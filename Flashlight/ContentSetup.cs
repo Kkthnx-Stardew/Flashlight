@@ -14,21 +14,16 @@ namespace Flashlight
     {
         public const string ModId = "Kkthnx.Flashlight";
 
-        /// <summary>The flashlight when it is off. It is the one the shop sells.</summary>
         public const string FlashlightId = ModId + "_Flashlight";
-
-        /// <summary>The same flashlight while it is on. It only differs in its picture, so the toolbar shows the state.</summary>
-        public const string FlashlightOnId = ModId + "_FlashlightOn";
 
         public const string BatteryId = ModId + "_Battery";
         public const string QualifiedFlashlightId = "(T)" + FlashlightId;
-        public const string QualifiedFlashlightOnId = "(T)" + FlashlightOnId;
         public const string QualifiedBatteryId = "(O)" + BatteryId;
 
         public static readonly string[] BeamNames = { "Up", "Right", "Down", "Left" }; // the game's facing numbers: 0 up, 1 right, 2 down, 3 left
 
         private const string ObjectsTexture = "Mods/" + ModId + "/Objects";
-        private const string ToolsTexture = "Mods/" + ModId + "/Tools";
+        public const string ToolsTexture = "Mods/" + ModId + "/Tools";
         public const string HeldTexture = "Mods/" + ModId + "/Held";
         private const string BeamTexturePrefix = "Mods/" + ModId + "/Beam";
 
@@ -45,8 +40,6 @@ namespace Flashlight
         }
 
         public static string BeamAssetName(int facing) => BeamTexturePrefix + BeamNames[facing];
-
-        public static bool IsFlashlight(Item? item) => FlashlightState.IsFlashlight(item);
 
         public void OnAssetRequested(AssetRequestedEventArgs e)
         {
@@ -85,8 +78,7 @@ namespace Flashlight
                 e.Edit(asset =>
                 {
                     var tools = asset.AsDictionary<string, ToolData>().Data;
-                    tools[FlashlightId] = NewFlashlight(FlashlightId, 0, config.FlashlightPrice);
-                    tools[FlashlightOnId] = NewFlashlight(FlashlightOnId, 1, -1);
+                    tools[FlashlightId] = NewFlashlight(config.FlashlightPrice);
                 });
             }
             else if (e.NameWithoutLocale.IsEquivalentTo("Data/CraftingRecipes"))
@@ -109,27 +101,27 @@ namespace Flashlight
             }
         }
 
-        private ToolData NewFlashlight(string id, int spriteIndex, int salePrice) => new()
+        private ToolData NewFlashlight(int salePrice) => new()
         {
             ClassName = "GenericTool",
-            Name = id,
+            Name = FlashlightId,
             DisplayName = _i18n.Get("item.flashlight.name"),
             Description = _i18n.Get("item.flashlight.description"),
             Texture = ToolsTexture,
-            SpriteIndex = spriteIndex,
-            MenuSpriteIndex = spriteIndex,
+            SpriteIndex = 0,
+            MenuSpriteIndex = 0,
             SalePrice = salePrice,
             AttachmentSlots = _config().BatterySlots,
             CanBeLostOnDeath = false,
         };
 
-        /// <summary>One flashlight per player: it is only on sale to someone who has none, switched on or off.</summary>
+        /// <summary>One flashlight per player: it is only on sale to someone who has none.</summary>
         internal static ShopItemData FlashlightShopItem(ModConfig config) => new()
         {
             Id = FlashlightId,
             ItemId = QualifiedFlashlightId,
             Price = config.FlashlightPrice,
-            Condition = $"!PLAYER_HAS_ITEM Current {QualifiedFlashlightId}, !PLAYER_HAS_ITEM Current {QualifiedFlashlightOnId}",
+            Condition = ShopRules.OneFlashlight(QualifiedFlashlightId),
         };
 
         /// <summary>Batteries are limited each day, and are not sold to someone who is already carrying the most.</summary>
@@ -143,10 +135,10 @@ namespace Flashlight
             // A random roll that is the same all day for every player however often the shop is opened, and does not depend on what else is for sale.
             AvailableStockModifiers = new List<QuantityModifier>
             {
-                new() { Id = "OutOfStock", Condition = $"SYNCED_RANDOM day {ModId}_BatteryOut {config.BatteryOutOfStockPercent / 100.0:0.##}", Modification = QuantityModifier.ModificationType.Set, Amount = 0 },
-                new() { Id = "LowStock", Condition = $"SYNCED_RANDOM day {ModId}_BatteryLow {config.BatteryLowStockPercent / 100.0:0.##}", Modification = QuantityModifier.ModificationType.Multiply, Amount = 0.5f },
+                new() { Id = "OutOfStock", Condition = ShopRules.DailyRoll(ModId + "_BatteryOut", config.BatteryOutOfStockPercent), Modification = QuantityModifier.ModificationType.Set, Amount = 0 },
+                new() { Id = "LowStock", Condition = ShopRules.DailyRoll(ModId + "_BatteryLow", config.BatteryLowStockPercent), Modification = QuantityModifier.ModificationType.Multiply, Amount = 0.5f },
             },
-            Condition = $"PLAYER_HAS_ITEM Current {QualifiedBatteryId} 0 {config.MaxBatteriesCarried - 1}",
+            Condition = ShopRules.CarryLimit(QualifiedBatteryId, config.MaxBatteriesCarried),
         };
     }
 }

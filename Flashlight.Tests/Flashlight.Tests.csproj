@@ -23,6 +23,7 @@
     <Compile Include="..\Flashlight\ModConfig.cs" Link="ModConfig.cs" />
     <Compile Include="..\Flashlight\FlickerModel.cs" Link="FlickerModel.cs" />
     <Compile Include="..\Flashlight\ChargeBar.cs" Link="ChargeBar.cs" />
+    <Compile Include="..\Flashlight\ShopRules.cs" Link="ShopRules.cs" />
   </ItemGroup>
 
 </Project>

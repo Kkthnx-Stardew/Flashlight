@@ -18,6 +18,9 @@ namespace Flashlight
     /// </summary>
     internal static class FlashlightPatches
     {
+        /// <summary>How far the picture is lifted to make room for the charge bar under it, in pixels. The watering can uses the same.</summary>
+        private const float BarLift = 12f;
+
         /// <summary>Builds the line of text about the charge for the tooltip, from a share of a full load. Set by the mod.</summary>
         public static Func<float, string>? ChargeText { get; set; }
 
@@ -109,17 +112,25 @@ namespace Flashlight
 
         // ---------------------------------------------------------------- how it looks
 
-        /// <summary>Lifts the picture a little to make room for the bar, as the watering can does, and remembers where the slot began.</summary>
-        private static void DrawInMenuPrefix(Tool __instance, ref Vector2 location, out Vector2 __state)
+        /// <summary>
+        /// Lifts the picture a little to make room for the bar, as the watering can does, but only where the bar will be drawn.
+        /// Remembers where the slot began.
+        /// </summary>
+        private static void DrawInMenuPrefix(Tool __instance, ref Vector2 location, StackDrawType drawStackNumber, out Vector2 __state)
         {
             __state = location;
-            if (FlashlightState.IsFlashlight(__instance))
-                location.Y -= 12f;
+            if (drawStackNumber != StackDrawType.Hide && FlashlightState.IsFlashlight(__instance))
+                location.Y -= BarLift;
         }
 
-        private static void DrawInMenuPostfix(Tool __instance, SpriteBatch spriteBatch, float transparency, float layerDepth, StackDrawType drawStackNumber, Vector2 __state)
+        private static void DrawInMenuPostfix(Tool __instance, SpriteBatch spriteBatch, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber, Color color, Vector2 __state)
         {
-            if (drawStackNumber != StackDrawType.Hide && FlashlightState.IsFlashlight(__instance))
+            if (!FlashlightState.IsFlashlight(__instance))
+                return;
+            var withBar = drawStackNumber != StackDrawType.Hide;
+            if (FlashlightState.IsLit(__instance))
+                FlashlightVisuals.DrawLitIcon(spriteBatch, withBar ? __state - new Vector2(0f, BarLift) : __state, scaleSize, transparency, layerDepth, color);
+            if (withBar)
                 FlashlightVisuals.DrawBar(spriteBatch, __state, transparency, layerDepth, __instance);
         }
 

@@ -11,12 +11,23 @@ namespace Flashlight
     {
         public const string ChargeKey = ContentSetup.ModId + "/Charge";
 
+        /// <summary>Present in a flashlight's mod data while it is switched on. It is saved with the item, so it is cleared when a day starts.</summary>
+        public const string LitKey = ContentSetup.ModId + "/Lit";
+
         /// <summary>Ticks of light in one Dry Cell. Set from the settings.</summary>
         public static int Capacity { get; set; } = ChargeModel.CapacityTicks(4);
 
-        public static bool IsFlashlight(Item? item) => item?.ItemId is ContentSetup.FlashlightId or ContentSetup.FlashlightOnId;
+        public static bool IsFlashlight(Item? item) => item?.ItemId == ContentSetup.FlashlightId;
 
-        public static bool IsLit(Item? item) => item?.ItemId == ContentSetup.FlashlightOnId;
+        public static bool IsLit(Item? item) => item is not null && item.modData.ContainsKey(LitKey);
+
+        public static void SetLit(Item flashlight, bool lit)
+        {
+            if (lit)
+                flashlight.modData[LitKey] = "1";
+            else
+                flashlight.modData.Remove(LitKey);
+        }
 
         public static int ReadCharge(Item tool) =>
             tool.modData.TryGetValue(ChargeKey, out var text) && int.TryParse(text, out var charge) ? Math.Max(0, charge) : 0;

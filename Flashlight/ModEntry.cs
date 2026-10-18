@@ -20,7 +20,6 @@ namespace Flashlight
         private ModConfig _config = new();
         private ContentSetup _content = null!; // set in Entry
         private KeybindList _toggleKeys = KeybindList.Parse("F");
-        private bool _swapping;
 
         // Each split-screen player has a flashlight of their own.
         private readonly PerScreen<bool> _on = new();
@@ -43,6 +42,8 @@ namespace Flashlight
             FlashlightPatches.Apply(Monitor);
             FlashlightPatches.ChargeText = fraction => helper.Translation.Get("tooltip.charge", new { percent = (int)Math.Round(fraction * 100) });
             FlashlightVisuals.HeldLoader = () => helper.GameContent.Load<Texture2D>(ContentSetup.HeldTexture);
+            FlashlightVisuals.ToolsLoader = () => helper.GameContent.Load<Texture2D>(ContentSetup.ToolsTexture);
+            FlashlightVisuals.OnError = reason => Monitor.Log("Could not load a picture for the flashlight, so it will be drawn plainly: " + reason, LogLevel.Error);
 
             helper.Events.GameLoop.GameLaunched += (_, _) => ConfigMenu.Setup(this, helper, () => _config, OnConfigSaved);
             helper.Events.Content.AssetRequested += (_, e) => _content.OnAssetRequested(e);
@@ -142,59 +143,25 @@ namespace Flashlight
             return first;
         }
 
-        // ---------------------------------------------------------------- the on and off pictures
+        // ---------------------------------------------------------------- keeping every flashlight in order
 
         /// <summary>
-        /// Swaps the flashlight in the backpack for its lit or unlit twin, keeping its slot, its charge and its loaded cells.
-        /// The two are separate items only so that the toolbar picture shows whether it is on.
+        /// Puts every flashlight in the backpack in the state it should be in: unlit unless the light is on (the lit flag is saved
+        /// with the item, so one can be found lit after a save or in a chest), and with the slots the settings ask for.
         /// </summary>
-        private Tool SetVariant(Farmer player, Tool tool, bool on)
-        {
-            var id = on ? ContentSetup.FlashlightOnId : ContentSetup.FlashlightId;
-            if (tool.ItemId == id)
-                return tool;
-            var index = player.Items.IndexOf(tool);
-            if (index < 0)
-                return tool;
-
-            _swapping = true;
-            try
-            {
-                var fresh = ItemRegistry.Create<Tool>("(T)" + id);
-                foreach (var pair in tool.modData.Pairs)
-                    fresh.modData[pair.Key] = pair.Value;
-                for (var i = 0; i < Math.Min(tool.attachments.Count, fresh.attachments.Count); i++)
-                    fresh.attachments[i] = tool.attachments[i]; // the loaded cells go with it
-                player.Items[index] = fresh;
-                _tool.Value = fresh;
-                return fresh;
-            }
-            finally
-            {
-                _swapping = false;
-            }
-        }
-
-        /// <summary>A lit flashlight only exists while the light is on, so one found any other time is put back to unlit.</summary>
         private void Normalize(Farmer player)
         {
-            if (_swapping)
-                return;
-
             var items = player.Items;
             for (var i = 0; i < items.Count; i++)
             {
+                if (items[i] is not Tool tool || !FlashlightState.IsFlashlight(tool))
+                    continue;
                 // a flashlight made before the slot count was raised in the settings gets the extra slots
-                if (items[i] is Tool tool && FlashlightState.IsFlashlight(tool) && tool.AttachmentSlotsCount < _config.BatterySlots)
+                if (tool.AttachmentSlotsCount < _config.BatterySlots)
                     tool.AttachmentSlotsCount = _config.BatterySlots;
-            }
-
-            if (_on.Value)
-                return;
-            for (var i = 0; i < items.Count; i++)
-            {
-                if (items[i] is Tool lit && lit.ItemId == ContentSetup.FlashlightOnId)
-                    SetVariant(player, lit, on: false);
+                // only the flashlight in use can be lit, and only while the light is on
+                if (FlashlightState.IsLit(tool) && !(_on.Value && ReferenceEquals(tool, _tool.Value)))
+                    FlashlightState.SetLit(tool, false);
             }
         }
 
@@ -212,9 +179,12 @@ namespace Flashlight
 
         // ---------------------------------------------------------------- input
 
+        /// <summary>Whether a key or click is for the flashlight: the world is up, the farmer is free to move, and no one is typing in the chat or a text box.</summary>
+        private static bool CanAct() => Context.IsWorldReady && Context.IsPlayerFree && Game1.keyboardDispatcher?.Subscriber is null;
+
         private void OnButtonsChanged(object? sender, ButtonsChangedEventArgs e)
         {
-            if (!_toggleKeys.JustPressed() || !Context.IsWorldReady || !Context.IsPlayerFree)
+            if (!_toggleKeys.JustPressed() || !CanAct())
                 return;
             if (_tool.Value is null && RefreshTool(Game1.player) is null)
                 return;
@@ -226,7 +196,7 @@ namespace Flashlight
         /// <summary>Using the tool (clicking with it selected) switches it too, with no swing.</summary>
         private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
         {
-            if (!Context.IsWorldReady || !Context.IsPlayerFree || !e.Button.IsUseToolButton())
+            if (!CanAct() || !e.Button.IsUseToolButton())
                 return;
             var player = Game1.player;
             if (!FlashlightState.IsFlashlight(player.CurrentTool) || (_tool.Value is null && RefreshTool(player) is null))
@@ -258,13 +228,13 @@ namespace Flashlight
             if (step.CellUsed)
                 FlashlightState.UseCell(flashlight);
             FlashlightState.WriteCharge(flashlight, step.Charge);
-            flashlight = SetVariant(player, flashlight, on: true);
+            FlashlightState.SetLit(flashlight, true);
             _reserve.Value = FlashlightState.Reserve(flashlight);
             _warnedLow.Value = _reserve.Value < ChargeBar.LowFraction;
             _flickerTicks.Value = 0;
             _on.Value = true;
             AddLight(player);
-            Game1.playSound("woodyStep");
+            Game1.playSound("smallSelect");
             Game1.addHUDMessage(new HUDMessage(Helper.Translation.Get("message.on"), HUDMessage.newQuest_type));
         }
 
@@ -275,19 +245,19 @@ namespace Flashlight
             _on.Value = false;
             RemoveLight();
             if (Context.IsWorldReady)
-                Normalize(Game1.player);
+                Normalize(Game1.player); // the flashlight is no longer lit
             if (announce)
             {
-                Game1.playSound("woodyStep");
+                Game1.playSound("toolSwap");
                 Game1.addHUDMessage(new HUDMessage(Helper.Translation.Get("message.off"), HUDMessage.newQuest_type));
             }
         }
 
         // ---------------------------------------------------------------- time
 
-        /// <summary>Whether the place the farmer is in is dark enough for a light to matter. Daylight outside is not.</summary>
+        /// <summary>Whether the place the farmer is in is dark enough for a light to matter: indoors, in the mines, outside after dark, or in the rain. Daylight outside is not.</summary>
         private static bool NeedsLight(GameLocation? location) =>
-            location is not null && (!location.IsOutdoors || Game1.isDarkOut(location));
+            location is not null && (!location.IsOutdoors || Game1.isDarkOut(location) || Game1.IsRainingHere(location));
 
         /// <summary>Called every 10 in-game minutes.</summary>
         private void OnTimeChanged(object? sender, TimeChangedEventArgs e)

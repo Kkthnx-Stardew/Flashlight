@@ -16,16 +16,7 @@ namespace Flashlight
 
             menu.Register(
                 mod: manifest,
-                reset: () =>
-                {
-                    var c = config();
-                    var d = new ModConfig();
-                    c.ToggleKey = d.ToggleKey; c.BeamLengthTiles = d.BeamLengthTiles; c.BatteryHours = d.BatteryHours;
-                    c.BatterySlots = d.BatterySlots; c.FlashlightPrice = d.FlashlightPrice; c.BatteryPrice = d.BatteryPrice;
-                    c.SoldAtCarpenter = d.SoldAtCarpenter; c.BatteryDailyStock = d.BatteryDailyStock;
-                    c.BatteryOutOfStockPercent = d.BatteryOutOfStockPercent; c.BatteryLowStockPercent = d.BatteryLowStockPercent;
-                    c.MaxBatteriesCarried = d.MaxBatteriesCarried; c.FlickerSecondsBetween = d.FlickerSecondsBetween;
-                },
+                reset: () => config().CopyFrom(new ModConfig()),
                 save: saved);
 
             menu.AddSectionTitle(manifest, () => t.Get("gmcm.use"));

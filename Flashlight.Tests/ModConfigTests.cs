@@ -75,3 +75,36 @@ public class ModConfigTests
         Assert.Equal(expected, config.FlickerSecondsBetween);
     }
 }
+
+public class ModConfigCopyTests
+{
+    [Fact]
+    public void CopyFromCopiesEverySettingSoTheMenuResetCannotMissOne()
+    {
+        var changed = new ModConfig
+        {
+            ToggleKey = "G", BeamLengthTiles = 5, BatteryHours = 7, BatterySlots = 3, FlashlightPrice = 111, BatteryPrice = 22,
+            SoldAtCarpenter = false, BatteryDailyStock = 4, BatteryOutOfStockPercent = 33, BatteryLowStockPercent = 44,
+            MaxBatteriesCarried = 9, FlickerSecondsBetween = 77,
+        };
+        var target = new ModConfig();
+        target.CopyFrom(changed);
+        foreach (var property in typeof(ModConfig).GetProperties())
+            Assert.Equal(property.GetValue(changed), property.GetValue(target));
+    }
+
+    [Fact]
+    public void EverySettingIsDifferentFromItsDefaultInTheTestAbove()
+    {
+        // guards the test above: a new setting that it does not change would make the copy check pass for nothing
+        var changed = new ModConfig
+        {
+            ToggleKey = "G", BeamLengthTiles = 5, BatteryHours = 7, BatterySlots = 3, FlashlightPrice = 111, BatteryPrice = 22,
+            SoldAtCarpenter = false, BatteryDailyStock = 4, BatteryOutOfStockPercent = 33, BatteryLowStockPercent = 44,
+            MaxBatteriesCarried = 9, FlickerSecondsBetween = 77,
+        };
+        var defaults = new ModConfig();
+        foreach (var property in typeof(ModConfig).GetProperties())
+            Assert.NotEqual(property.GetValue(defaults), property.GetValue(changed));
+    }
+}

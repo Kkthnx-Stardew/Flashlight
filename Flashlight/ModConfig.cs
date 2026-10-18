@@ -42,6 +42,16 @@ namespace Flashlight
         /// </summary>
         public int FlickerSecondsBetween { get; set; } = 40;
 
+        /// <summary>Copies every setting from another instance. Used to restore the defaults from the config menu.</summary>
+        public void CopyFrom(ModConfig other)
+        {
+            foreach (var property in typeof(ModConfig).GetProperties())
+            {
+                if (property.CanRead && property.CanWrite)
+                    property.SetValue(this, property.GetValue(other));
+            }
+        }
+
         /// <summary>Keeps every value in a range the game and the balance can cope with.</summary>
         public void Clamp()
         {

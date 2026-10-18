@@ -18,12 +18,40 @@ namespace Flashlight
 
         private static readonly Rectangle BarFrame = new(297, 420, 14, 5); // the frame the watering can uses, in the game's cursors picture
 
-        /// <summary>Loads the held pictures. Set by the mod; cleared when the asset changes so it is fetched again.</summary>
+        /// <summary>Loads the held pictures and the tool sheet. Set by the mod; cleared when an asset changes so it is fetched again.</summary>
         public static Func<Texture2D?>? HeldLoader { get; set; }
 
-        private static Texture2D? _held;
+        public static Func<Texture2D?>? ToolsLoader { get; set; }
 
-        public static void ForgetTextures() => _held = null;
+        /// <summary>Called once with the reason when a picture cannot be loaded, after which nothing more is drawn until the assets change.</summary>
+        public static Action<string>? OnError { get; set; }
+
+        private static Texture2D? _held;
+        private static Texture2D? _tools;
+        private static bool _failed;
+
+        public static void ForgetTextures()
+        {
+            _held = null;
+            _tools = null;
+            _failed = false;
+        }
+
+        private static Texture2D? Get(ref Texture2D? cache, Func<Texture2D?>? loader)
+        {
+            if (cache is not null || _failed || loader is null)
+                return cache;
+            try
+            {
+                cache = loader();
+            }
+            catch (Exception ex)
+            {
+                _failed = true; // one message, not one every frame
+                OnError?.Invoke(ex.Message);
+            }
+            return cache;
+        }
 
         // ---------------------------------------------------------------- the charge bar
 
@@ -49,6 +77,20 @@ namespace Flashlight
             spriteBatch.Draw(Game1.staminaRect, new Rectangle((int)location.X + 8, (int)location.Y + 64 - 16, width, 8), color * 0.9f * transparency);
         }
 
+        // ---------------------------------------------------------------- the lit picture
+
+        /// <summary>
+        /// Draws the lit picture of the flashlight over the unlit one the game has just drawn. Both fill the same cell and the lit one
+        /// only changes the lens and adds rays, so it covers the unlit one completely.
+        /// </summary>
+        public static void DrawLitIcon(SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, Color color)
+        {
+            var tools = Get(ref _tools, ToolsLoader);
+            if (tools is null)
+                return;
+            spriteBatch.Draw(tools, location + new Vector2(32f, 32f), new Rectangle(16, 0, 16, 16), color * transparency, 0f, new Vector2(8f, 8f), 4f * scaleSize, SpriteEffects.None, layerDepth + 0.00005f);
+        }
+
         // ---------------------------------------------------------------- in the hand
 
         /// <summary>
@@ -62,7 +104,7 @@ namespace Flashlight
             if (who.hidden.Value || Game1.eventUp || who.UsingTool || who.isRidingHorse() || who.IsSitting() || who.currentLocation != Game1.currentLocation)
                 return;
 
-            var held = _held ??= HeldLoader?.Invoke();
+            var held = Get(ref _held, HeldLoader);
             if (held is null)
                 return;
 

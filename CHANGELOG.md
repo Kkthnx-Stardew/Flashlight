@@ -16,4 +16,7 @@ First build. It compiles against Stardew Valley 1.6.15 and SMAPI 4.5.2 with no w
 - Under a tenth of a full load the flicker gets steadily more frequent, about every 12 seconds at 5 percent and every 3 seconds when nearly empty.
 - Settings in Generic Mod Config Menu, and a toggle key that can list several buttons, such as a controller button.
 - No beam during cutscenes and festivals.
+- The lit flashlight is drawn over the unlit one instead of being swapped for a second item, so there is one flashlight item and a lit flag that is cleared whenever a day starts.
+- The flashlight picture now sits in the rows above the charge bar, so it no longer touches the bar.
+- The shop's stock rolls are written with a full stop in every language (a comma broke them on some systems), keys typed in a chat or text box are ignored, and a flashlight left on in the rain drains like one left on at night.
 - One flashlight to a player (the shop stops selling a second, and a spare in the backpack is ignored), a daily limit on batteries with a random chance of a thin or empty shelf, a carry limit for the shop, and a low sell price for batteries so they cannot be bought and sold for profit.
