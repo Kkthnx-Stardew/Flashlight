@@ -16,7 +16,7 @@ namespace Flashlight
 
         private static readonly Rectangle BarFrame = new(297, 420, 14, 5); // the frame the watering can uses, in the game's cursors picture
 
-        /// <summary>Loads the tool sheet. Set by the mod; cleared when an asset changes so it is fetched again.</summary>
+        /// <summary>Loads the tool sheet. Set by the mod. Cleared when an asset changes so it is fetched again.</summary>
         public static Func<Texture2D?>? ToolsLoader { get; set; }
 
         /// <summary>Called once with the reason when a picture cannot be loaded, after which nothing more is drawn until the assets change.</summary>

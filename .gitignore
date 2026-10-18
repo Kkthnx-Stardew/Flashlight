@@ -363,3 +363,7 @@ MigrationBackup/
 FodyWeavers.xsd
 
 art/preview*.png
+
+# Mod settings and the usage tally are written next to the mod while it runs
+Flashlight/config.json
+Flashlight/stats.json

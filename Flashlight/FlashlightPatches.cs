@@ -56,6 +56,13 @@ namespace Flashlight
                     original: AccessTools.Method(typeof(Farmer), nameof(Farmer.couldInventoryAcceptThisItem), new[] { typeof(Item) }),
                     postfix: new HarmonyMethod(typeof(FlashlightPatches), nameof(CouldAcceptPostfix)));
             });
+            Patch(monitor, "flashlight in the hand", () => harmony.Patch(
+                original: AccessTools.Method(typeof(FarmerRenderer), nameof(FarmerRenderer.draw), new[]
+                {
+                    typeof(SpriteBatch), typeof(FarmerSprite.AnimationFrame), typeof(int), typeof(Rectangle), typeof(Vector2), typeof(Vector2),
+                    typeof(float), typeof(int), typeof(Color), typeof(float), typeof(float), typeof(Farmer),
+                }),
+                postfix: new HarmonyMethod(typeof(FlashlightPatches), nameof(FarmerDrawPostfix))));
             Patch(monitor, "tooltip charge line", () => harmony.Patch(
                 original: AccessTools.Method(typeof(Tool), nameof(Tool.getDescription), Type.EmptyTypes),
                 postfix: new HarmonyMethod(typeof(FlashlightPatches), nameof(GetDescriptionPostfix))));
@@ -75,16 +82,16 @@ namespace Flashlight
 
         // ---------------------------------------------------------------- battery slots
 
-        /// <summary>A slot of the flashlight in use takes a Dry Cell and nothing else. A spare flashlight takes nothing.</summary>
+        /// <summary>A slot of the flashlight in use takes a Dry Cell or a Battery Pack and nothing else. A spare flashlight takes nothing.</summary>
         private static void CanThisBeAttachedPostfix(Tool __instance, StardewValley.Object o, ref bool __result)
         {
             if (!FlashlightState.IsFlashlight(__instance))
                 return;
-            __result = o?.QualifiedItemId == ContentSetup.QualifiedBatteryId && FlashlightState.IsActive(__instance);
+            __result = FlashlightState.CanLoad(o) && FlashlightState.IsActive(__instance);
         }
 
         /// <summary>
-        /// Loading puts one Dry Cell in the first empty slot and hands the rest of the stack back, so the flashlight can never
+        /// Loading puts one cell in the first empty slot and hands the rest of the stack back, so the flashlight can never
         /// hold more cells than it has slots. Taking out (an empty hand) gives back the first loaded cell.
         /// </summary>
         private static bool AttachPrefix(Tool __instance, StardewValley.Object o, ref StardewValley.Object __result)
@@ -109,7 +116,7 @@ namespace Flashlight
             }
 
             __result = o;
-            if (o.QualifiedItemId != ContentSetup.QualifiedBatteryId)
+            if (!FlashlightState.CanLoad(o))
                 return false;
             if (!FlashlightState.IsActive(__instance))
             {
@@ -128,7 +135,7 @@ namespace Flashlight
                 Game1.playSound("button1");
                 return false;
             }
-            return false; // every slot is full; the cell stays in the hand
+            return false; // every slot is full, so the cell stays in the hand
         }
 
         // ---------------------------------------------------------------- one flashlight in the backpack
@@ -180,6 +187,24 @@ namespace Flashlight
                 FlashlightVisuals.DrawLitIcon(spriteBatch, withBar ? __state - new Vector2(0f, BarLift) : __state, scaleSize, transparency, layerDepth, color);
             if (withBar)
                 FlashlightVisuals.DrawBar(spriteBatch, __state, transparency, layerDepth, __instance);
+        }
+
+        private static bool _heldFailed;
+
+        /// <summary>Draws the flashlight in the hand once the game has drawn the farmer. It must never stop the game from drawing.</summary>
+        private static void FarmerDrawPostfix(SpriteBatch b, FarmerSprite.AnimationFrame animationFrame, int currentFrame, Vector2 position, Vector2 origin, float layerDepth, int facingDirection, Color overrideColor, float scale, Farmer who)
+        {
+            if (_heldFailed)
+                return;
+            try
+            {
+                HeldFlashlight.Draw(b, who, animationFrame, currentFrame, position, origin, layerDepth, facingDirection, overrideColor, scale);
+            }
+            catch (Exception ex)
+            {
+                _heldFailed = true; // one message, not one every frame
+                HeldFlashlight.OnError?.Invoke(ex.ToString());
+            }
         }
 
         private static void GetDescriptionPostfix(Tool __instance, ref string __result)

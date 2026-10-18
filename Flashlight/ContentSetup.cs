@@ -24,6 +24,7 @@ namespace Flashlight
 
         private const string ObjectsTexture = "Mods/" + ModId + "/Objects";
         public const string ToolsTexture = "Mods/" + ModId + "/Tools";
+        public const string HeldTexture = "Mods/" + ModId + "/Held";
         private const string BeamTexturePrefix = "Mods/" + ModId + "/Beam";
 
         /// <summary>What a battery sells for. It is well under the shop price and under the cost of the recipe's ingredients.</summary>
@@ -48,6 +49,8 @@ namespace Flashlight
                 e.LoadFromModFile<Texture2D>("assets/objects.png", AssetLoadPriority.Medium);
             else if (e.NameWithoutLocale.IsEquivalentTo(ToolsTexture))
                 e.LoadFromModFile<Texture2D>("assets/tools.png", AssetLoadPriority.Medium);
+            else if (e.NameWithoutLocale.IsEquivalentTo(HeldTexture))
+                e.LoadFromModFile<Texture2D>("assets/held.png", AssetLoadPriority.Medium);
             else if (e.NameWithoutLocale.StartsWith(BeamTexturePrefix, true))
             {
                 for (var facing = 0; facing < BeamNames.Length; facing++)
@@ -68,6 +71,10 @@ namespace Flashlight
                     Price = BatterySellPrice,
                     Texture = ObjectsTexture,
                     SpriteIndex = 0,
+                    // it is not a collectible: Perfection must not ask for it, and no merchant or cart may sell it past the shop's limits
+                    ExcludeFromShippingCollection = true,
+                    ExcludeFromFishingCollection = true,
+                    ExcludeFromRandomSale = true,
                 });
             }
             else if (e.NameWithoutLocale.IsEquivalentTo("Data/Tools"))
@@ -91,7 +98,7 @@ namespace Flashlight
                 {
                     var shops = asset.AsDictionary<string, ShopData>().Data;
                     if (!shops.TryGetValue("Carpenter", out var shop))
-                        return; // Robin's shop is missing or renamed by another mod; sell nothing instead of breaking
+                        return; // Robin's shop is missing or renamed by another mod, so sell nothing instead of breaking
                     shop.Items.Add(FlashlightShopItem(config));
                     shop.Items.Add(BatteryShopItem(config));
                 });

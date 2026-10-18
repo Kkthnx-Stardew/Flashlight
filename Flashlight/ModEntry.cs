@@ -17,13 +17,17 @@ namespace Flashlight
         // The colour is taken away from the darkness, so a warm light removes mostly blue.
         private static readonly Color LightColor = new(0, 40, 140);
 
+        private const string StatsFile = "stats.json";
+
         private ModConfig _config = new();
+        private UsageStats _stats = new();
         private ContentSetup _content = null!; // set in Entry
         private KeybindList _toggleKeys = KeybindList.Parse("F");
 
         // Each split-screen player has a flashlight of their own.
         private readonly PerScreen<bool> _on = new();
         private readonly PerScreen<string?> _lightId = new();
+        private readonly PerScreen<string?> _glowId = new();
         private readonly PerScreen<string?> _lightLocation = new();
         private readonly PerScreen<bool> _warnedLow = new();
         private readonly PerScreen<int> _flickerTicks = new();
@@ -48,6 +52,8 @@ namespace Flashlight
                 Monitor.Log($"Could not read config.json, so the default settings are used and the file is left as it is. Fix it or delete it. ({ex.Message})", LogLevel.Warn);
             }
             ApplyConfig(save: readable);
+            LoadStats();
+            helper.ConsoleCommands.Add("flashlight_report", "Prints a block of text about your settings and how the flashlight has been used, to paste into a bug report or feedback. Nothing is sent anywhere.", (_, _) => Monitor.Log(Report(), LogLevel.Info));
 
             _content = new ContentSetup(helper.Translation, () => _config);
             FlashlightPatches.Apply(Monitor);
@@ -55,6 +61,10 @@ namespace Flashlight
             FlashlightPatches.SecondRefused = () => Notice("message.carry-one");
             FlashlightPatches.ChargeText = fraction => helper.Translation.Get("tooltip.charge", new { percent = (int)Math.Round(fraction * 100) });
             FlashlightVisuals.ToolsLoader = () => helper.GameContent.Load<Texture2D>(ContentSetup.ToolsTexture);
+            HeldFlashlight.HeldLoader = () => helper.GameContent.Load<Texture2D>(ContentSetup.HeldTexture);
+            HeldFlashlight.SheetLoader = male => helper.GameContent.Load<Texture2D>(male ? "Characters/Farmer/farmer_base" : "Characters/Farmer/farmer_girl_base");
+            HeldFlashlight.Enabled = () => _config.ShowInHand;
+            HeldFlashlight.OnError = reason => Monitor.Log("Could not draw the flashlight in the hand, so it will not be drawn there: " + reason, LogLevel.Error);
             FlashlightVisuals.OnError = reason => Monitor.Log("Could not load a picture for the flashlight, so it will be drawn plainly: " + reason, LogLevel.Error);
 
             helper.Events.GameLoop.GameLaunched += (_, _) => ConfigMenu.Setup(this, helper, () => _config, OnConfigSaved);
@@ -67,8 +77,18 @@ namespace Flashlight
             helper.Events.GameLoop.TimeChanged += OnTimeChanged;
             helper.Events.GameLoop.SaveLoaded += (_, _) => Reset();
             helper.Events.GameLoop.DayStarted += (_, _) => Reset();
-            helper.Events.GameLoop.DayEnding += (_, _) => TurnOff(announce: false);
-            helper.Events.GameLoop.ReturnedToTitle += (_, _) => ForgetLight();
+            helper.Events.GameLoop.DayEnding += (_, _) =>
+            {
+                TurnOff(announce: false);
+                _stats.DayEnded();
+                SaveStats();
+            };
+            helper.Events.GameLoop.Saving += (_, _) => SaveStats();
+            helper.Events.GameLoop.ReturnedToTitle += (_, _) =>
+            {
+                ForgetLight();
+                SaveStats();
+            };
             helper.Events.Player.Warped += OnWarped;
             helper.Events.Player.InventoryChanged += (_, e) =>
             {
@@ -88,7 +108,8 @@ namespace Flashlight
             if (save)
                 Helper.WriteConfig(_config);
 
-            FlashlightState.Capacity = ChargeModel.CapacityTicks(_config.BatteryHours);
+            FlashlightState.Capacities = new CellCapacities(ChargeModel.CapacityTicks(_config.BatteryHours), ChargeModel.CapacityTicks(_config.BatteryPackHours));
+            FlashlightState.PacksAllowed = _config.UseBatteryPacks;
             if (!KeybindList.TryParse(_config.ToggleKey, out var keys, out var errors))
             {
                 Monitor.Log($"The toggle key '{_config.ToggleKey}' is not valid ({string.Join("; ", errors)}). Using F.", LogLevel.Warn);
@@ -117,13 +138,65 @@ namespace Flashlight
         {
             foreach (var name in e.NamesWithoutLocale)
             {
+                if (name.StartsWith("Characters/Farmer/farmer", true))
+                    HeldFlashlight.ForgetTextures();
                 if (name.StartsWith("Mods/" + ContentSetup.ModId + "/", true))
                 {
                     FlashlightVisuals.ForgetTextures();
+                    HeldFlashlight.ForgetTextures();
                     Array.Clear(_beams);
                     return;
                 }
             }
+        }
+
+        // ---------------------------------------------------------------- feedback
+
+        private void LoadStats()
+        {
+            try
+            {
+                _stats = Helper.Data.ReadJsonFile<UsageStats>(StatsFile) ?? new UsageStats();
+            }
+            catch (Exception ex)
+            {
+                // the tally is only for feedback, so a file that cannot be read is started over and never stops the mod
+                Monitor.Log($"Could not read {StatsFile}, so the usage tally starts again. ({ex.Message})", LogLevel.Debug);
+                _stats = new UsageStats();
+            }
+        }
+
+        private void SaveStats()
+        {
+            try
+            {
+                Helper.Data.WriteJsonFile(StatsFile, _stats);
+            }
+            catch (Exception ex)
+            {
+                Monitor.Log($"Could not save {StatsFile}. ({ex.Message})", LogLevel.Debug);
+            }
+        }
+
+        /// <summary>The block of text printed by the flashlight_report command.</summary>
+        private string Report()
+        {
+            var environment = $"SMAPI {Constants.ApiVersion}, Stardew Valley {Game1.version}, {Constants.TargetPlatform}";
+            var flashlight = "no save loaded";
+            if (Context.IsWorldReady)
+            {
+                var tool = FlashlightState.ActiveIn(Game1.player);
+                if (tool is null)
+                    flashlight = "not carried";
+                else
+                {
+                    Span<CellKind> slots = stackalloc CellKind[FlashlightState.MaxSlots];
+                    var count = FlashlightState.ReadSlots(tool, slots);
+                    var loaded = string.Join(", ", slots[..count].ToArray().Select(k => k == CellKind.None ? "-" : k.ToString()));
+                    flashlight = $"{FlashlightState.Reserve(tool) * 100:0}% of a full load, charge {FlashlightState.ReadCharge(tool)} ticks ({FlashlightState.ReadInUse(tool)}), slots [{loaded}]";
+                }
+            }
+            return ReportText.Build(ModManifest.Version.ToString(), environment, _config, _stats, flashlight);
         }
 
         // ---------------------------------------------------------------- finding the flashlight
@@ -137,7 +210,7 @@ namespace Flashlight
         private Tool? RefreshTool(Farmer player)
         {
             var chosen = FlashlightState.ActiveIn(player);
-            // while the light is on it belongs to the lit flashlight; if that was dropped or sold the light goes out
+            // while the light is on it belongs to the lit flashlight, and if that was dropped or sold the light goes out
             if (_on.Value && chosen is not null && !FlashlightState.IsLit(chosen))
                 chosen = null;
             _tool.Value = chosen;
@@ -232,16 +305,16 @@ namespace Flashlight
 
         private void TurnOn(Farmer player, Tool flashlight)
         {
-            var step = ChargeModel.TurnOn(FlashlightState.ReadCharge(flashlight), FlashlightState.CountCells(flashlight), FlashlightState.Capacity);
+            var step = FlashlightState.TurnOn(flashlight);
             if (!step.LightOn)
             {
                 Game1.addHUDMessage(new HUDMessage(Helper.Translation.Get("message.no-battery"), HUDMessage.error_type));
                 return;
             }
 
+            FlashlightState.Commit(flashlight, step);
             if (step.CellUsed)
-                FlashlightState.UseCell(flashlight);
-            FlashlightState.WriteCharge(flashlight, step.Charge);
+                _stats.CellUsed(step.InUse);
             FlashlightState.SetLit(flashlight, true);
             _reserve.Value = FlashlightState.Reserve(flashlight);
             _warnedLow.Value = _reserve.Value < ChargeBar.LowFraction;
@@ -291,15 +364,18 @@ namespace Flashlight
             if (!NeedsLight(player.currentLocation))
                 return;
 
-            var step = ChargeModel.Tick(FlashlightState.ReadCharge(flashlight), FlashlightState.CountCells(flashlight), FlashlightState.Capacity);
+            var step = FlashlightState.Tick(flashlight);
+            FlashlightState.Commit(flashlight, step);
+            if (step.LightOn)
+                _stats.Tick();
             if (step.CellUsed)
-                FlashlightState.UseCell(flashlight);
-            FlashlightState.WriteCharge(flashlight, step.Charge);
+                _stats.CellUsed(step.InUse);
             _reserve.Value = FlashlightState.Reserve(flashlight);
 
             if (!step.LightOn)
             {
                 TurnOff(announce: false);
+                _stats.RanOut++;
                 Game1.addHUDMessage(new HUDMessage(Helper.Translation.Get("message.empty"), HUDMessage.error_type));
             }
             else if (_reserve.Value < ChargeBar.LowFraction && !_warnedLow.Value)
@@ -319,9 +395,23 @@ namespace Flashlight
 
         private float Radius => _config.BeamLengthTiles * 64f / ConePixels;
 
+        /// <summary>How much brighter than a Dry Cell the beam is with the given share of a Battery Pack's boost (0 to 1).</summary>
+        private float Brightness(float boost) => 1f + boost * (_config.BatteryPackBeamPercent / 100f - 1f);
+
+        /// <summary>A Battery Pack gives a longer beam and takes more of the darkness away, a little more than the length alone.</summary>
+        private Color ColorFor(float boost)
+        {
+            var f = 1f + (Brightness(boost) - 1f) * 1.5f;
+            return new Color(LightColor.R, (int)Math.Min(255f, LightColor.G * f), (int)Math.Min(255f, LightColor.B * f));
+        }
+
         /// <summary>The spot the beam starts from: the lens of the flashlight in the farmer's hand, whichever way they face.</summary>
         private static Vector2 BeamOrigin(Farmer player)
         {
+            // when the flashlight is drawn in the hand, the beam starts at the lens that was drawn, so it follows the hand
+            if (HeldFlashlight.TryGetLens(out var lens))
+                return lens;
+
             var from = player.FacingDirection switch
             {
                 0 => new Vector2(22, -18),  // up: past the shoulder
@@ -332,6 +422,26 @@ namespace Flashlight
             return player.Position + from;
         }
 
+        /// <summary>The middle of the farmer, where the soft glow around them is centred.</summary>
+        private static Vector2 GlowOrigin(Farmer player) => player.Position + new Vector2(32f, -24f);
+
+        /// <summary>The soft glow is a little dimmer than the beam, so the beam still reads as the main light.</summary>
+        private Color GlowColor(float boost)
+        {
+            var c = ColorFor(boost);
+            return new Color(c.R, (int)(c.G * 0.7f), (int)(c.B * 0.7f));
+        }
+
+        /// <summary>Adds the soft light around the farmer, when the settings ask for one.</summary>
+        private void AddGlow(Farmer player, GameLocation location, float boost)
+        {
+            if (_config.AmbientGlowTiles <= 0 || _lightId.Value is null)
+                return;
+            var glowId = _lightId.Value + "_glow";
+            location.sharedLights.AddLight(new LightSource(glowId, LightSource.lantern, GlowOrigin(player), _config.AmbientGlowTiles * Brightness(boost), GlowColor(boost), LightSource.LightContext.None, player.UniqueMultiplayerID, location.NameOrUniqueName));
+            _glowId.Value = glowId;
+        }
+
         private void AddLight(Farmer player)
         {
             var location = player.currentLocation;
@@ -340,12 +450,14 @@ namespace Flashlight
 
             RemoveLight();
             var id = $"{ContentSetup.ModId}_{player.UniqueMultiplayerID}";
-            var light = new LightSource(id, LightSource.lantern, BeamOrigin(player), Radius, LightColor, LightSource.LightContext.None, player.UniqueMultiplayerID, location.NameOrUniqueName)
+            var boost = _tool.Value is { } flashlight ? FlashlightState.Boost(flashlight) : 0f;
+            var light = new LightSource(id, LightSource.lantern, BeamOrigin(player), Radius * Brightness(boost), ColorFor(boost), LightSource.LightContext.None, player.UniqueMultiplayerID, location.NameOrUniqueName)
             {
                 lightTexture = BeamFor(player.FacingDirection),
             };
             location.sharedLights.AddLight(light);
             _lightId.Value = id;
+            AddGlow(player, location, boost);
             _lightLocation.Value = location.NameOrUniqueName;
         }
 
@@ -356,7 +468,10 @@ namespace Flashlight
             // the light may be in the place the farmer just left
             var location = Game1.getLocationFromName(_lightLocation.Value) ?? Game1.player.currentLocation;
             location?.removeLightSource(_lightId.Value);
+            if (_glowId.Value is not null)
+                location?.removeLightSource(_glowId.Value);
             _lightId.Value = null;
+            _glowId.Value = null;
             _lightLocation.Value = null;
         }
 
@@ -365,6 +480,7 @@ namespace Flashlight
             _on.Value = false;
             _tool.Value = null;
             _lightId.Value = null;
+            _glowId.Value = null;
             _lightLocation.Value = null;
         }
 
@@ -374,7 +490,10 @@ namespace Flashlight
                 return;
             // move the light into the new place
             e.OldLocation?.removeLightSource(_lightId.Value);
+            if (_glowId.Value is not null)
+                e.OldLocation?.removeLightSource(_glowId.Value);
             _lightId.Value = null;
+            _glowId.Value = null;
             AddLight(e.Player);
         }
 
@@ -404,12 +523,19 @@ namespace Flashlight
             }
 
             location.repositionLightSource(_lightId.Value, BeamOrigin(player));
+            // the glow can be switched on in the settings while the flashlight is already lit
+            if (_glowId.Value is null && _config.AmbientGlowTiles > 0)
+                AddGlow(player, location, 0f);
+            var glow = _glowId.Value is { } glowName ? location.getLightSource(glowName) : null;
+            glow?.position.Set(GlowOrigin(player));
             light.lightTexture = BeamFor(player.FacingDirection);
 
             // no beam during a cutscene or a festival, where the farmer is moved by the script
             if (Game1.eventUp)
             {
                 light.radius.Value = 0f;
+                if (glow is not null)
+                    glow.radius.Value = 0f;
                 return;
             }
 
@@ -423,7 +549,14 @@ namespace Flashlight
                 strength = FlickerModel.Strength(_flickerTicks.Value, Game1.random);
                 _flickerTicks.Value--;
             }
-            light.radius.Value = Radius * strength;
+            var boost = _tool.Value is { } held ? FlashlightState.Boost(held) : 0f;
+            light.color.Value = ColorFor(boost);
+            light.radius.Value = Radius * Brightness(boost) * strength;
+            if (glow is not null)
+            {
+                glow.color.Value = GlowColor(boost);
+                glow.radius.Value = _config.AmbientGlowTiles * Brightness(boost) * strength;
+            }
         }
     }
 }

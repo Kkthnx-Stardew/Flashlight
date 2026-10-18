@@ -1,0 +1,29 @@
+name: Bug report
+description: Something does not work, looks wrong or throws an error
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did, what you expected and what you saw instead.
+    validations:
+      required: true
+  - type: input
+    id: log
+    attributes:
+      label: SMAPI log
+      description: Upload your log at https://smapi.io/log and paste the link. It shows your versions and every mod you run.
+    validations:
+      required: true
+  - type: textarea
+    id: report
+    attributes:
+      label: Flashlight report
+      description: Type `flashlight_report` in the SMAPI console and paste what it prints. It shows your changed settings and how the flashlight has been used. Nothing is sent anywhere.
+      render: text
+  - type: textarea
+    id: mods
+    attributes:
+      label: Other mods that might matter
+      description: Anything that changes lighting, shops, tools, the farmer's look or the inventory.

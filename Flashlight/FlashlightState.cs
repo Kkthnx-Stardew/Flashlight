@@ -14,8 +14,20 @@ namespace Flashlight
         /// <summary>Present in a flashlight's mod data while it is switched on. It is saved with the item, so it is cleared when a day starts.</summary>
         public const string LitKey = ContentSetup.ModId + "/Lit";
 
-        /// <summary>Ticks of light in one Dry Cell. Set from the settings.</summary>
-        public static int Capacity { get; set; } = ChargeModel.CapacityTicks(4);
+        /// <summary>Present in a flashlight's mod data while the cell in use is a Battery Pack. Without it the cell is a Dry Cell, which is also what a flashlight saved by an older version has.</summary>
+        public const string PackKey = ContentSetup.ModId + "/Pack";
+
+        /// <summary>The game's Battery Pack.</summary>
+        public const string QualifiedPackId = "(O)787";
+
+        /// <summary>Ticks of light in each kind of cell. Set from the settings.</summary>
+        public static CellCapacities Capacities { get; set; } = new(ChargeModel.CapacityTicks(4), ChargeModel.CapacityTicks(12));
+
+        /// <summary>Whether a Battery Pack can be loaded. A pack that is already loaded keeps working if this is turned off.</summary>
+        public static bool PacksAllowed { get; set; } = true;
+
+        /// <summary>The most slots the tool reads, so the reading needs no allocation.</summary>
+        public const int MaxSlots = 8;
 
         public static bool IsFlashlight(Item? item) => item?.ItemId == ContentSetup.FlashlightId;
 
@@ -51,38 +63,88 @@ namespace Flashlight
         public static int ReadCharge(Item tool) =>
             tool.modData.TryGetValue(ChargeKey, out var text) && int.TryParse(text, out var charge) ? Math.Max(0, charge) : 0;
 
-        public static void WriteCharge(Item tool, int charge) => tool.modData[ChargeKey] = charge.ToString();
-
-        /// <summary>The Dry Cells loaded in the flashlight's slots.</summary>
-        public static int CountCells(Tool flashlight)
+        /// <summary>The kind of the cell in use. None when there is no charge.</summary>
+        public static CellKind ReadInUse(Item tool)
         {
-            var total = 0;
-            for (var i = 0; i < flashlight.attachments.Count; i++)
-            {
-                var cell = flashlight.attachments[i];
-                if (cell?.QualifiedItemId == ContentSetup.QualifiedBatteryId)
-                    total += cell.Stack;
-            }
-            return total;
+            if (ReadCharge(tool) <= 0)
+                return CellKind.None;
+            return tool.modData.ContainsKey(PackKey) ? CellKind.Pack : CellKind.Dry;
         }
 
-        /// <summary>Uses up one loaded cell, emptying its slot.</summary>
-        public static void UseCell(Tool flashlight)
+        /// <summary>The kind of cell an item is, or None when it is not one the flashlight uses.</summary>
+        public static CellKind KindOf(Item? item) => item?.QualifiedItemId switch
         {
-            for (var i = 0; i < flashlight.attachments.Count; i++)
-            {
-                var cell = flashlight.attachments[i];
-                if (cell?.QualifiedItemId != ContentSetup.QualifiedBatteryId)
-                    continue;
-                cell.Stack--;
-                if (cell.Stack <= 0)
-                    flashlight.attachments[i] = null;
+            ContentSetup.QualifiedBatteryId => CellKind.Dry,
+            QualifiedPackId => CellKind.Pack,
+            _ => CellKind.None,
+        };
+
+        /// <summary>Whether a new cell of this item can be loaded into a slot.</summary>
+        public static bool CanLoad(Item? item) => KindOf(item) switch
+        {
+            CellKind.Dry => true,
+            CellKind.Pack => PacksAllowed,
+            _ => false,
+        };
+
+        /// <summary>Reads the cell in each slot into <paramref name="into"/> and returns how many slots were read.</summary>
+        public static int ReadSlots(Tool flashlight, Span<CellKind> into)
+        {
+            var count = Math.Min(flashlight.attachments.Count, into.Length);
+            for (var i = 0; i < count; i++)
+                into[i] = KindOf(flashlight.attachments[i]);
+            return count;
+        }
+
+        /// <summary>Tries to switch the flashlight on. Nothing is changed: <see cref="Commit"/> applies the result.</summary>
+        public static ChargeModel.Step TurnOn(Tool flashlight)
+        {
+            Span<CellKind> slots = stackalloc CellKind[MaxSlots];
+            var count = ReadSlots(flashlight, slots);
+            return ChargeModel.TurnOn(ReadCharge(flashlight), ReadInUse(flashlight), slots[..count], Capacities);
+        }
+
+        /// <summary>Spends one tick of light. Nothing is changed: <see cref="Commit"/> applies the result.</summary>
+        public static ChargeModel.Step Tick(Tool flashlight)
+        {
+            Span<CellKind> slots = stackalloc CellKind[MaxSlots];
+            var count = ReadSlots(flashlight, slots);
+            return ChargeModel.Tick(ReadCharge(flashlight), ReadInUse(flashlight), slots[..count], Capacities);
+        }
+
+        /// <summary>Writes the result of a step: empties the slot a cell was taken from, and keeps the charge and its kind.</summary>
+        public static void Commit(Tool flashlight, ChargeModel.Step step)
+        {
+            if (step.CellUsed)
+                UseCell(flashlight, step.SlotUsed);
+            flashlight.modData[ChargeKey] = step.Charge.ToString();
+            if (step.InUse == CellKind.Pack && step.Charge > 0)
+                flashlight.modData[PackKey] = "1";
+            else
+                flashlight.modData.Remove(PackKey);
+        }
+
+        private static void UseCell(Tool flashlight, int slot)
+        {
+            if (slot < 0 || slot >= flashlight.attachments.Count)
                 return;
-            }
+            var cell = flashlight.attachments[slot];
+            if (cell is null)
+                return;
+            cell.Stack--;
+            if (cell.Stack <= 0)
+                flashlight.attachments[slot] = null;
         }
 
         /// <summary>How much of a full load is left, from 0 to 1.</summary>
-        public static float Reserve(Tool flashlight) =>
-            ChargeModel.ReserveFraction(ReadCharge(flashlight), CountCells(flashlight), flashlight.AttachmentSlotsCount, Capacity);
+        public static float Reserve(Tool flashlight)
+        {
+            Span<CellKind> slots = stackalloc CellKind[MaxSlots];
+            var count = ReadSlots(flashlight, slots);
+            return ChargeModel.ReserveFraction(ReadCharge(flashlight), ReadInUse(flashlight), slots[..count], flashlight.AttachmentSlotsCount, Capacities);
+        }
+
+        /// <summary>How much of a Battery Pack's extra brightness the beam has: 1 while a pack is in use, otherwise 0.</summary>
+        public static float Boost(Tool flashlight) => ChargeModel.Boost(ReadInUse(flashlight), ReadCharge(flashlight));
     }
 }

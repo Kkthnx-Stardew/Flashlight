@@ -1,0 +1,46 @@
+name: Balance feedback
+description: The prices, battery life, stock or brightness feel wrong
+labels: [balance]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        The numbers are a first pass and real play is how they get fixed. Honest, specific notes help most.
+  - type: dropdown
+    id: topic
+    attributes:
+      label: What feels off
+      multiple: true
+      options:
+        - Flashlight price
+        - Dry Cell price
+        - Dry Cells run out too fast
+        - Dry Cells last too long
+        - Shop stock is too tight
+        - Shop stock is too generous
+        - Beam is too weak
+        - Beam is too strong
+        - Light around the farmer
+        - Battery Pack life or brightness
+        - Flicker
+        - Something else
+    validations:
+      required: true
+  - type: input
+    id: progress
+    attributes:
+      label: How far into the game are you
+      description: For example "spring year 1", "winter year 2, mining level 8".
+  - type: textarea
+    id: details
+    attributes:
+      label: What happened and what you would change
+      description: Numbers help, such as how many nights a pair of Dry Cells lasted you or how often the shelf was empty.
+    validations:
+      required: true
+  - type: textarea
+    id: report
+    attributes:
+      label: Flashlight report
+      description: Type `flashlight_report` in the SMAPI console and paste what it prints. It shows your changed settings and how the flashlight has been used. Nothing is sent anywhere.
+      render: text

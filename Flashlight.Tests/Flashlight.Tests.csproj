@@ -24,6 +24,9 @@
     <Compile Include="..\Flashlight\FlickerModel.cs" Link="FlickerModel.cs" />
     <Compile Include="..\Flashlight\ChargeBar.cs" Link="ChargeBar.cs" />
     <Compile Include="..\Flashlight\ShopRules.cs" Link="ShopRules.cs" />
+    <Compile Include="..\Flashlight\HandLocator.cs" Link="HandLocator.cs" />
+    <Compile Include="..\Flashlight\UsageStats.cs" Link="UsageStats.cs" />
+    <Compile Include="..\Flashlight\ReportText.cs" Link="ReportText.cs" />
   </ItemGroup>
 
 </Project>
