@@ -8,31 +8,31 @@ public class ChargeModelTests
     public void CapacityIsSixTicksPerHour() => Assert.Equal(24, ChargeModel.CapacityTicks(4));
 
     [Fact]
-    public void CannotTurnOnWithNoChargeAndNoBattery()
+    public void CannotTurnOnWithNoChargeAndNoCell()
     {
         var step = ChargeModel.TurnOn(0, 0, Capacity);
         Assert.False(step.LightOn);
-        Assert.False(step.BatteryUsed);
+        Assert.False(step.CellUsed);
     }
 
     [Fact]
-    public void TurningOnWithNoChargeTakesABattery()
+    public void TurningOnWithNoChargeTakesALoadedCell()
     {
         var step = ChargeModel.TurnOn(0, 2, Capacity);
         Assert.True(step.LightOn);
-        Assert.True(step.BatteryUsed);
+        Assert.True(step.CellUsed);
         Assert.Equal(Capacity, step.Charge);
-        Assert.Equal(1, step.BatteriesLeft);
+        Assert.Equal(1, step.CellsLeft);
     }
 
     [Fact]
-    public void TurningOnWithChargeKeepsTheBattery()
+    public void TurningOnWithChargeKeepsTheCells()
     {
         var step = ChargeModel.TurnOn(10, 2, Capacity);
         Assert.True(step.LightOn);
-        Assert.False(step.BatteryUsed);
+        Assert.False(step.CellUsed);
         Assert.Equal(10, step.Charge);
-        Assert.Equal(2, step.BatteriesLeft);
+        Assert.Equal(2, step.CellsLeft);
     }
 
     [Fact]
@@ -44,12 +44,12 @@ public class ChargeModelTests
     }
 
     [Fact]
-    public void ARunOutChargeTakesTheNextBatteryByItself()
+    public void ARunOutChargeTakesTheNextLoadedCellByItself()
     {
         var step = ChargeModel.Tick(0, 1, Capacity);
-        Assert.True(step.BatteryUsed);
+        Assert.True(step.CellUsed);
         Assert.Equal(Capacity - 1, step.Charge);
-        Assert.Equal(0, step.BatteriesLeft);
+        Assert.Equal(0, step.CellsLeft);
         Assert.True(step.LightOn);
     }
 
@@ -61,30 +61,45 @@ public class ChargeModelTests
     }
 
     [Fact]
-    public void OneBatteryLastsExactlyItsCapacityInTicks() => Assert.Equal(Capacity, TicksOfLight(charge: Capacity, batteries: 0));
+    public void OneCellLastsExactlyItsCapacityInTicks() => Assert.Equal(Capacity, TicksOfLight(charge: Capacity, cells: 0));
 
     [Fact]
-    public void TwoBatteriesInTheBackpackLastTwiceAsLong() => Assert.Equal(Capacity * 2, TicksOfLight(charge: 0, batteries: 2));
+    public void TwoLoadedCellsLastTwiceAsLong() => Assert.Equal(Capacity * 2, TicksOfLight(charge: 0, cells: 2));
 
     [Fact]
-    public void LowIsOnlyReportedWhenThereIsNoSpareBattery()
+    public void TheFractionIsOneWhenEverySlotHoldsAFreshCell() =>
+        Assert.Equal(1f, ChargeModel.ReserveFraction(charge: 0, cells: 2, slots: 2, Capacity));
+
+    [Fact]
+    public void TheFractionFallsAsTheChargeIsSpent()
     {
-        Assert.False(ChargeModel.Tick(2, 1, Capacity).Low);
-        Assert.True(ChargeModel.Tick(2, 0, Capacity).Low);
+        Assert.Equal(0.75f, ChargeModel.ReserveFraction(charge: 12, cells: 1, slots: 2, Capacity), 3);
+        Assert.Equal(0.5f, ChargeModel.ReserveFraction(charge: 0, cells: 1, slots: 2, Capacity), 3);
+        Assert.Equal(0f, ChargeModel.ReserveFraction(charge: 0, cells: 0, slots: 2, Capacity), 3);
     }
 
+    [Fact]
+    public void LoadingSpareCellsOnTopOfPartUsedChargeNeverShowsMoreThanFull() =>
+        Assert.Equal(1f, ChargeModel.ReserveFraction(charge: 20, cells: 2, slots: 2, Capacity));
+
+    [Theory]
+    [InlineData(0, 0, 0)]
+    [InlineData(5, 1, 0)]
+    public void NoSlotsOrNoCapacityGivesZero(int slots, int cells, int capacity) =>
+        Assert.Equal(0f, ChargeModel.ReserveFraction(charge: 3, cells, slots, capacity));
+
     /// <summary>Runs the model until the light goes out and counts the ticks that had light.</summary>
-    private static int TicksOfLight(int charge, int batteries)
+    private static int TicksOfLight(int charge, int cells)
     {
         var lit = 0;
         for (var i = 0; i < Capacity * 10; i++)
         {
-            var step = ChargeModel.Tick(charge, batteries, Capacity);
+            var step = ChargeModel.Tick(charge, cells, Capacity);
             if (!step.LightOn)
                 break;
             lit++;
             charge = step.Charge;
-            batteries = step.BatteriesLeft;
+            cells = step.CellsLeft;
         }
         return lit;
     }

@@ -26,9 +26,10 @@ The vanilla Battery Pack is rare and sells for 500g, so it is not used. This mod
 
 - **Battery slots.** The flashlight has two slots that work like the bait slot of a fishing rod. Right-click the flashlight in the backpack with Dry Cells on the cursor to load one into each slot; right-click it with an empty hand to take one out. Hover it to see what is loaded. Only Dry Cells fit, and only one to a slot, so it can never hold more than two.
 - **Charge.** The flashlight keeps the charge of the cell in use. When that runs out it takes the next loaded cell. With nothing loaded it goes out.
-- **Switching.** A key (F) or using the tool switches it on and off. The toolbar picture changes to a lit one while it is on.
+- **Switching.** A key (F, or a list such as `F, LeftShoulder` for a controller) or using the tool switches it on and off. The toolbar picture changes to a lit one while it is on, and the farmer holds the flashlight in one hand while it is the selected tool.
+- **Charge bar.** Under the picture is a bar like the water bar of the watering can. It shows how much of a full load (every slot holding a fresh cell) is left, in steps: green above half, yellow above a quarter, orange above a tenth, red below that. The tooltip gives the same figure as a percentage.
 - **Only in the dark.** The charge only drains where a light matters: indoors, in the mines, or outside after dark. A flashlight left on in the sun costs nothing.
-- **Random flicker.** Now and then, on average every 40 seconds of use, the beam stutters for a fraction of a second, like an old flashlight with a loose cell. When the last cell is nearly gone it flickers every few seconds and a warning shows.
+- **Random flicker.** Now and then, on average every 40 seconds of use, the beam stutters for a fraction of a second, like an old flashlight with a loose cell. Under a tenth of a full load the flickers come steadily closer together: about every 12 seconds at 5 percent and every 3 seconds when nearly empty, even if the random flicker is switched off, and a warning shows once.
 
 ## Numbers
 

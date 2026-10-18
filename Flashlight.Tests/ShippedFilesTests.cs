@@ -38,6 +38,7 @@ public class ShippedFilesTests
     [Theory]
     [InlineData("objects.png", 16, 16)]
     [InlineData("tools.png", 32, 16)]
+    [InlineData("held.png", 72, 12)]
     [InlineData("beam-up.png", 128, 128)]
     [InlineData("beam-right.png", 128, 128)]
     [InlineData("beam-down.png", 128, 128)]
@@ -57,7 +58,7 @@ public class ShippedFilesTests
         var used = 0;
         foreach (var file in Directory.GetFiles(ProjectDir(), "*.cs"))
         {
-            foreach (Match m in Regex.Matches(File.ReadAllText(file), "\\.Get\\(\"([^\"]+)\"\\)"))
+            foreach (Match m in Regex.Matches(File.ReadAllText(file), "\\.Get\\(\"([^\"]+)\""))
             {
                 Assert.Contains(m.Groups[1].Value, keys);
                 used++;

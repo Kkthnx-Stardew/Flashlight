@@ -11,4 +11,9 @@ First build. It compiles against Stardew Valley 1.6.15 and SMAPI 4.5.2 with no w
 - A forward beam in the four facing directions, with a faint glow around the farmer. The toolbar picture shows when it is on.
 - Batteries drain while the flashlight is on and it is dark where the farmer is; the next loaded cell is used automatically.
 - A random flicker now and then, more often when the last cell is nearly flat, and a message when it goes out. It switches off when the farmer goes to bed.
+- A charge bar under the flashlight's picture like the water bar of the watering can (green, yellow, orange, red as it falls) and a charge line in the tooltip.
+- The farmer holds the flashlight in one hand while it is the selected tool, in four views, with the beam starting at its lens.
+- Under a tenth of a full load the flicker gets steadily more frequent, about every 12 seconds at 5 percent and every 3 seconds when nearly empty.
+- Settings in Generic Mod Config Menu, and a toggle key that can list several buttons, such as a controller button.
+- No beam during cutscenes and festivals.
 - One flashlight to a player (the shop stops selling a second, and a spare in the backpack is ignored), a daily limit on batteries with a random chance of a thin or empty shelf, a carry limit for the shop, and a low sell price for batteries so they cannot be bought and sold for profit.

@@ -29,6 +29,7 @@ namespace Flashlight
 
         private const string ObjectsTexture = "Mods/" + ModId + "/Objects";
         private const string ToolsTexture = "Mods/" + ModId + "/Tools";
+        public const string HeldTexture = "Mods/" + ModId + "/Held";
         private const string BeamTexturePrefix = "Mods/" + ModId + "/Beam";
 
         /// <summary>What a battery sells for. It is well under the shop price and under the cost of the recipe's ingredients.</summary>
@@ -45,7 +46,7 @@ namespace Flashlight
 
         public static string BeamAssetName(int facing) => BeamTexturePrefix + BeamNames[facing];
 
-        public static bool IsFlashlight(Item? item) => item?.ItemId is FlashlightId or FlashlightOnId;
+        public static bool IsFlashlight(Item? item) => FlashlightState.IsFlashlight(item);
 
         public void OnAssetRequested(AssetRequestedEventArgs e)
         {
@@ -55,6 +56,8 @@ namespace Flashlight
                 e.LoadFromModFile<Texture2D>("assets/objects.png", AssetLoadPriority.Medium);
             else if (e.NameWithoutLocale.IsEquivalentTo(ToolsTexture))
                 e.LoadFromModFile<Texture2D>("assets/tools.png", AssetLoadPriority.Medium);
+            else if (e.NameWithoutLocale.IsEquivalentTo(HeldTexture))
+                e.LoadFromModFile<Texture2D>("assets/held.png", AssetLoadPriority.Medium);
             else if (e.NameWithoutLocale.StartsWith(BeamTexturePrefix, true))
             {
                 for (var facing = 0; facing < BeamNames.Length; facing++)

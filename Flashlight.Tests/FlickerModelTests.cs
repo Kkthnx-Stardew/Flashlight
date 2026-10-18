@@ -26,11 +26,39 @@ public class FlickerModelTests
     }
 
     [Fact]
-    public void ALowBatteryFlickersMuchMoreOftenThanTheSetting()
+    public void AHealthyReserveUsesTheSetting()
     {
-        Assert.Equal(FlickerModel.LowBatterySecondsBetween, FlickerModel.Interval(40, low: true));
-        Assert.Equal(40, FlickerModel.Interval(40, low: false));
-        Assert.True(FlickerModel.LowBatterySecondsBetween < 40);
+        Assert.Equal(40, FlickerModel.Interval(40, 1f));
+        Assert.Equal(40, FlickerModel.Interval(40, ChargeBar.LowFraction));
+        Assert.Equal(0, FlickerModel.Interval(0, 0.5f));
+    }
+
+    [Fact]
+    public void TheGapShrinksSteadilyAsTheReserveRunsOut()
+    {
+        var last = int.MaxValue;
+        for (var f = ChargeBar.LowFraction; f >= 0f; f -= 0.005f)
+        {
+            var seconds = FlickerModel.Interval(40, f);
+            Assert.True(seconds <= last, $"The gap grew again at {f}.");
+            last = seconds;
+        }
+        Assert.Equal(FlickerModel.LowestSecondsBetween, FlickerModel.Interval(40, 0f));
+    }
+
+    [Fact]
+    public void AtFivePercentTheFlickersAreAlreadyMuchMoreFrequentThanNormal()
+    {
+        var seconds = FlickerModel.Interval(40, 0.05f);
+        Assert.InRange(seconds, 5, 15);
+    }
+
+    [Fact]
+    public void ALowReserveFlickersEvenWhenTheRandomFlickerIsOff()
+    {
+        Assert.Equal(0, FlickerModel.Interval(0, 0.5f));
+        Assert.True(FlickerModel.Interval(0, 0.04f) > 0);
+        Assert.Equal(FlickerModel.LowestSecondsBetween, FlickerModel.Interval(0, 0f));
     }
 
     [Fact]

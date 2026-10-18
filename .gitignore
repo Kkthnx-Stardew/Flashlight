@@ -360,4 +360,6 @@ MigrationBackup/
 .ionide/
 
 # Fody - auto-generated XML schema
-FodyWeavers.xsdart/preview*.png
+FodyWeavers.xsd
+
+art/preview*.png

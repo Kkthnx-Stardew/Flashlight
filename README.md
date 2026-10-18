@@ -6,10 +6,10 @@ This is an early build. It has been run in Stardew Valley 1.6.15 with SMAPI 4.5.
 
 ## What it adds
 
-- **Flashlight** (a tool): sold at Robin's Carpenter's Shop, one to a player. Press **F** or use the tool to switch it on and off. It keeps shining while you use other tools, which a torch cannot do. The toolbar picture shows when it is on.
+- **Flashlight** (a tool): sold at Robin's Carpenter's Shop, one to a player. Press **F** (or use the tool) to switch it on and off. It keeps shining while you use other tools, which a torch cannot do. The toolbar picture shows when it is on, a charge bar under it works like the water bar of the watering can, and the farmer holds it in one hand while it is selected.
 - **Battery slots**: the flashlight has two, like the bait slot on a fishing rod. Right-click the flashlight with Dry Cells on the cursor to load them, one to a slot, and right-click it with an empty hand to take one out. Hover it to see what is loaded.
 - **Dry Cell** (a battery): sold at Robin's in limited numbers, or crafted from 1 Copper Bar and 1 Coal for 3 cells once you reach Mining level 2. Each lasts 4 in-game hours, and only while it is dark where you are.
-- A forward cone of light, 7 tiles long, with a faint glow around you, and now and then a random flicker like an old flashlight with a loose cell.
+- A forward cone of light, 7 tiles long, with a faint glow around you. Now and then it flickers like an old flashlight with a loose cell, and much more often once the charge falls under a tenth of a full load.
 
 The balance reasoning, with the numbers it was checked against and how it is kept from being abused, is in [docs/BALANCE.md](docs/BALANCE.md).
 
@@ -19,7 +19,7 @@ Edit `config.json` in the mod folder after the first run.
 
 | Setting | Default | What it does |
 | --- | --- | --- |
-| `ToggleKey` | `F` | The button that switches the flashlight on and off. |
+| `ToggleKey` | `F` | The button or buttons that switch the flashlight on and off, such as `F, LeftShoulder`. |
 | `BeamLengthTiles` | `7` | How far the beam reaches (3 to 12). |
 | `BatteryHours` | `4` | In-game hours one battery lasts (1 to 12). |
 | `BatterySlots` | `2` | How many batteries a new flashlight holds (1 to 4). |
@@ -41,7 +41,8 @@ Needs Stardew Valley 1.6.9 or newer.
 
 ## Known limits
 
-- The battery slots use two small Harmony patches on the game's tool code, which only act on the flashlight. SMAPI lists the mod as one that changes game code for that reason.
+- The battery slots, the charge bar, the flashlight in the hand and the tooltip line use five small Harmony patches on the game's own code. They only act on the flashlight. SMAPI lists the mod as one that changes game code for that reason.
+- The settings can also be changed in game with Generic Mod Config Menu, when it is installed.
 - In multiplayer other players see the game's ordinary round light, because the custom cone picture is only drawn on the machine that owns the flashlight. Multiplayer is untested.
 - Shop days for Robin and the Mining level of the recipe are not checked against the rest of the game.
 
