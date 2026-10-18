@@ -12,6 +12,9 @@ namespace Flashlight
     internal static class HeldFlashlight
     {
         private const int HeldCell = 12;     // the held pictures are 12 by 12 pixels
+        /// <summary>The front and back pictures are a full circle, which looks too big and too round beside the body, so they are drawn smaller and a little narrower.</summary>
+        private static readonly Vector2 FrontBackSize = new(0.7f, 0.8f);
+
         private const int ArmWidth = 16;     // one cell of the farmer sheet
         private const int ArmHeight = 32;
 
@@ -93,7 +96,7 @@ namespace Flashlight
             var topLeft = anchor - origin * drawScale;
             var handAt = topLeft + new Vector2(animationFrame.flip ? ArmWidth - hand.X : hand.X, hand.Y) * drawScale;
 
-            View(facingDirection, lit: FlashlightState.IsLit(who.CurrentTool), out var cell, out var grip, out var effects, out var lens);
+            View(facingDirection, lit: FlashlightState.IsLit(who.CurrentTool), out var cell, out var grip, out var effects, out var lens, out var size);
 
             var layer = facingDirection == 0 ? FarmerRenderer.FarmerSpriteLayers.ArmsUp : FarmerRenderer.FarmerSpriteLayers.Arms;
             var step = Game1.isUsingBackToFrontSorting ? -1f : 1f;
@@ -101,20 +104,21 @@ namespace Flashlight
             // the end cap must stay clear, so it goes just over the arm and the hand is seen holding it from behind.
             var overArm = facingDirection == 0 || facingDirection == 2;
             var depth = FarmerRenderer.GetLayerDepth(layerDepth, layer) + (overArm ? 0.5e-6f : -0.5e-6f) * step;
-            b.Draw(held, handAt, new Rectangle(cell * HeldCell, 0, HeldCell, HeldCell), Color.White, 0f, grip, drawScale, effects, depth);
+            b.Draw(held, handAt, new Rectangle(cell * HeldCell, 0, HeldCell, HeldCell), Color.White, 0f, grip, size * drawScale, effects, depth);
 
             if (who.IsLocalPlayer)
             {
-                _lensWorld = handAt + (lens - grip) * drawScale + new Vector2(Game1.viewport.X, Game1.viewport.Y);
+                _lensWorld = handAt + (lens - grip) * size * drawScale + new Vector2(Game1.viewport.X, Game1.viewport.Y);
                 _lensTick = Game1.ticks;
             }
         }
 
         /// <summary>Which picture to use for the way the farmer faces, and the spot of it that sits in the hand (in picture pixels, before any flip).</summary>
-        private static void View(int facing, bool lit, out int cell, out Vector2 grip, out SpriteEffects effects, out Vector2 lens)
+        private static void View(int facing, bool lit, out int cell, out Vector2 grip, out SpriteEffects effects, out Vector2 lens, out Vector2 size)
         {
             var on = lit ? 1 : 0;
             effects = SpriteEffects.None;
+            size = Vector2.One;
             switch (facing)
             {
                 case 1: // right: from the side, the lens ahead
@@ -122,9 +126,9 @@ namespace Flashlight
                 case 3: // left: the same picture turned round
                     cell = on; grip = new Vector2(HeldCell - 1.5f, 5.5f); effects = SpriteEffects.FlipHorizontally; lens = new Vector2(HeldCell - 11f, 5.5f); break;
                 case 0: // up: the end cap faces the viewer and the beam goes away from it
-                    cell = 4 + on; grip = new Vector2(6.5f, 6.5f); lens = new Vector2(6f, 3f); break;
+                    cell = 4 + on; grip = new Vector2(6.5f, 6.5f); lens = new Vector2(6f, 3f); size = FrontBackSize; break;
                 default: // down: the lens faces the viewer
-                    cell = 2 + on; grip = new Vector2(5.5f, 6.5f); lens = new Vector2(6f, 8f); break;
+                    cell = 2 + on; grip = new Vector2(5.5f, 6.5f); lens = new Vector2(6f, 8f); size = FrontBackSize; break;
             }
         }
 
