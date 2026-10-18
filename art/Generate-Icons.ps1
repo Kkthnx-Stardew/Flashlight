@@ -1,73 +1,72 @@
 # Draws the item icons: the flashlight (off and on) and the Dry Cell battery. Dot-sourced by Generate-Art.ps1.
 #
-# Style rules, measured from the game's own 16x16 icons (Torch, Copper Bar, Iron Bar, Coal, Copper Axe, Glow Ring):
-#  - the outline is a darker shade of the object's own colour, never plain black
-#  - three to five tones per material, light from the top left
-#  - tools are drawn on the diagonal, handle bottom left, working end top right
+# Style rules, measured pixel by pixel from the game's own 16x16 icons (Torch, Bomb, Joja Cola, Copper Bar, Watering Can, Glow Ring):
+#  - each material has one dark outline colour of its own, never plain black, a touch lighter on the top and left
+#  - three or four fill tones, light from the top left, with single stray pixels of the next tone instead of smooth bands
+#  - a bright highlight that is only one or two pixels
+#  - silhouettes with the corners cut, never a perfect rectangle or oval
 #
 # The look follows the reference pictures: a brass head with a glass lens and a dark navy body with a small switch,
 # and a D-cell battery in the same navy and brass so the two items read as a set.
 
-# materials: outline, shadow, base, light, highlight
-$mat = @{
-  brass = @('#431600', '#692c00', '#b35500', '#d99a3e', '#f3c870')
-  navy  = @('#0b1224', '#16254a', '#26407a', '#3a58b8', '#6a8ce8')
-  glass = @('#2b3340', '#4a4e5a', '#8fb0a8', '#b8dfd8', '#d6f5ee')   # a lens that is off
-  lamp  = @('#c64c00', '#ff8900', '#ffd900', '#ffff2b', '#fff9f2')   # a lens that is on
-}
+# one letter per colour; the letters are case sensitive, so the table compares them exactly
+$palette = New-Object System.Collections.Hashtable ([StringComparer]::Ordinal)
+# brass: Q dark outline, q lighter outline and shadow, m base, l light, h highlight
+$palette['Q'] = '#431600'; $palette['q'] = '#692c00'; $palette['m'] = '#b35500'; $palette['l'] = '#d99a3e'; $palette['h'] = '#f3c870'
+# navy: O dark outline, P lighter outline, 1 shadow, 2 base, 3 light, 4 highlight
+$palette['O'] = '#0b1224'; $palette['P'] = '#16254a'; $palette['1'] = '#16254a'; $palette['2'] = '#26407a'; $palette['3'] = '#3a58b8'; $palette['4'] = '#6a8ce8'
+# a lens that is off: x shadow, y base, z light, w glint
+$palette['x'] = '#4a6f78'; $palette['y'] = '#8fb0a8'; $palette['z'] = '#b8dfd8'; $palette['w'] = '#ffffff'
+# a lens that is on: d edge, e glow, f bright, g hot centre
+$palette['d'] = '#ff8900'; $palette['e'] = '#ffd900'; $palette['f'] = '#ffff2b'; $palette['g'] = '#fff9f2'
 
-function Get-IconShape([bool]$on) {
-  # The game draws the picture three pixels higher than its cell in the toolbar to leave room for the charge bar, the way it does
-  # for the watering can. The watering can's own picture fills rows 4 to 14 of its cell and all 16 columns, so this one does too:
-  # a flashlight seen from the side, pointing right, in a block 14 wide and 11 tall (rows 4 to 14), with room in the last two
-  # columns for the rays of the lit version. The shapes are set out by hand on the pixel grid, because a computed ellipse this
-  # small comes out lumpy.
-  $grid = New-Object 'object[,]' 16, 16   # each cell: @{m=material; t=-1..1 across the piece} or $null
-  # which rows of the head (0 to 10) are filled in each column of it
-  $headRows = @{ 7 = @(2, 8); 8 = @(1, 9); 9 = @(0, 10); 10 = @(0, 10); 11 = @(0, 10); 12 = @(0, 10); 13 = @(1, 9) }
-  for ($x = 0; $x -lt 14; $x++) { for ($r = 0; $r -lt 11; $r++) {
-    $y = $r + 4
-    $hit = $null
-    if ($x -le 6 -and $r -ge 2 -and $r -le 8) { $hit = @{ m = 'navy'; t = ($r - 5) / 3.5 } }       # the body
-    if (($x -eq 2 -or $x -eq 5) -and $r -ge 2 -and $r -le 8) { $hit = @{ m = 'navy'; t = ($r - 5) / 3.5; groove = $true } }   # two grip grooves
-    if (($x -eq 1 -or $x -eq 3) -and $r -eq 3) { $hit = @{ m = 'navy'; t = -1.0 } }                # a shine on the upper left of the body
-    if ($x -eq 0 -and $r -ge 2 -and $r -le 8) { $hit = @{ m = 'brass'; t = ($r - 5) / 3.5 } }     # the end cap
-    if ($headRows.ContainsKey($x) -and $r -ge $headRows[$x][0] -and $r -le $headRows[$x][1]) { $hit = @{ m = 'brass'; t = ($r - 5) / 5.0 } }  # the head
-    if (($x -eq 3 -or $x -eq 4) -and $r -eq 1) { $hit = @{ m = 'brass'; t = -0.6 } }               # the switch
-    # the lens: a tall oval on the front of the head, with a rim of brass round it
-    $lx = ($x + 0.5 - 10.6) / 1.75; $lr = ($r + 0.5 - 5.5) / 3.6
-    if ($lx * $lx + $lr * $lr -le 1.0) { $hit = @{ m = $(if ($on) { 'lamp' } else { 'glass' }); t = ($r - 5.5) / 3.6; lens = $true } }
-    $grid[$x, $y] = $hit
-  } }
-  return , $grid
-}
+# The flashlight seen from the side, pointing right, in rows 5 to 13 and columns 0 to 13. The game draws the picture twelve pixels
+# higher in the toolbar to leave room for the charge bar, the way it does for the watering can, whose own picture also spans
+# rows 4 to 14. The last two columns are kept free for the rays of the lit version.
+$flashlightRows = @(
+  '................',
+  '................',
+  '................',
+  '................',
+  '................',
+  '...qq....qqqq...',
+  '..qhlQ..qlhllQ..',
+  '.qPPPPPqlhzlmQ..',
+  'qh43313qlwzymQ..',
+  'ql32212qmyyxmQ..',
+  'Qm22111QmyxxmQ..',
+  '.QOOOOOQmmxqmQ..',
+  '........QmmqqQ..',
+  '.........QQQQ...',
+  '................',
+  '................'
+)
 
-function Mix-Colors([string]$a, [string]$b) {
-  $ca = C $a; $cb = C $b
-  [System.Drawing.Color]::FromArgb([int](([int]$ca.R + $cb.R) / 2), [int](([int]$ca.G + $cb.G) / 2), [int](([int]$ca.B + $cb.B) / 2))
-}
+# The Dry Cell: a navy wrap with brass ends and a small nub, eight pixels wide like the game's Joja Cola bottle.
+$batteryRows = @(
+  '................',
+  '................',
+  '.......qq.......',
+  '......qhlQ......',
+  '....qhllllmQ....',
+  '....qmmmmmmQ....',
+  '....P342221O....',
+  '....P342221O....',
+  '....P322221O....',
+  '....P322221O....',
+  '....P342221O....',
+  '....P322221O....',
+  '....P322221O....',
+  '....qlmmmmqQ....',
+  '.....QQQQQQ.....',
+  '................'
+)
 
-function Convert-ShapeToBitmap($grid) {
+function Convert-RowsToBitmap([string[]]$rows) {
   $bmp = New-Object System.Drawing.Bitmap 16, 16
   for ($y = 0; $y -lt 16; $y++) { for ($x = 0; $x -lt 16; $x++) {
-    $cell = $grid[$x, $y]; if ($null -eq $cell) { continue }
-    $edge = $false
-    foreach ($d in @(@(1, 0), @(-1, 0), @(0, 1), @(0, -1))) {
-      $nx = $x + $d[0]; $ny = $y + $d[1]
-      if ($nx -lt 0 -or $ny -lt 0 -or $nx -gt 15 -or $ny -gt 15 -or $null -eq $grid[$nx, $ny]) { $edge = $true }
-    }
-    $ramp = $mat[$cell.m]
-    if ($edge) {
-      # the game's own icons outline the top and left a little lighter than the bottom and right, as if lit from the top left
-      $lightSide = ($x -gt 0 -and $null -eq $grid[($x - 1), $y]) -or ($y -gt 0 -and $null -eq $grid[$x, ($y - 1)])
-      $bmp.SetPixel($x, $y, $(if ($lightSide) { Mix-Colors $ramp[0] $ramp[1] } else { C $ramp[0] }))
-      continue
-    }
-    $t = $cell.t
-    if ($cell.lens) { $tone = if ($t -lt -0.4) { 4 } elseif ($t -lt 0.1) { 3 } elseif ($t -lt 0.6) { 2 } else { 1 } }
-    else { $tone = if ($t -lt -0.55) { 4 } elseif ($t -lt -0.1) { 3 } elseif ($t -lt 0.45) { 2 } else { 1 } }
-    if ($cell.groove -and $tone -gt 1) { $tone-- }
-    $bmp.SetPixel($x, $y, (C $ramp[$tone]))
+    $ch = [string]$rows[$y][$x]; if ($ch -eq '.') { continue }
+    $bmp.SetPixel($x, $y, (C $palette[$ch]))
   } }
   return $bmp
 }
@@ -75,47 +74,22 @@ function Convert-ShapeToBitmap($grid) {
 function Set-Pixels($bmp, $list, [string]$hex) { foreach ($p in $list) { $bmp.SetPixel($p[0], $p[1], (C $hex)) } }
 
 function New-FlashlightIcon([bool]$on) {
-  $bmp = Convert-ShapeToBitmap (Get-IconShape $on)
+  $rows = $flashlightRows
+  if ($on) { $rows = $rows | ForEach-Object { $_.Replace('w', 'g').Replace('z', 'f').Replace('y', 'e').Replace('x', 'd') } }
+  $bmp = Convert-RowsToBitmap $rows
   if ($on) {
-    Set-Pixels $bmp @(, @(10, 7)) '#fff9f2'                                   # the hot centre of the lens
     Set-Pixels $bmp @(@(14, 9), @(14, 6), @(14, 12)) '#ffff2b'                  # rays leaving the lens
     Set-Pixels $bmp @(@(15, 9), @(15, 5), @(15, 13)) '#ffd900'
-  } else {
-    Set-Pixels $bmp @(, @(10, 7)) '#ffffff'                                  # a glint on the glass
   }
   return $bmp
 }
 
 function New-BatteryIcon {
-  $rows = @(
-    '................',
-    '......OOOO......',
-    '......OecO......',
-    '....OeccbbdO....',
-    '....OcbbbddO....',
-    '....12344451....',
-    '....12344451....',
-    '....12344451....',
-    '....12344451....',
-    '....12344451....',
-    '....12344451....',
-    '....12344451....',
-    '....12344451....',
-    '....OcbbbddO....',
-    '....OOOOOOOO....',
-    '................'
-  )
-  $map = @{
-    'O' = '#431600'; 'e' = '#f3c870'; 'c' = '#d99a3e'; 'b' = '#b35500'; 'd' = '#692c00'
-    '1' = '#0b1224'; '2' = '#6a8ce8'; '3' = '#3a58b8'; '4' = '#26407a'; '5' = '#16254a'
-  }
-  $bmp = New-Object System.Drawing.Bitmap 16, 16
-  for ($y = 0; $y -lt 16; $y++) { for ($x = 0; $x -lt 16; $x++) {
-    $ch = [string]$rows[$y][$x]; if ($ch -eq '.') { continue }
-    $bmp.SetPixel($x, $y, (C $map[$ch]))
-  } }
+  $bmp = Convert-RowsToBitmap $batteryRows
   # a yellow bolt on the navy wrap
-  Set-Pixels $bmp @(@(9, 6), @(8, 6), @(8, 7), @(7, 7), @(7, 8), @(8, 8), @(9, 8), @(8, 9), @(9, 9), @(7, 10), @(8, 10), @(7, 11)) '#ffd23a'
+  Set-Pixels $bmp @(@(9, 7), @(8, 7), @(8, 8), @(7, 8), @(7, 9), @(8, 9), @(9, 9), @(8, 10), @(9, 10), @(7, 11), @(8, 11)) '#ffd900'
+  Set-Pixels $bmp @(@(9, 7), @(8, 7)) '#ffff2b'
+  Set-Pixels $bmp @(, @(7, 11)) '#ff8900'
   return $bmp
 }
 

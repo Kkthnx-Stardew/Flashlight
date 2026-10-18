@@ -1,5 +1,14 @@
 # Draws the small flashlight the farmer holds in the hand while it is the selected tool. Dot-sourced by Generate-Art.ps1
-# after Generate-Icons.ps1, which defines the colours ($mat) and the helpers.
+# after Generate-Icons.ps1, which defines the helper C.
+#
+# The pieces are computed from simple shapes and ramps of five tones (outline, shadow, base, light, highlight), because at
+# twelve pixels and drawn small beside the farmer they do not need the hand-set shading of the item pictures.
+$mat = @{
+  brass = @('#431600', '#692c00', '#b35500', '#d99a3e', '#f3c870')
+  navy  = @('#0b1224', '#16254a', '#26407a', '#3a58b8', '#6a8ce8')
+  glass = @('#2b3340', '#4a6f78', '#8fb0a8', '#b8dfd8', '#d6f5ee')   # a lens that is off
+  lamp  = @('#c64c00', '#ff8900', '#ffd900', '#ffff2b', '#fff9f2')   # a lens that is on
+}
 #
 # held.png is a row of 12 by 12 cells, three views of the flashlight and for each an unlit and a lit one:
 #   cell 0, 1: from the side, pointing right (it is flipped for left)
