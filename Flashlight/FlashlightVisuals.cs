@@ -4,11 +4,9 @@ using StardewValley;
 
 namespace Flashlight
 {
-    /// <summary>The charge bar under the flashlight's picture and the flashlight in the farmer's hand. Called every frame.</summary>
+    /// <summary>The charge bar under the flashlight's picture and its lit picture. Called every frame.</summary>
     internal static class FlashlightVisuals
     {
-        private const int HeldCell = 12;                    // the held pictures are 12 by 12 pixels
-        private const float Zoom = 4f;                      // the game draws world pictures four times as large
         private const int BarFullWidth = 48;
 
         private static readonly Color Green = new(88, 190, 60);
@@ -18,21 +16,17 @@ namespace Flashlight
 
         private static readonly Rectangle BarFrame = new(297, 420, 14, 5); // the frame the watering can uses, in the game's cursors picture
 
-        /// <summary>Loads the held pictures and the tool sheet. Set by the mod; cleared when an asset changes so it is fetched again.</summary>
-        public static Func<Texture2D?>? HeldLoader { get; set; }
-
+        /// <summary>Loads the tool sheet. Set by the mod; cleared when an asset changes so it is fetched again.</summary>
         public static Func<Texture2D?>? ToolsLoader { get; set; }
 
         /// <summary>Called once with the reason when a picture cannot be loaded, after which nothing more is drawn until the assets change.</summary>
         public static Action<string>? OnError { get; set; }
 
-        private static Texture2D? _held;
         private static Texture2D? _tools;
         private static bool _failed;
 
         public static void ForgetTextures()
         {
-            _held = null;
             _tools = null;
             _failed = false;
         }
@@ -89,50 +83,6 @@ namespace Flashlight
             if (tools is null)
                 return;
             spriteBatch.Draw(tools, location + new Vector2(32f, 32f), new Rectangle(16, 0, 16, 16), color * transparency, 0f, new Vector2(8f, 8f), 4f * scaleSize, SpriteEffects.None, layerDepth + 0.00005f);
-        }
-
-        // ---------------------------------------------------------------- in the hand
-
-        /// <summary>
-        /// Draws the flashlight in the hand of a farmer who has it selected. It is drawn in the same pass as the farmer, with a
-        /// depth just in front of them (or just behind when they face away), so trees and roofs still cover it correctly.
-        /// </summary>
-        public static void DrawHeld(SpriteBatch b, Farmer who)
-        {
-            if (!FlashlightState.IsFlashlight(who.CurrentTool))
-                return;
-            if (who.hidden.Value || Game1.eventUp || who.UsingTool || who.isRidingHorse() || who.IsSitting() || who.currentLocation != Game1.currentLocation)
-                return;
-
-            var held = Get(ref _held, HeldLoader);
-            if (held is null)
-                return;
-
-            // which picture, where, and which way up
-            var lit = FlashlightState.IsLit(who.CurrentTool) ? 1 : 0;
-            int view;
-            Vector2 offset;
-            var effects = SpriteEffects.None;
-            var layer = who.getDrawLayer();
-            switch (who.FacingDirection)
-            {
-                case 1: // right
-                    view = 0; offset = new Vector2(46f, -12f); layer += 0.0004f; break;
-                case 3: // left
-                    view = 0; offset = new Vector2(18f, -12f); effects = SpriteEffects.FlipHorizontally; layer += 0.0004f; break;
-                case 2: // down: the lens faces the viewer
-                    view = 1; offset = new Vector2(48f, 0f); layer += 0.0004f; break;
-                default: // up: the end cap faces the viewer, behind the body
-                    view = 2; offset = new Vector2(16f, -4f); layer -= 0.0004f; break;
-            }
-
-            // follow the walking bob of the farmer's sprite
-            var frame = who.FarmerSprite.CurrentFrame;
-            var bob = frame >= 0 && frame < FarmerRenderer.featureYOffsetPerFrame.Length ? FarmerRenderer.featureYOffsetPerFrame[frame] * 4f : 0f;
-
-            var position = who.getLocalPosition(Game1.viewport) + who.jitter + new Vector2(0f, who.yJumpOffset + bob) + offset;
-            var source = new Rectangle((view * 2 + lit) * HeldCell, 0, HeldCell, HeldCell);
-            b.Draw(held, position, source, Color.White, 0f, new Vector2(HeldCell / 2f, HeldCell / 2f), Zoom, effects, layer);
         }
     }
 }

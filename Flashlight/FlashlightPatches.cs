@@ -13,8 +13,7 @@ namespace Flashlight
     /// for any tool, but a plain tool accepts any item in them and a whole stack at once, so two patches make the flashlight
     /// take only Dry Cells, one to a slot.
     ///
-    /// The charge bar is drawn under the picture like the water bar of the watering can, the flashlight is drawn in the hand
-    /// of a farmer who has it selected, and the tooltip says how much charge is left.
+    /// The charge bar is drawn under the picture like the water bar of the watering can, and the tooltip says how much charge is left.
     /// </summary>
     internal static class FlashlightPatches
     {
@@ -37,9 +36,6 @@ namespace Flashlight
                 original: AccessTools.Method(typeof(Tool), nameof(Tool.drawInMenu), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(StackDrawType), typeof(Color), typeof(bool) }),
                 prefix: new HarmonyMethod(typeof(FlashlightPatches), nameof(DrawInMenuPrefix)),
                 postfix: new HarmonyMethod(typeof(FlashlightPatches), nameof(DrawInMenuPostfix))));
-            Patch(monitor, "flashlight in hand", () => harmony.Patch(
-                original: AccessTools.Method(typeof(Farmer), nameof(Farmer.draw), new[] { typeof(SpriteBatch) }),
-                postfix: new HarmonyMethod(typeof(FlashlightPatches), nameof(FarmerDrawPostfix))));
             Patch(monitor, "tooltip charge line", () => harmony.Patch(
                 original: AccessTools.Method(typeof(Tool), nameof(Tool.getDescription), Type.EmptyTypes),
                 postfix: new HarmonyMethod(typeof(FlashlightPatches), nameof(GetDescriptionPostfix))));
@@ -133,8 +129,6 @@ namespace Flashlight
             if (withBar)
                 FlashlightVisuals.DrawBar(spriteBatch, __state, transparency, layerDepth, __instance);
         }
-
-        private static void FarmerDrawPostfix(Farmer __instance, SpriteBatch b) => FlashlightVisuals.DrawHeld(b, __instance);
 
         private static void GetDescriptionPostfix(Tool __instance, ref string __result)
         {

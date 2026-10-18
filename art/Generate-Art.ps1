@@ -9,7 +9,6 @@ New-Item -ItemType Directory -Force $assets | Out-Null
 function C([string]$hex) { [System.Drawing.ColorTranslator]::FromHtml($hex) }
 
 . (Join-Path $PSScriptRoot 'Generate-Icons.ps1')
-. (Join-Path $PSScriptRoot 'Generate-Held.ps1')
 
 # ---- the light beam: a soft cone plus a small glow around the farmer, 128 by 128, white with the light in the alpha channel.
 # The light sits at the centre of the picture. One file per way the farmer can face.

@@ -52,7 +52,6 @@ namespace Flashlight
             _content = new ContentSetup(helper.Translation, () => _config);
             FlashlightPatches.Apply(Monitor);
             FlashlightPatches.ChargeText = fraction => helper.Translation.Get("tooltip.charge", new { percent = (int)Math.Round(fraction * 100) });
-            FlashlightVisuals.HeldLoader = () => helper.GameContent.Load<Texture2D>(ContentSetup.HeldTexture);
             FlashlightVisuals.ToolsLoader = () => helper.GameContent.Load<Texture2D>(ContentSetup.ToolsTexture);
             FlashlightVisuals.OnError = reason => Monitor.Log("Could not load a picture for the flashlight, so it will be drawn plainly: " + reason, LogLevel.Error);
 
@@ -322,7 +321,7 @@ namespace Flashlight
             var from = player.FacingDirection switch
             {
                 0 => new Vector2(22, -18),  // up: past the shoulder
-                1 => new Vector2(66, -12),  // right: the lens of the held flashlight
+                1 => new Vector2(66, -12),  // right: just ahead of the farmer
                 2 => new Vector2(48, 10),   // down: in front of the hip
                 _ => new Vector2(-2, -12),  // left
             };

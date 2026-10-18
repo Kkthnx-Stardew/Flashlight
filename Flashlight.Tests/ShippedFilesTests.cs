@@ -38,7 +38,6 @@ public class ShippedFilesTests
     [Theory]
     [InlineData("objects.png", 16, 16)]
     [InlineData("tools.png", 32, 16)]
-    [InlineData("held.png", 72, 12)]
     [InlineData("beam-up.png", 128, 128)]
     [InlineData("beam-right.png", 128, 128)]
     [InlineData("beam-down.png", 128, 128)]
