@@ -2,7 +2,7 @@
 
 A flashlight for Stardew Valley that casts a beam in the direction you face and runs on batteries. Buy it early, keep it in your backpack, and see at night without holding a torch.
 
-This is an early build and has not been played in the game yet. The art and the numbers are a first pass.
+This is an early build. It has been run in Stardew Valley 1.6.15 with SMAPI 4.5.2 on Windows and the beam, battery and shop work, but the art and the numbers are a first pass and it has not had real play-time yet.
 
 ## What it adds
 
