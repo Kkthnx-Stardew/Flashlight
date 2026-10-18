@@ -2,15 +2,16 @@
 
 A flashlight for Stardew Valley that casts a beam in the direction you face and runs on batteries. Buy it early, keep it in your backpack, and see at night without holding a torch.
 
-This is an early build. It has been run in Stardew Valley 1.6.15 with SMAPI 4.5.2 on Windows and the beam, battery and shop work, but the art and the numbers are a first pass and it has not had real play-time yet.
+This is an early build. It has been run in Stardew Valley 1.6.15 with SMAPI 4.5.2 on Windows and the beam, battery slots, shop and flicker work, but the art and the numbers are a first pass and it has not had real play-time yet.
 
 ## What it adds
 
-- **Flashlight** (a tool): sold at Robin's Carpenter's Shop. Press **F** or use the tool to switch it on and off. It keeps shining while you use other tools, which a torch cannot do.
-- **Dry Cell** (a battery): sold at Robin's, or crafted from 1 Copper Bar and 1 Coal for 3 cells once you reach Mining level 2. The flashlight takes a new one from your backpack when its charge runs out, so there is no menu to load it.
-- A forward cone of light, 7 tiles long, with a faint glow around you.
+- **Flashlight** (a tool): sold at Robin's Carpenter's Shop, one to a player. Press **F** or use the tool to switch it on and off. It keeps shining while you use other tools, which a torch cannot do. The toolbar picture shows when it is on.
+- **Battery slots**: the flashlight has two, like the bait slot on a fishing rod. Right-click the flashlight with Dry Cells on the cursor to load them, one to a slot, and right-click it with an empty hand to take one out. Hover it to see what is loaded.
+- **Dry Cell** (a battery): sold at Robin's in limited numbers, or crafted from 1 Copper Bar and 1 Coal for 3 cells once you reach Mining level 2. Each lasts 4 in-game hours, and only while it is dark where you are.
+- A forward cone of light, 7 tiles long, with a faint glow around you, and now and then a random flicker like an old flashlight with a loose cell.
 
-The balance reasoning, with the numbers it was checked against, is in [docs/BALANCE.md](docs/BALANCE.md).
+The balance reasoning, with the numbers it was checked against and how it is kept from being abused, is in [docs/BALANCE.md](docs/BALANCE.md).
 
 ## Settings
 
@@ -21,9 +22,15 @@ Edit `config.json` in the mod folder after the first run.
 | `ToggleKey` | `F` | The button that switches the flashlight on and off. |
 | `BeamLengthTiles` | `7` | How far the beam reaches (3 to 12). |
 | `BatteryHours` | `4` | In-game hours one battery lasts (1 to 12). |
+| `BatterySlots` | `2` | How many batteries a new flashlight holds (1 to 4). |
 | `FlashlightPrice` | `600` | Shop price of the flashlight. |
 | `BatteryPrice` | `60` | Shop price of one battery. |
 | `SoldAtCarpenter` | `true` | Whether Robin sells them. Turn off if another mod handles shops. |
+| `BatteryDailyStock` | `6` | How many batteries the shop sells to one player each day. |
+| `MaxBatteriesCarried` | `6` | The shop stops selling batteries to someone carrying this many. |
+| `BatteryOutOfStockPercent` | `15` | Chance in percent that Robin has no batteries on a day. |
+| `BatteryLowStockPercent` | `25` | Chance in percent that Robin has half the stock on a day. |
+| `FlickerSecondsBetween` | `40` | Average seconds of use between random flickers. 0 turns them off. |
 
 ## Install
 
@@ -34,8 +41,8 @@ Needs Stardew Valley 1.6.9 or newer.
 
 ## Known limits
 
-- In multiplayer other players see the game's ordinary round light, because the custom cone picture is only drawn on the machine that owns the flashlight.
-- The flashlight icon does not change when it is switched on. The "on" picture is in the sheet for later.
+- The battery slots use two small Harmony patches on the game's tool code, which only act on the flashlight. SMAPI lists the mod as one that changes game code for that reason.
+- In multiplayer other players see the game's ordinary round light, because the custom cone picture is only drawn on the machine that owns the flashlight. Multiplayer is untested.
 - Shop days for Robin and the Mining level of the recipe are not checked against the rest of the game.
 
 ## Building

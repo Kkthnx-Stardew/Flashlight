@@ -22,12 +22,15 @@ namespace Flashlight
         private ModConfig _config = new();
         private ContentSetup _content = null!; // set in Entry
         private SButton _toggleButton = SButton.F;
+        private bool _swapping;
 
         // Each split-screen player has a flashlight of their own.
         private readonly PerScreen<bool> _on = new();
         private readonly PerScreen<string?> _lightId = new();
         private readonly PerScreen<string?> _lightLocation = new();
         private readonly PerScreen<bool> _warnedLow = new();
+        private readonly PerScreen<bool> _warnedExtra = new();
+        private readonly PerScreen<int> _flickerTicks = new();
 
         private readonly Texture2D?[] _beams = new Texture2D?[4];
 
@@ -39,15 +42,23 @@ namespace Flashlight
             ApplyConfig();
 
             _content = new ContentSetup(helper.Translation, () => _config);
+            FlashlightPatches.Apply(Monitor);
 
             helper.Events.Content.AssetRequested += (_, e) => _content.OnAssetRequested(e);
             helper.Events.Content.LocaleChanged += (_, _) => InvalidateContent();
             helper.Events.Input.ButtonPressed += OnButtonPressed;
             helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
             helper.Events.GameLoop.TimeChanged += OnTimeChanged;
+            helper.Events.GameLoop.SaveLoaded += (_, _) => Reset();
+            helper.Events.GameLoop.DayStarted += (_, _) => Reset();
             helper.Events.GameLoop.DayEnding += (_, _) => TurnOff(announce: false);
             helper.Events.GameLoop.ReturnedToTitle += (_, _) => ForgetLight();
             helper.Events.Player.Warped += OnWarped;
+            helper.Events.Player.InventoryChanged += (_, e) =>
+            {
+                if (e.IsLocalPlayer)
+                    Normalize(e.Player);
+            };
         }
 
         private void ApplyConfig()
@@ -68,26 +79,110 @@ namespace Flashlight
 
         // ---------------------------------------------------------------- finding things
 
-        private static Tool? FindFlashlight(Farmer player) =>
-            player.Items.OfType<Tool>().FirstOrDefault(tool => tool.ItemId == ContentSetup.FlashlightId);
-
-        private static int CountBatteries(Farmer player) =>
-            player.Items.Where(item => item?.QualifiedItemId == ContentSetup.QualifiedBatteryId).Sum(item => item.Stack);
-
-        private static void UseBattery(Farmer player)
+        /// <summary>
+        /// The flashlight to use. A player is meant to have only one, and the shop sells one to a player who has none. If
+        /// there are more (found, or kept from before), only the first counts, so charge cannot be stored in spares.
+        /// </summary>
+        private Tool? FindFlashlight(Farmer player)
         {
-            var battery = player.Items.FirstOrDefault(item => item?.QualifiedItemId == ContentSetup.QualifiedBatteryId);
-            if (battery is null)
+            Tool? first = null;
+            var count = 0;
+            foreach (var tool in player.Items.OfType<Tool>().Where(t => ContentSetup.IsFlashlight(t)))
+            {
+                first ??= tool;
+                count++;
+            }
+            if (count > 1 && !_warnedExtra.Value)
+            {
+                _warnedExtra.Value = true;
+                Game1.addHUDMessage(new HUDMessage(Helper.Translation.Get("message.one-flashlight"), HUDMessage.error_type));
+            }
+            return first;
+        }
+
+        /// <summary>The batteries loaded in the flashlight's slots. Those in the backpack are not used until they are loaded.</summary>
+        private static int CountBatteries(Tool flashlight) =>
+            flashlight.attachments.Where(item => item?.QualifiedItemId == ContentSetup.QualifiedBatteryId).Sum(item => item.Stack);
+
+        /// <summary>Uses up one loaded battery, emptying its slot.</summary>
+        private static void UseBattery(Tool flashlight)
+        {
+            for (var i = 0; i < flashlight.attachments.Count; i++)
+            {
+                var battery = flashlight.attachments[i];
+                if (battery?.QualifiedItemId != ContentSetup.QualifiedBatteryId)
+                    continue;
+                battery.Stack--;
+                if (battery.Stack <= 0)
+                    flashlight.attachments[i] = null;
                 return;
-            battery.Stack--;
-            if (battery.Stack <= 0)
-                player.removeItemFromInventory(battery);
+            }
         }
 
         private static int ReadCharge(Tool tool) =>
             tool.modData.TryGetValue(ChargeKey, out var text) && int.TryParse(text, out var charge) ? Math.Max(0, charge) : 0;
 
         private static void WriteCharge(Tool tool, int charge) => tool.modData[ChargeKey] = charge.ToString();
+
+        // ---------------------------------------------------------------- the on and off pictures
+
+        /// <summary>
+        /// Swaps the flashlight in the backpack for its lit or unlit twin, keeping its slot and its charge. The two are
+        /// separate items only so that the toolbar picture shows whether it is on.
+        /// </summary>
+        private Tool SetVariant(Farmer player, Tool tool, bool on)
+        {
+            var id = on ? ContentSetup.FlashlightOnId : ContentSetup.FlashlightId;
+            if (tool.ItemId == id)
+                return tool;
+            var index = player.Items.IndexOf(tool);
+            if (index < 0)
+                return tool;
+
+            _swapping = true;
+            try
+            {
+                var fresh = ItemRegistry.Create<Tool>("(T)" + id);
+                foreach (var pair in tool.modData.Pairs)
+                    fresh.modData[pair.Key] = pair.Value;
+                for (var i = 0; i < Math.Min(tool.attachments.Count, fresh.attachments.Count); i++)
+                    fresh.attachments[i] = tool.attachments[i]; // the loaded batteries go with it
+                player.Items[index] = fresh;
+                return fresh;
+            }
+            finally
+            {
+                _swapping = false;
+            }
+        }
+
+        /// <summary>A lit flashlight only exists while the light is on, so one found any other time is put back to unlit.</summary>
+        private void Normalize(Farmer player)
+        {
+            if (_swapping)
+                return;
+
+            // a flashlight made before the slot count was raised in the settings gets the extra slots
+            foreach (var tool in player.Items.OfType<Tool>().Where(t => ContentSetup.IsFlashlight(t)))
+            {
+                if (tool.AttachmentSlotsCount < _config.BatterySlots)
+                    tool.AttachmentSlotsCount = _config.BatterySlots;
+            }
+
+            if (_on.Value)
+                return;
+            foreach (var tool in player.Items.OfType<Tool>().Where(t => t.ItemId == ContentSetup.FlashlightOnId).ToList())
+                SetVariant(player, tool, on: false);
+        }
+
+        private void Reset()
+        {
+            _on.Value = false;
+            _flickerTicks.Value = 0;
+            _warnedExtra.Value = false;
+            if (Context.IsWorldReady)
+                Normalize(Game1.player);
+        }
 
         // ---------------------------------------------------------------- input
 
@@ -101,7 +196,7 @@ namespace Flashlight
             if (flashlight is null)
                 return;
 
-            var usesTheTool = e.Button.IsUseToolButton() && player.CurrentTool?.ItemId == ContentSetup.FlashlightId;
+            var usesTheTool = e.Button.IsUseToolButton() && ContentSetup.IsFlashlight(player.CurrentTool);
             if (e.Button != _toggleButton && !usesTheTool)
                 return;
 
@@ -117,7 +212,7 @@ namespace Flashlight
         private void TurnOn(Farmer player, Tool flashlight)
         {
             var capacity = ChargeModel.CapacityTicks(_config.BatteryHours);
-            var step = ChargeModel.TurnOn(ReadCharge(flashlight), CountBatteries(player), capacity);
+            var step = ChargeModel.TurnOn(ReadCharge(flashlight), CountBatteries(flashlight), capacity);
             if (!step.LightOn)
             {
                 Game1.addHUDMessage(new HUDMessage(Helper.Translation.Get("message.no-battery"), HUDMessage.error_type));
@@ -125,9 +220,11 @@ namespace Flashlight
             }
 
             if (step.BatteryUsed)
-                UseBattery(player);
+                UseBattery(flashlight);
             WriteCharge(flashlight, step.Charge);
+            SetVariant(player, flashlight, on: true);
             _warnedLow.Value = false;
+            _flickerTicks.Value = 0;
             _on.Value = true;
             AddLight(player);
             Game1.playSound("woodyStep");
@@ -140,6 +237,8 @@ namespace Flashlight
                 return;
             _on.Value = false;
             RemoveLight();
+            if (Context.IsWorldReady)
+                Normalize(Game1.player);
             if (announce)
             {
                 Game1.playSound("woodyStep");
@@ -148,6 +247,10 @@ namespace Flashlight
         }
 
         // ---------------------------------------------------------------- time
+
+        /// <summary>Whether the place the farmer is in is dark enough for a light to matter. Daylight outside is not.</summary>
+        private static bool NeedsLight(GameLocation? location) =>
+            location is not null && (!location.IsOutdoors || Game1.isDarkOut(location));
 
         /// <summary>Called every 10 in-game minutes.</summary>
         private void OnTimeChanged(object? sender, TimeChangedEventArgs e)
@@ -163,10 +266,14 @@ namespace Flashlight
                 return;
             }
 
+            // a battery is not used up by a light nobody needs, such as one left on in the sun
+            if (!NeedsLight(player.currentLocation))
+                return;
+
             var capacity = ChargeModel.CapacityTicks(_config.BatteryHours);
-            var step = ChargeModel.Tick(ReadCharge(flashlight), CountBatteries(player), capacity);
+            var step = ChargeModel.Tick(ReadCharge(flashlight), CountBatteries(flashlight), capacity);
             if (step.BatteryUsed)
-                UseBattery(player);
+                UseBattery(flashlight);
             WriteCharge(flashlight, step.Charge);
 
             if (!step.LightOn)
@@ -263,11 +370,20 @@ namespace Flashlight
             location.repositionLightSource(_lightId.Value, BeamOrigin(player));
             light.lightTexture = BeamFor(player.FacingDirection);
 
-            // a nearly empty battery makes the beam flicker
+            // Flicker: now and then at random, like an old flashlight with a loose cell, and often when the battery is nearly flat.
             var flashlight = FindFlashlight(player);
             var charge = flashlight is null ? 0 : ReadCharge(flashlight);
-            var low = charge <= ChargeModel.LowTicks && CountBatteries(player) == 0;
-            light.radius.Value = low && Game1.random.NextDouble() < 0.12 ? Radius * 0.6f : Radius;
+            var low = flashlight is not null && charge <= ChargeModel.LowTicks && CountBatteries(flashlight) == 0;
+            if (_flickerTicks.Value <= 0 && FlickerModel.ShouldStart(Game1.random, FlickerModel.Interval(_config.FlickerSecondsBetween, low)))
+                _flickerTicks.Value = FlickerModel.NewLength(Game1.random);
+
+            var strength = 1f;
+            if (_flickerTicks.Value > 0)
+            {
+                strength = FlickerModel.Strength(_flickerTicks.Value, Game1.random);
+                _flickerTicks.Value--;
+            }
+            light.radius.Value = Radius * strength;
         }
     }
 }

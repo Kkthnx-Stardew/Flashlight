@@ -6,6 +6,7 @@
 		<RootNamespace>Flashlight</RootNamespace>
 		<AssemblyName>Flashlight</AssemblyName>
 		<Version>0.1.0</Version>
+		<EnableHarmony>true</EnableHarmony>
 	</PropertyGroup>
 
 	<ItemGroup>

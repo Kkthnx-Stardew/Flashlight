@@ -21,6 +21,27 @@ namespace Flashlight
         /// <summary>Whether Robin's Carpenter's Shop sells the flashlight and batteries.</summary>
         public bool SoldAtCarpenter { get; set; } = true;
 
+        /// <summary>How many batteries the flashlight holds at once, like the bait slot of a fishing rod.</summary>
+        public int BatterySlots { get; set; } = 2;
+
+        /// <summary>How many batteries the shop sells to one player each day.</summary>
+        public int BatteryDailyStock { get; set; } = 6;
+
+        /// <summary>The chance, in percent, that on a given day Robin has no Dry Cells at all. It is the same all day.</summary>
+        public int BatteryOutOfStockPercent { get; set; } = 15;
+
+        /// <summary>The chance, in percent, that on a given day Robin has only half the usual stock of Dry Cells.</summary>
+        public int BatteryLowStockPercent { get; set; } = 25;
+
+        /// <summary>The shop stops selling batteries to a player who already carries this many.</summary>
+        public int MaxBatteriesCarried { get; set; } = 6;
+
+        /// <summary>
+        /// On average, how many seconds of use pass between random flickers, like an old flashlight with a loose cell.
+        /// 0 turns the random flicker off.
+        /// </summary>
+        public int FlickerSecondsBetween { get; set; } = 40;
+
         /// <summary>Keeps every value in a range the game and the balance can cope with.</summary>
         public void Clamp()
         {
@@ -30,6 +51,12 @@ namespace Flashlight
             BatteryHours = Math.Clamp(BatteryHours, 1, 12);
             FlashlightPrice = Math.Clamp(FlashlightPrice, 0, 100_000);
             BatteryPrice = Math.Clamp(BatteryPrice, 0, 10_000);
+            BatterySlots = Math.Clamp(BatterySlots, 1, 4);
+            MaxBatteriesCarried = Math.Clamp(MaxBatteriesCarried, 1, 20);
+            BatteryDailyStock = Math.Clamp(BatteryDailyStock, 1, MaxBatteriesCarried);
+            BatteryOutOfStockPercent = Math.Clamp(BatteryOutOfStockPercent, 0, 90);
+            BatteryLowStockPercent = Math.Clamp(BatteryLowStockPercent, 0, 90);
+            FlickerSecondsBetween = FlickerSecondsBetween <= 0 ? 0 : Math.Clamp(FlickerSecondsBetween, 5, 600);
         }
     }
 }
