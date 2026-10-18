@@ -97,7 +97,10 @@ namespace Flashlight
 
             var layer = facingDirection == 0 ? FarmerRenderer.FarmerSpriteLayers.ArmsUp : FarmerRenderer.FarmerSpriteLayers.Arms;
             var step = Game1.isUsingBackToFrontSorting ? -1f : 1f;
-            var depth = FarmerRenderer.GetLayerDepth(layerDepth, layer) - 0.5e-6f * step;
+            // from the side the fingers close over the handle, so it goes just under the arm. From the front and back the lens or
+            // the end cap must stay clear, so it goes just over the arm and the hand is seen holding it from behind.
+            var overArm = facingDirection == 0 || facingDirection == 2;
+            var depth = FarmerRenderer.GetLayerDepth(layerDepth, layer) + (overArm ? 0.5e-6f : -0.5e-6f) * step;
             b.Draw(held, handAt, new Rectangle(cell * HeldCell, 0, HeldCell, HeldCell), Color.White, 0f, grip, drawScale, effects, depth);
 
             if (who.IsLocalPlayer)
@@ -119,9 +122,9 @@ namespace Flashlight
                 case 3: // left: the same picture turned round
                     cell = on; grip = new Vector2(HeldCell - 1.5f, 5.5f); effects = SpriteEffects.FlipHorizontally; lens = new Vector2(HeldCell - 11f, 5.5f); break;
                 case 0: // up: the end cap faces the viewer and the beam goes away from it
-                    cell = 4 + on; grip = new Vector2(4.5f, 6f); lens = new Vector2(6f, 3f); break;
+                    cell = 4 + on; grip = new Vector2(4.5f, 6.5f); lens = new Vector2(6f, 3f); break;
                 default: // down: the lens faces the viewer
-                    cell = 2 + on; grip = new Vector2(7.5f, 6f); lens = new Vector2(6f, 8f); break;
+                    cell = 2 + on; grip = new Vector2(7.5f, 6.5f); lens = new Vector2(6f, 8f); break;
             }
         }
 
