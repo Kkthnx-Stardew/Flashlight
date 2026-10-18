@@ -21,8 +21,6 @@
     "gmcm.hours.tip": "In-game hours one Dry Cell lasts while it is dark where you are.",
     "gmcm.hand.name": "Show in hand",
     "gmcm.hand.tip": "Draw the flashlight in the farmer's hand while it is the selected item.",
-    "gmcm.glow.name": "Light around you",
-    "gmcm.glow.tip": "How far, in tiles, the soft light around you reaches while the flashlight is on. 0 leaves only the beam.",
     "gmcm.packs.name": "Allow Battery Packs",
     "gmcm.packs.tip": "Let the game's Battery Pack be loaded as a cell that lasts longer and shines brighter. Packs already loaded keep working if this is turned off.",
     "gmcm.packhours.name": "Battery Pack life (hours)",

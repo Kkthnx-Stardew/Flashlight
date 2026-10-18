@@ -12,9 +12,6 @@ namespace Flashlight
         /// <summary>How long one battery lasts, in in-game hours.</summary>
         public int BatteryHours { get; set; } = 4;
 
-        /// <summary>How far, in tiles, the soft light around the farmer reaches. 0 turns it off and leaves only the beam.</summary>
-        public int AmbientGlowTiles { get; set; } = 3;
-
         /// <summary>Whether the game's Battery Pack can be loaded as a longer lasting, brighter cell.</summary>
         public bool UseBatteryPacks { get; set; } = true;
 
@@ -74,7 +71,6 @@ namespace Flashlight
                 ToggleKey = "F";
             BeamLengthTiles = Math.Clamp(BeamLengthTiles, 3, 12);
             BatteryHours = Math.Clamp(BatteryHours, 1, 12);
-            AmbientGlowTiles = Math.Clamp(AmbientGlowTiles, 0, 6);
             BatteryPackHours = Math.Clamp(BatteryPackHours, 1, 48);
             BatteryPackBeamPercent = Math.Clamp(BatteryPackBeamPercent, 100, 200);
             FlashlightPrice = Math.Clamp(FlashlightPrice, 0, 100_000);

@@ -119,9 +119,9 @@ namespace Flashlight
                 case 3: // left: the same picture turned round
                     cell = on; grip = new Vector2(HeldCell - 1.5f, 5.5f); effects = SpriteEffects.FlipHorizontally; lens = new Vector2(HeldCell - 11f, 5.5f); break;
                 case 0: // up: the end cap faces the viewer and the beam goes away from it
-                    cell = 4 + on; grip = new Vector2(6f, 6.5f); lens = new Vector2(6f, 3f); break;
+                    cell = 4 + on; grip = new Vector2(6f, 10.5f); lens = new Vector2(6f, 3f); break;
                 default: // down: the lens faces the viewer
-                    cell = 2 + on; grip = new Vector2(6f, 6f); lens = new Vector2(6f, 8f); break;
+                    cell = 2 + on; grip = new Vector2(6f, 10.5f); lens = new Vector2(6f, 8f); break;
             }
         }
 

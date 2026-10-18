@@ -23,7 +23,6 @@ namespace Flashlight
             menu.AddTextOption(manifest, () => config().ToggleKey, v => config().ToggleKey = v, () => t.Get("gmcm.key.name"), () => t.Get("gmcm.key.tip"));
             menu.AddNumberOption(manifest, () => config().BeamLengthTiles, v => config().BeamLengthTiles = v, () => t.Get("gmcm.beam.name"), () => t.Get("gmcm.beam.tip"), 3, 12, 1);
             menu.AddNumberOption(manifest, () => config().BatteryHours, v => config().BatteryHours = v, () => t.Get("gmcm.hours.name"), () => t.Get("gmcm.hours.tip"), 1, 12, 1);
-            menu.AddNumberOption(manifest, () => config().AmbientGlowTiles, v => config().AmbientGlowTiles = v, () => t.Get("gmcm.glow.name"), () => t.Get("gmcm.glow.tip"), 0, 6, 1, tiles => tiles == 0 ? t.Get("gmcm.off") : $"{tiles}");
             menu.AddBoolOption(manifest, () => config().ShowInHand, v => config().ShowInHand = v, () => t.Get("gmcm.hand.name"), () => t.Get("gmcm.hand.tip"));
             menu.AddBoolOption(manifest, () => config().UseBatteryPacks, v => config().UseBatteryPacks = v, () => t.Get("gmcm.packs.name"), () => t.Get("gmcm.packs.tip"));
             menu.AddNumberOption(manifest, () => config().BatteryPackHours, v => config().BatteryPackHours = v, () => t.Get("gmcm.packhours.name"), () => t.Get("gmcm.packhours.tip"), 1, 48, 1);

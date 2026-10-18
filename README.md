@@ -9,7 +9,7 @@ This is an early build. It has been run in Stardew Valley 1.6.15 with SMAPI 4.5.
 ## What it adds
 
 - **Flashlight** (a tool): sold at Robin's Carpenter's Shop, one to a player. Press **F** (or use the tool) to switch it on and off. It keeps shining while you use other tools, which a torch cannot do. The toolbar picture shows when it is on, and a charge bar under it works like the water bar of the watering can.
-- **Light all around you and ahead of you**: a cone of light 7 tiles long and a soft light around you, 3 tiles out, so the ground at your feet is not black. It flickers now and then like an old flashlight with a loose cell, and much more often once the charge falls under a tenth of a full load.
+- **A cone of light**: a beam 7 tiles long in the direction you face, with nothing lit around you, like a real flashlight. It flickers now and then like an old flashlight with a loose cell, and much more often once the charge falls under a tenth of a full load.
 - **Held in your hand**: while the flashlight is the selected tool you are drawn holding it. It follows your hand as you walk, the beam starts at its lens, and from the front and back it is held in one hand.
 - **Battery slots**: the flashlight has two, like the bait slot on a fishing rod. Right-click the flashlight with cells on the cursor to load them, one to a slot, and right-click it with an empty hand to take one out. Hover it to see what is loaded.
 - **Dry Cell** (a battery): sold at Robin's in limited numbers, or crafted from 1 Copper Bar and 1 Coal for 3 cells once you reach Mining level 2. Each lasts 4 in-game hours, and only while it is dark where you are.
@@ -39,7 +39,6 @@ Edit `config.json` in the mod folder after the first run, or change them in game
 | --- | --- | --- |
 | `ToggleKey` | `F` | The button or buttons that switch the flashlight on and off, such as `F, LeftShoulder`. |
 | `BeamLengthTiles` | `7` | How far the beam reaches (3 to 12). |
-| `AmbientGlowTiles` | `3` | How far the soft light around you reaches (0 to 6). 0 leaves only the beam. |
 | `ShowInHand` | `true` | Draw the flashlight in your hand while it is selected. |
 | `BatteryHours` | `4` | In-game hours one Dry Cell lasts (1 to 12). |
 | `UseBatteryPacks` | `true` | Whether the game's Battery Pack can be loaded. |

@@ -11,12 +11,12 @@ function C([string]$hex) { [System.Drawing.ColorTranslator]::FromHtml($hex) }
 . (Join-Path $PSScriptRoot 'Generate-Icons.ps1')
 . (Join-Path $PSScriptRoot 'Generate-Held.ps1')
 
-# ---- the light beam: a cone with a bright middle and soft sides plus a small glow at its start (the wider light around the farmer is a second light in code), 128 by 128, white with the light in the alpha channel.
+# ---- the light beam: a cone with a bright middle and soft sides with nothing around the farmer (an optional soft light around them is a second light in code), 128 by 128, white with the light in the alpha channel.
 # The light sits at the centre of the picture. One file per way the farmer can face.
 function New-Beam([int]$turns) {
   $size = 128; $half = $size / 2
   $bmp = New-Object System.Drawing.Bitmap $size, $size
-  $range = 62.0; $spread = 30.0 * [Math]::PI / 180.0; $glow = 8.0
+  $range = 62.0; $spread = 30.0 * [Math]::PI / 180.0; $glow = 0.0
   for ($y = 0; $y -lt $size; $y++) { for ($x = 0; $x -lt $size; $x++) {
     $dx = $x + 0.5 - $half; $dy = $y + 0.5 - $half
     # turn the picture so the beam points right, 0 = right, 1 = down, 2 = left, 3 = up

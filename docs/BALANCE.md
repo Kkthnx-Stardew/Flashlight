@@ -27,7 +27,7 @@ The game's Battery Pack sells for 500g and is not sold in any shop. It comes fro
 - **Battery slots.** The flashlight has two slots that work like the bait slot of a fishing rod. Right-click the flashlight in the backpack with Dry Cells on the cursor to load one into each slot, and right-click it with an empty hand to take one out. Hover it to see what is loaded. Only Dry Cells and Battery Packs fit, and only one to a slot, so it can never hold more cells than it has slots.
 - **Charge.** The flashlight keeps the charge of the cell in use. When that runs out it takes the next loaded cell, in slot order. With nothing loaded it goes out.
 - **Battery Pack.** A slot takes a Dry Cell or a Battery Pack. A pack lasts 12 hours (three Dry Cells) and while it is in use the beam is 30 percent longer (about 9 tiles) and takes more of the darkness away. It is found, not bought, so it is a reward for a lightning rod or a solar panel and not a way round the shop limits. The charge bar is measured against the best cell in the flashlight, so a Dry Cell only flashlight still reads full with every slot loaded and a pack flashlight reads full with every slot holding a pack.
-- **Light around the farmer.** While it is on there is also a soft light reaching 3 tiles, centred on the farmer, so the ground at their feet and behind them is not black. It is a little dimmer than the beam and smaller than a Small Glow Ring (5 tiles), so rings are still worth having.
+- **Only a cone.** Like a real flashlight it lights what it points at and nothing around the farmer, so it does not replace a torch for work at close range or a glow ring that lights every way.
 - **Switching.** A key (F, or a list such as `F, LeftShoulder` for a controller) or using the tool switches it on and off. The toolbar picture changes to a lit one while it is on.
 - **Charge bar.** Under the picture is a bar like the water bar of the watering can. It shows how much of a full load (every slot holding a fresh cell) is left, in steps: green above half, yellow above a quarter, orange above a tenth, red below that. The tooltip gives the same figure as a percentage.
 - **Only in the dark.** The charge only drains where a light matters: indoors, in the mines, or outside after dark or in the rain. A flashlight left on in the sun costs nothing.
@@ -38,7 +38,6 @@ The game's Battery Pack sells for 500g and is not sold in any shop. It comes fro
 | Setting | Default | Why |
 | --- | --- | --- |
 | Beam length | 7 tiles (9 with a Battery Pack) | More reach than a Small Glow Ring, far less coverage than a Glow Ring. |
-| Light around the farmer | 3 tiles | About a torch, under a Small Glow Ring. |
 | Beam spread | 30 degrees each side of the facing | Narrow on purpose. |
 | Battery slots | 2 | Two cells is 8 in-game hours, a full night with some to spare, and no more. |
 | Battery life | 4 in-game hours (24 ticks of 10 minutes) | About 170 real seconds per cell. |
@@ -78,7 +77,7 @@ The defaults are a first pass. Players can paste the output of the `flashlight_r
 | Most nights end with spare cells and the shop is never empty | Lower `BatteryDailyStock` or raise `BatteryOutOfStockPercent`. The target is a flashlight that costs thought on a bad shop day, not every day. |
 | The flashlight runs out mid night more than about one night in four | Raise `BatteryHours` or `BatteryDailyStock`. Upkeep should be a cost, not a wall. |
 | The 600g price is reached before spring ends and feels free | Raise `FlashlightPrice`. If it feels out of reach, check against when players first have 600g. |
-| Beam or glow is called too strong next to glow rings | Lower `BeamLengthTiles` or `AmbientGlowTiles`. Rings should stay better in the Mines. |
+| Beam or glow is called too strong next to glow rings | Lower `BeamLengthTiles`. Rings should stay better in the Mines. |
 | Battery Packs make the Dry Cell pointless | Lower `BatteryPackHours` or `BatteryPackBeamPercent`. A pack should be an event, not the default. |
 | Flicker is annoying | Raise `FlickerSecondsBetween`, or set it to 0. The low-charge warning flicker stays. |
 

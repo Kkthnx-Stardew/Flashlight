@@ -27,7 +27,6 @@ namespace Flashlight
         // Each split-screen player has a flashlight of their own.
         private readonly PerScreen<bool> _on = new();
         private readonly PerScreen<string?> _lightId = new();
-        private readonly PerScreen<string?> _glowId = new();
         private readonly PerScreen<string?> _lightLocation = new();
         private readonly PerScreen<bool> _warnedLow = new();
         private readonly PerScreen<int> _flickerTicks = new();
@@ -422,26 +421,6 @@ namespace Flashlight
             return player.Position + from;
         }
 
-        /// <summary>The middle of the farmer, where the soft glow around them is centred.</summary>
-        private static Vector2 GlowOrigin(Farmer player) => player.Position + new Vector2(32f, -24f);
-
-        /// <summary>The soft glow is a little dimmer than the beam, so the beam still reads as the main light.</summary>
-        private Color GlowColor(float boost)
-        {
-            var c = ColorFor(boost);
-            return new Color(c.R, (int)(c.G * 0.7f), (int)(c.B * 0.7f));
-        }
-
-        /// <summary>Adds the soft light around the farmer, when the settings ask for one.</summary>
-        private void AddGlow(Farmer player, GameLocation location, float boost)
-        {
-            if (_config.AmbientGlowTiles <= 0 || _lightId.Value is null)
-                return;
-            var glowId = _lightId.Value + "_glow";
-            location.sharedLights.AddLight(new LightSource(glowId, LightSource.lantern, GlowOrigin(player), _config.AmbientGlowTiles * Brightness(boost), GlowColor(boost), LightSource.LightContext.None, player.UniqueMultiplayerID, location.NameOrUniqueName));
-            _glowId.Value = glowId;
-        }
-
         private void AddLight(Farmer player)
         {
             var location = player.currentLocation;
@@ -457,7 +436,6 @@ namespace Flashlight
             };
             location.sharedLights.AddLight(light);
             _lightId.Value = id;
-            AddGlow(player, location, boost);
             _lightLocation.Value = location.NameOrUniqueName;
         }
 
@@ -468,10 +446,7 @@ namespace Flashlight
             // the light may be in the place the farmer just left
             var location = Game1.getLocationFromName(_lightLocation.Value) ?? Game1.player.currentLocation;
             location?.removeLightSource(_lightId.Value);
-            if (_glowId.Value is not null)
-                location?.removeLightSource(_glowId.Value);
             _lightId.Value = null;
-            _glowId.Value = null;
             _lightLocation.Value = null;
         }
 
@@ -480,7 +455,6 @@ namespace Flashlight
             _on.Value = false;
             _tool.Value = null;
             _lightId.Value = null;
-            _glowId.Value = null;
             _lightLocation.Value = null;
         }
 
@@ -490,10 +464,7 @@ namespace Flashlight
                 return;
             // move the light into the new place
             e.OldLocation?.removeLightSource(_lightId.Value);
-            if (_glowId.Value is not null)
-                e.OldLocation?.removeLightSource(_glowId.Value);
             _lightId.Value = null;
-            _glowId.Value = null;
             AddLight(e.Player);
         }
 
@@ -523,19 +494,12 @@ namespace Flashlight
             }
 
             location.repositionLightSource(_lightId.Value, BeamOrigin(player));
-            // the glow can be switched on in the settings while the flashlight is already lit
-            if (_glowId.Value is null && _config.AmbientGlowTiles > 0)
-                AddGlow(player, location, 0f);
-            var glow = _glowId.Value is { } glowName ? location.getLightSource(glowName) : null;
-            glow?.position.Set(GlowOrigin(player));
             light.lightTexture = BeamFor(player.FacingDirection);
 
             // no beam during a cutscene or a festival, where the farmer is moved by the script
             if (Game1.eventUp)
             {
                 light.radius.Value = 0f;
-                if (glow is not null)
-                    glow.radius.Value = 0f;
                 return;
             }
 
@@ -552,11 +516,6 @@ namespace Flashlight
             var boost = _tool.Value is { } held ? FlashlightState.Boost(held) : 0f;
             light.color.Value = ColorFor(boost);
             light.radius.Value = Radius * Brightness(boost) * strength;
-            if (glow is not null)
-            {
-                glow.color.Value = GlowColor(boost);
-                glow.radius.Value = _config.AmbientGlowTiles * Brightness(boost) * strength;
-            }
         }
     }
 }

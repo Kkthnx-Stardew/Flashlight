@@ -9,7 +9,6 @@ public class ModConfigTests
         Assert.Equal("F", config.ToggleKey);
         Assert.Equal(7, config.BeamLengthTiles);
         Assert.Equal(4, config.BatteryHours);
-        Assert.Equal(3, config.AmbientGlowTiles);
         Assert.True(config.UseBatteryPacks);
         Assert.Equal(12, config.BatteryPackHours);
         Assert.Equal(130, config.BatteryPackBeamPercent);
@@ -47,17 +46,6 @@ public class ModConfigTests
         config.Clamp();
         Assert.Equal(expectedHours, config.BatteryPackHours);
         Assert.Equal(expectedPercent, config.BatteryPackBeamPercent);
-    }
-
-    [Theory]
-    [InlineData(-4, 0)]
-    [InlineData(3, 3)]
-    [InlineData(40, 6)]
-    public void TheGlowAroundTheFarmerIsKeptInRange(int set, int expected)
-    {
-        var config = new ModConfig { AmbientGlowTiles = set };
-        config.Clamp();
-        Assert.Equal(expected, config.AmbientGlowTiles);
     }
 
     [Fact]
@@ -113,7 +101,7 @@ public class ModConfigCopyTests
         {
             ToggleKey = "G", BeamLengthTiles = 5, BatteryHours = 7, BatterySlots = 3, FlashlightPrice = 111, BatteryPrice = 22,
             SoldAtCarpenter = false, BatteryDailyStock = 7, BatteryOutOfStockPercent = 33, BatteryLowStockPercent = 44,
-            MaxBatteriesCarried = 9, FlickerSecondsBetween = 77, UseBatteryPacks = false, AmbientGlowTiles = 5, BatteryPackHours = 20, BatteryPackBeamPercent = 150, ShowInHand = false,
+            MaxBatteriesCarried = 9, FlickerSecondsBetween = 77, UseBatteryPacks = false, BatteryPackHours = 20, BatteryPackBeamPercent = 150, ShowInHand = false,
         };
         var target = new ModConfig();
         target.CopyFrom(changed);
@@ -129,7 +117,7 @@ public class ModConfigCopyTests
         {
             ToggleKey = "G", BeamLengthTiles = 5, BatteryHours = 7, BatterySlots = 3, FlashlightPrice = 111, BatteryPrice = 22,
             SoldAtCarpenter = false, BatteryDailyStock = 7, BatteryOutOfStockPercent = 33, BatteryLowStockPercent = 44,
-            MaxBatteriesCarried = 9, FlickerSecondsBetween = 77, UseBatteryPacks = false, AmbientGlowTiles = 5, BatteryPackHours = 20, BatteryPackBeamPercent = 150, ShowInHand = false,
+            MaxBatteriesCarried = 9, FlickerSecondsBetween = 77, UseBatteryPacks = false, BatteryPackHours = 20, BatteryPackBeamPercent = 150, ShowInHand = false,
         };
         var defaults = new ModConfig();
         foreach (var property in typeof(ModConfig).GetProperties())
