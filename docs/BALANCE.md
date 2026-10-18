@@ -66,7 +66,7 @@ Not blocked on purpose: batteries made by crafting are not limited, since each n
 
 ## Multiplayer
 
-The light is added as a shared light, so other players see a light at the right place. They will see the game's ordinary round light, because the custom cone picture is only drawn on the machine that owns the flashlight. Cone sharing is a possible later step. Multiplayer has not been tested.
+The light is added as a shared light, so other players see a light at the right place. Multiplayer has not been tested at all, so none of this is known. From reading the code, they may see the game's ordinary round light, because the custom cone picture is only drawn on the machine that owns the flashlight.
 
 ## Supply against use
 

@@ -73,7 +73,7 @@ Type `flashlight_report` in the SMAPI console and paste what it prints. It lists
 ## Known limits
 
 - The battery slots, the charge bar, the tooltip line, the held flashlight and the one-flashlight rule use a few small Harmony patches on the game's own code. They only act on the flashlight. SMAPI lists the mod as one that changes game code for that reason.
-- In multiplayer other players see the game's ordinary round light for the beam, because the custom cone picture is only drawn on the machine that owns the flashlight. Multiplayer is untested.
+- Multiplayer is untested. It has never been run with a second player, so it is not known whether it works. From reading the code, other players may see the game's ordinary round light for the beam instead of the cone, but that is a guess. Please report what you find.
 - Tested on Windows. Linux and Mac are untested.
 - Shop days for Robin and the Mining level of the recipe are not checked against the rest of the game.
 - If another mod changes how the farmer is drawn (a different farmer sheet or a custom farmer renderer), the held flashlight might sit in the wrong place. Turn it off with `ShowInHand` and report it.

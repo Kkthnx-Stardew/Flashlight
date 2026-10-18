@@ -16,7 +16,7 @@ The first release is the first test of the prices, the stock and the battery lif
 
 ### Multiplayer
 
-Other players see the game's ordinary round light for the beam, because the cone picture is only drawn on the machine that owns the flashlight. The held flashlight is drawn for every farmer who has one selected and lit, but the whole of multiplayer has not been tested. Sharing the cone is a possible next step.
+Multiplayer has never been tested, so whether the mod works there is unknown. By reading the code, other players may see the game's ordinary round light for the beam, because the cone picture is only drawn on the machine that owns the flashlight. The first step is to test it with a second player and write down what happens.
 
 ### Translations
 
