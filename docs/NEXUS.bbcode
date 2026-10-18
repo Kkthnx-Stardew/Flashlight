@@ -1,44 +1,64 @@
 [size=4][b]Flashlight[/b][/size]
-A flashlight for Stardew Valley that casts a beam in the direction you face and runs on batteries. Buy it early, keep it in your backpack, and see at night without holding a torch.
+A flashlight for Stardew Valley that lights a cone in the direction you face and runs on a pair of batteries. Buy it from Robin, keep it in your backpack, and see at night without holding a torch.
 
-[size=3][b]What it adds[/b][/size]
+This is a first release and I want to be straight about it. The mod has been played in the game and the pieces work, but the numbers (prices, battery life, shop stock) are my best reasoning and a simulation, not hundreds of hours of play. Please tell me where they feel wrong. How to do that is at the bottom.
+
+[size=3][b]How it works[/b][/size]
 [list]
-[*][b]Flashlight[/b] (a tool): sold at Robin's Carpenter's Shop, one to a player, 600g. Press F (or use the tool) to switch it on and off. It keeps shining while you use other tools, which a torch cannot do. A charge bar under its picture works like the water bar of the watering can.
-[*][b]Battery slots[/b]: two, always two, like the bait slot on a fishing rod. It runs on a matching pair and needs both loaded, like a real flashlight: two Dry Cells or two Battery Packs, never one of each. Right-click the flashlight with cells on the cursor to load them and right-click it with an empty hand to take one out.
-[*][b]Dry Cell[/b] (a battery): sold at Robin's in limited numbers, or crafted from 1 Copper Bar and 1 Coal for 12 cells once you reach Mining level 2. A pair lasts 2 in-game hours, and only while it is dark where you are.
-[*]A cone of light 7 tiles long in the direction you face, like a real flashlight, with nothing lit around you. It flickers now and then like an old flashlight with a loose cell, and much more often when the charge is nearly gone.
-[*][b]Held in your hand[/b]: you are drawn holding it while it is selected. It follows your hand as you walk and the beam starts at its lens.
-[*][b]Battery Pack[/b] (the game's own): a pair of them goes in the slots instead. A pair lasts 4 hours, two more than Dry Cells, and makes the beam 20 percent longer and a little brighter. Found from Lightning Rods and Solar Panels, never sold.
-[*]No beam during cutscenes and festivals. It switches off when you go to bed.
+[*][b]Flashlight[/b] (a tool): sold at Robin's Carpenter's Shop for 600g, one to a player. Select it and press [b]F[/b] (or click) to switch it on and off. It keeps shining while you use other tools, which a torch cannot do. The toolbar picture shows when it is on and a charge bar under it works like the watering can's water bar.
+[*][b]A cone, like a real flashlight[/b]: a beam 7 tiles long in the direction you face. Nothing around you is lit. It flickers now and then like an old flashlight with a loose connection, and much more often when the charge is nearly gone.
+[*][b]Held in your hand[/b]: you are drawn holding it while it is selected, standing or walking, and the beam starts at its lens.
+[*][b]Two slots, one matching pair[/b]: the flashlight always has two battery slots, like the bait slot on a fishing rod. It needs both filled with the [i]same[/i] kind of battery, like a real one. One alone does nothing, and a Dry Cell next to a Battery Pack is refused. Right-click it with batteries on the cursor to load them, right-click with an empty hand to take one out, and hover it to see what is loaded.
+[*][b]Batteries only drain when light matters[/b]: indoors, in the Mines, outside after dark or in the rain. Left on in daylight it costs nothing. It switches off when you go to bed.
 [/list]
 
-[size=3][b]Balance[/b][/size]
-It reaches further than a torch, but only forward, and it costs upkeep, so it does not replace the Glow Rings. One flashlight to a player, batteries are limited each day and sell for little, so they cannot be hoarded or flipped for profit. The reasoning is written down in the docs on GitHub.
+[size=3][b]Getting batteries[/b][/size]
+[list]
+[*][b]Dry Cell[/b] (added by this mod): sold at Robin's for 15g each, up to 16 a day per player, and you can carry at most 16 when you buy. Robin has none on about one day in seven and half the stock on about one day in four, so you cannot rely on the shop alone. You can also craft them: 1 Copper Bar and 1 Coal make 12 Dry Cells once you reach Mining level 2. A pair of Dry Cells lasts 2 in-game hours.
+[*][b]Battery Pack[/b] (the game's own): a pair of these goes in the slots instead. Lightning Rods and Solar Panels make them, they are never sold, and you need two. A pair lasts 4 hours, two more than Dry Cells, and while it is in use the beam is 20 percent longer and a little brighter. The game sells a Battery Pack for 500g and uses it in lamp-posts and sprinklers, so burning a pair is a treat and a choice, not the cheap way to run the flashlight.
+[/list]
+
+[size=3][b]How I tried to balance it[/b][/size]
+[list]
+[*]The goal: an early game tool that costs thought, does not replace the Glow Rings, and cannot be farmed for gold. It lights a cone, so a torch or a ring still wins at close range and in every direction.
+[*]Upkeep is about 15g for every hour of light. A full spring night (6 dark hours) is around 90g. A simulation of a year, with the shop open six days in seven, says a normal night of 4 to 6 hours is covered by the shop. Someone who runs it all day through long Mines trips runs short on about one day in three and has to craft cells or use Battery Packs. That pressure is on purpose.
+[*]It cannot be abused for money: cells sell for 3g against 15g to buy and a craft is worth less than its ingredients. You can only own one flashlight, so you cannot store charge in spares, and there is only one light per player.
+[*]The reasoning, the table of every number, the simulation and what I would change first are all written down: [url=https://github.com/Kkthnx-Stardew/Flashlight/blob/main/docs/BALANCE.md]docs/BALANCE.md[/url].
+[/list]
+
+[size=3][b]What is not verified[/b][/size]
+[list]
+[*]Real play-time. Prices, stock and battery life are a first pass.
+[*]Robin's open days and hours and the Mining level of the recipe are not checked against the rest of the game.
+[*]Multiplayer is untested. Other players would see the game's ordinary round light for your beam rather than the cone.
+[*]Tested on Windows only. Linux and Mac are untested.
+[*]If another mod changes how the farmer is drawn, the held flashlight might sit in the wrong place. Turn it off with the Show in hand setting and tell me.
+[/list]
 
 [size=3][b]Settings[/b][/size]
-Everything below can be changed in game with Generic Mod Config Menu (optional), or in config.json: toggle key (keyboard or controller buttons), beam length, battery life, battery slots, prices, daily stock, chance of a thin shelf, and flicker.
-
-[size=3][b]Feedback[/b][/size]
-The numbers are a first pass. Tell me how it plays: how many nights a pair of Dry Cells lasted, whether the shop felt too tight or too generous. Type [b]flashlight_report[/b] in the SMAPI console and paste what it prints. It shows your changed settings and a local tally of use, and nothing is sent anywhere. Bugs and balance notes also go on GitHub.
+Everything below can be changed in game with Generic Mod Config Menu (optional), or in config.json: toggle key (keyboard or controller buttons, such as F, LeftShoulder), beam length, Dry Cell and Battery Pack pair life, Battery Pack beam bonus, whether Battery Packs are allowed, show in hand, prices, daily stock, carry limit, chance of a thin or empty shelf, and flicker. If another mod handles Robin's shop, turn off Sold at Robin's.
 
 [size=3][b]Install[/b][/size]
 [list=1]
 [*]Install SMAPI 4.2.1 or newer.
 [*]Unzip the Flashlight folder into Stardew Valley/Mods.
 [/list]
-Needs Stardew Valley 1.6.9 or newer. Works with the game's own content, no Content Patcher needed.
+Needs Stardew Valley 1.6.9 or newer. No other mod is required.
 
 [size=3][b]Compatibility[/b][/size]
 [list]
-[*]It uses a few small Harmony patches on the game's own code (battery slots, charge bar, tooltip, the one-flashlight rule). They only act on the flashlight, so SMAPI lists the mod as one that changes game code.
-[*]If another mod controls Robin's shop, turn off "Sold at Robin's" in the settings.
-[*]Multiplayer is untested. Other players will see the ordinary round light instead of the cone.
-[*]Tested on Windows. Linux and Mac are untested.
+[*]It uses a few small Harmony patches on the game's own code (battery slots, charge bar, tooltip, the held picture, the one-flashlight rule). They only act on the flashlight, so SMAPI lists the mod as one that changes game code.
+[*]It does not replace any vanilla file. Removing it turns any flashlight and Dry Cells in a save into error items until you load the save with the mod again, so sell or drop them first.
 [/list]
 
-[size=3][b]Uninstalling[/b][/size]
-Remove the folder. Any flashlights and Dry Cells in a save turn into error items until you load the save with the mod again, so sell or drop them first.
+[size=3][b]Feedback, please[/b][/size]
+This is what I most want. Tell me how it plays: how far into the game you are, how many nights a pair of Dry Cells lasted you, whether the shop felt too tight or too generous, whether the beam feels too weak or too strong next to a ring, and anything that looks wrong.
+[list]
+[*]Comment here, or open a GitHub issue: [url=https://github.com/Kkthnx-Stardew/Flashlight/issues/new/choose]bug report or balance feedback[/url].
+[*]Type [b]flashlight_report[/b] in the SMAPI console and paste what it prints. It shows the settings you changed and a tally of nights used, hours lit and batteries used, which makes balance feedback much easier to act on. The tally is kept in stats.json in the mod folder, on your computer. Nothing is ever sent anywhere.
+[*]For a crash or an error, upload your SMAPI log at smapi.io/log and link it.
+[/list]
+Every balance change goes into the changelog with the reason.
 
-[size=3][b]Source and credits[/b][/size]
-Source (MIT): https://github.com/Kkthnx-Stardew/Flashlight
-All art was drawn for this mod. Not affiliated with ConcernedApe.
+[size=3][b]Source, credits and honesty about how it was made[/b][/size]
+Source (MIT): [url=https://github.com/Kkthnx-Stardew/Flashlight]github.com/Kkthnx-Stardew/Flashlight[/url]. The code was written with the help of an AI assistant (Claude) and I tested and played it myself. The item pictures and light cone textures are drawn by scripts in the repository, not by an image generator. This is a fan-made mod and is not affiliated with ConcernedApe.

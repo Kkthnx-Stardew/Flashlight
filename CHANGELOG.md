@@ -2,9 +2,11 @@
 
 Versions follow [Semantic Versioning](https://semver.org/). Newest first.
 
-## 0.1.0 (not released)
+## 1.0.0 (2026-10-18)
 
-First build. It compiles against Stardew Valley 1.6.15 and SMAPI 4.5.2 with no warnings and passes its tests. It was run in the game on a throwaway farm with only this mod loaded: the items and shop entries load, the cone shows at night in all four directions, loaded cells drain and are swapped in turn (Dry Cells and Battery Packs, in slot order), the charge survives saving, the slots take only one cell each, the flicker and the lit toolbar picture work, and the farmer is drawn holding the flashlight while it is selected, standing and walking. Multiplayer, Linux and long play are untested.
+First release. The numbers are a first pass and real play will change them, see docs/BALANCE.md.
+
+It compiles against Stardew Valley 1.6.15 and SMAPI 4.5.2 with no warnings and passes its tests. It was run in the game on a throwaway farm with only this mod loaded: the items and shop entries load, the cone shows at night in all four directions, loaded cells drain and are swapped in turn (Dry Cells and Battery Packs, in slot order), the charge survives saving, the slots take only one cell each, the flicker and the lit toolbar picture work, and the farmer is drawn holding the flashlight while it is selected, standing and walking. Multiplayer, Linux and long play are untested.
 
 - Flashlight tool and Dry Cell battery, sold at Robin's Carpenter's Shop, with a Dry Cell recipe.
 - Two battery slots on the flashlight, always two, that work like the bait slot of a fishing rod. It runs on a matching pair and needs both loaded: two Dry Cells or two Battery Packs, never mixed and never one alone. Right-click to load one cell to a slot or take one out, and hover to see them.
