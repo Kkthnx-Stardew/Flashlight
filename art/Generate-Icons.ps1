@@ -17,32 +17,34 @@ $mat = @{
 }
 
 function Get-IconShape([bool]$on) {
-  # The picture is drawn three pixels higher than its cell in the toolbar to leave room for the charge bar, as the game does
-  # for the watering can, so everything must sit in rows 3 to 13 of the 16 to stay clear of the bar and the top of the slot.
-  $cx = 7.5; $cy = 8.25; $r2 = [Math]::Sqrt(2)
+  # The game draws the picture three pixels higher than its cell in the toolbar to leave room for the charge bar, the way it does
+  # for the watering can. The watering can's own picture fills rows 4 to 14 of its cell and all 16 columns, so this one does too:
+  # a flashlight seen from the side, pointing right, in a block 14 wide and 11 tall (rows 4 to 14), with room in the last two
+  # columns for the rays of the lit version. The shapes are set out by hand on the pixel grid, because a computed ellipse this
+  # small comes out lumpy.
   $grid = New-Object 'object[,]' 16, 16   # each cell: @{m=material; t=-1..1 across the piece} or $null
-  for ($y = 0; $y -lt 16; $y++) { for ($x = 0; $x -lt 16; $x++) {
-    $dx = $x + 0.5 - $cx; $dy = $y + 0.5 - $cy
-    $u = ($dx - $dy) / $r2    # along the flashlight, towards the top right
-    $v = ($dx + $dy) / $r2    # across it, towards the bottom right
+  # which rows of the head (0 to 10) are filled in each column of it
+  $headRows = @{ 7 = @(2, 8); 8 = @(1, 9); 9 = @(0, 10); 10 = @(0, 10); 11 = @(0, 10); 12 = @(0, 10); 13 = @(1, 9) }
+  for ($x = 0; $x -lt 14; $x++) { for ($r = 0; $r -lt 11; $r++) {
+    $y = $r + 4
     $hit = $null
-    # the body (navy), then the brass end cap
-    if ($u -ge -5.4 -and $u -lt 1.4 -and [Math]::Abs($v) -le 2.0) { $hit = @{ m = 'navy'; t = $v / 2.0 } }
-    if ($u -ge -6.3 -and $u -lt -5.4 -and [Math]::Abs($v) -le 2.0) { $hit = @{ m = 'brass'; t = $v / 2.0 } }
-    # the neck that widens into the head
-    if ($u -ge 1.4 -and $u -lt 2.7) { $hw = 2.1 + ($u - 1.4) * 0.7; if ([Math]::Abs($v) -le $hw) { $hit = @{ m = 'brass'; t = $v / $hw } } }
-    # the head: a brass bezel, an ellipse seen at an angle
-    $eu = ($u - 4.0) / 2.4; $ev = $v / 3.05
-    if ($eu * $eu + $ev * $ev -le 1.0) { $hit = @{ m = 'brass'; t = $v / 3.05 } }
-    # the lens, a smaller ellipse nearer the tip
-    $lu = ($u - 4.6) / 1.45; $lv = $v / 2.2
-    if ($lu * $lu + $lv * $lv -le 1.0) { $hit = @{ m = $(if ($on) { 'lamp' } else { 'glass' }); t = $v / 2.2; lens = $true } }
-    # the switch: a small bump on the upper side of the body
-    $su = $u + 2.2; $sv = $v + 2.3
-    if ($su * $su + $sv * $sv -le 0.75) { $hit = @{ m = 'brass'; t = -0.5 } }
+    if ($x -le 6 -and $r -ge 2 -and $r -le 8) { $hit = @{ m = 'navy'; t = ($r - 5) / 3.5 } }       # the body
+    if (($x -eq 2 -or $x -eq 5) -and $r -ge 2 -and $r -le 8) { $hit = @{ m = 'navy'; t = ($r - 5) / 3.5; groove = $true } }   # two grip grooves
+    if (($x -eq 1 -or $x -eq 3) -and $r -eq 3) { $hit = @{ m = 'navy'; t = -1.0 } }                # a shine on the upper left of the body
+    if ($x -eq 0 -and $r -ge 2 -and $r -le 8) { $hit = @{ m = 'brass'; t = ($r - 5) / 3.5 } }     # the end cap
+    if ($headRows.ContainsKey($x) -and $r -ge $headRows[$x][0] -and $r -le $headRows[$x][1]) { $hit = @{ m = 'brass'; t = ($r - 5) / 5.0 } }  # the head
+    if (($x -eq 3 -or $x -eq 4) -and $r -eq 1) { $hit = @{ m = 'brass'; t = -0.6 } }               # the switch
+    # the lens: a tall oval on the front of the head, with a rim of brass round it
+    $lx = ($x + 0.5 - 10.6) / 1.75; $lr = ($r + 0.5 - 5.5) / 3.6
+    if ($lx * $lx + $lr * $lr -le 1.0) { $hit = @{ m = $(if ($on) { 'lamp' } else { 'glass' }); t = ($r - 5.5) / 3.6; lens = $true } }
     $grid[$x, $y] = $hit
   } }
   return , $grid
+}
+
+function Mix-Colors([string]$a, [string]$b) {
+  $ca = C $a; $cb = C $b
+  [System.Drawing.Color]::FromArgb([int](([int]$ca.R + $cb.R) / 2), [int](([int]$ca.G + $cb.G) / 2), [int](([int]$ca.B + $cb.B) / 2))
 }
 
 function Convert-ShapeToBitmap($grid) {
@@ -55,10 +57,16 @@ function Convert-ShapeToBitmap($grid) {
       if ($nx -lt 0 -or $ny -lt 0 -or $nx -gt 15 -or $ny -gt 15 -or $null -eq $grid[$nx, $ny]) { $edge = $true }
     }
     $ramp = $mat[$cell.m]
-    if ($edge) { $bmp.SetPixel($x, $y, (C $ramp[0])); continue }
+    if ($edge) {
+      # the game's own icons outline the top and left a little lighter than the bottom and right, as if lit from the top left
+      $lightSide = ($x -gt 0 -and $null -eq $grid[($x - 1), $y]) -or ($y -gt 0 -and $null -eq $grid[$x, ($y - 1)])
+      $bmp.SetPixel($x, $y, $(if ($lightSide) { Mix-Colors $ramp[0] $ramp[1] } else { C $ramp[0] }))
+      continue
+    }
     $t = $cell.t
     if ($cell.lens) { $tone = if ($t -lt -0.4) { 4 } elseif ($t -lt 0.1) { 3 } elseif ($t -lt 0.6) { 2 } else { 1 } }
     else { $tone = if ($t -lt -0.55) { 4 } elseif ($t -lt -0.1) { 3 } elseif ($t -lt 0.45) { 2 } else { 1 } }
+    if ($cell.groove -and $tone -gt 1) { $tone-- }
     $bmp.SetPixel($x, $y, (C $ramp[$tone]))
   } }
   return $bmp
@@ -69,11 +77,11 @@ function Set-Pixels($bmp, $list, [string]$hex) { foreach ($p in $list) { $bmp.Se
 function New-FlashlightIcon([bool]$on) {
   $bmp = Convert-ShapeToBitmap (Get-IconShape $on)
   if ($on) {
-    Set-Pixels $bmp @(, @(9, 4)) '#fff9f2'                                   # the hot centre of the lens
-    Set-Pixels $bmp @(@(14, 3), @(15, 5)) '#ffff2b'                           # rays leaving the lens, kept inside rows 3 to 13
-    Set-Pixels $bmp @(@(15, 4), @(14, 6)) '#ffd900'
+    Set-Pixels $bmp @(, @(10, 7)) '#fff9f2'                                   # the hot centre of the lens
+    Set-Pixels $bmp @(@(14, 9), @(14, 6), @(14, 12)) '#ffff2b'                  # rays leaving the lens
+    Set-Pixels $bmp @(@(15, 9), @(15, 5), @(15, 13)) '#ffd900'
   } else {
-    Set-Pixels $bmp @(, @(9, 4)) '#ffffff'                                  # a glint on the glass
+    Set-Pixels $bmp @(, @(10, 7)) '#ffffff'                                  # a glint on the glass
   }
   return $bmp
 }
