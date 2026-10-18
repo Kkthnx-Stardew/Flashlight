@@ -35,8 +35,19 @@ namespace Flashlight
 
         public override void Entry(IModHelper helper)
         {
-            _config = helper.ReadConfig<ModConfig>() ?? new ModConfig();
-            ApplyConfig(save: true);
+            var readable = true;
+            try
+            {
+                _config = helper.ReadConfig<ModConfig>() ?? new ModConfig();
+            }
+            catch (Exception ex)
+            {
+                // a config.json that cannot be read (a typo, text where a number belongs) must not stop the mod from loading
+                readable = false;
+                _config = new ModConfig();
+                Monitor.Log($"Could not read config.json, so the default settings are used and the file is left as it is. Fix it or delete it. ({ex.Message})", LogLevel.Warn);
+            }
+            ApplyConfig(save: readable);
 
             _content = new ContentSetup(helper.Translation, () => _config);
             FlashlightPatches.Apply(Monitor);
