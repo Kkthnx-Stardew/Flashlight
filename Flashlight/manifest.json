@@ -2,10 +2,10 @@
     "Name": "Flashlight",
     "Author": "Kkthnx",
     "Version": "%ProjectVersion%",
-    "Description": "A buyable flashlight with a forward beam that runs on batteries, so you can see at night in the early game without holding a torch.",
+    "Description": "A buyable flashlight that lights a cone in front of you and runs on a matching pair of batteries, so you can see at night without holding a torch.",
     "UniqueID": "Kkthnx.Flashlight",
     "EntryDll": "Flashlight.dll",
     "MinimumApiVersion": "4.2.1",
     "MinimumGameVersion": "1.6.9",
-    "UpdateKeys": []
+    "UpdateKeys": [ "Nexus:54143" ]
 }
