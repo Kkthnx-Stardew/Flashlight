@@ -21,13 +21,16 @@ namespace Flashlight
         public const string QualifiedPackId = "(O)787";
 
         /// <summary>Ticks of light in each kind of cell. Set from the settings.</summary>
-        public static CellCapacities Capacities { get; set; } = new(ChargeModel.CapacityTicks(4), ChargeModel.CapacityTicks(12));
+        public static CellCapacities Capacities { get; set; } = new(ChargeModel.CapacityTicks(2), ChargeModel.CapacityTicks(4));
 
         /// <summary>Whether a Battery Pack can be loaded. A pack that is already loaded keeps working if this is turned off.</summary>
         public static bool PacksAllowed { get; set; } = true;
 
         /// <summary>The most slots the tool reads, so the reading needs no allocation.</summary>
         public const int MaxSlots = 8;
+
+        /// <summary>A flashlight always has two battery slots, like the bait slot of a fishing rod and no more.</summary>
+        public const int Slots = 2;
 
         public static bool IsFlashlight(Item? item) => item?.ItemId == ContentSetup.FlashlightId;
 
@@ -112,11 +115,14 @@ namespace Flashlight
             return ChargeModel.Tick(ReadCharge(flashlight), ReadInUse(flashlight), slots[..count], Capacities);
         }
 
-        /// <summary>Writes the result of a step: empties the slot a cell was taken from, and keeps the charge and its kind.</summary>
+        /// <summary>Writes the result of a step: empties both slots when a pair was taken, and keeps the charge and its kind.</summary>
         public static void Commit(Tool flashlight, ChargeModel.Step step)
         {
-            if (step.CellUsed)
-                UseCell(flashlight, step.SlotUsed);
+            if (step.PairUsed)
+            {
+                for (var i = 0; i < flashlight.attachments.Count; i++)
+                    flashlight.attachments[i] = null;
+            }
             flashlight.modData[ChargeKey] = step.Charge.ToString();
             if (step.InUse == CellKind.Pack && step.Charge > 0)
                 flashlight.modData[PackKey] = "1";
@@ -124,16 +130,17 @@ namespace Flashlight
                 flashlight.modData.Remove(PackKey);
         }
 
-        private static void UseCell(Tool flashlight, int slot)
+        /// <summary>
+        /// Whether this item may go into this slot: it is a cell the settings allow, and the other slot is empty or holds the same
+        /// kind, because the two batteries work as a pair and cannot be mixed.
+        /// </summary>
+        public static bool CanLoadInto(Tool flashlight, Item? item, int slot)
         {
-            if (slot < 0 || slot >= flashlight.attachments.Count)
-                return;
-            var cell = flashlight.attachments[slot];
-            if (cell is null)
-                return;
-            cell.Stack--;
-            if (cell.Stack <= 0)
-                flashlight.attachments[slot] = null;
+            if (!CanLoad(item))
+                return false;
+            var other = slot == 0 ? 1 : 0;
+            var otherKind = other < flashlight.attachments.Count ? KindOf(flashlight.attachments[other]) : CellKind.None;
+            return ChargeModel.CanLoad(KindOf(item), otherKind);
         }
 
         /// <summary>How much of a full load is left, from 0 to 1.</summary>
@@ -141,7 +148,7 @@ namespace Flashlight
         {
             Span<CellKind> slots = stackalloc CellKind[MaxSlots];
             var count = ReadSlots(flashlight, slots);
-            return ChargeModel.ReserveFraction(ReadCharge(flashlight), ReadInUse(flashlight), slots[..count], flashlight.AttachmentSlotsCount, Capacities);
+            return ChargeModel.ReserveFraction(ReadCharge(flashlight), ReadInUse(flashlight), slots[..count], Capacities);
         }
 
         /// <summary>How much of a Battery Pack's extra brightness the beam has: 1 while a pack is in use, otherwise 0.</summary>

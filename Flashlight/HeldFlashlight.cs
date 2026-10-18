@@ -71,7 +71,7 @@ namespace Flashlight
         public static void Draw(SpriteBatch b, Farmer who, FarmerSprite.AnimationFrame animationFrame, int currentFrame, Vector2 position, Vector2 origin, float layerDepth, int facingDirection, Color overrideColor, float scale)
         {
             // the glow and shadow passes draw the farmer again in another colour, and menus draw them small: neither gets a flashlight
-            if (FarmerRenderer.isDrawingForUI || overrideColor != Color.White || Enabled?.Invoke() == false || animationFrame.armOffset <= 0 || !ShouldShow(who))
+            if (!FlashlightState.IsFlashlight(who.CurrentTool) || FarmerRenderer.isDrawingForUI || overrideColor != Color.White || Enabled?.Invoke() == false || animationFrame.armOffset <= 0 || !ShouldShow(who))
                 return;
 
             var held = Get(ref _held, HeldLoader);

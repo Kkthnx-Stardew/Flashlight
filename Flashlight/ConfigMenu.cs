@@ -38,7 +38,6 @@ namespace Flashlight
             menu.AddNumberOption(manifest, () => config().MaxBatteriesCarried, v => config().MaxBatteriesCarried = v, () => t.Get("gmcm.carry.name"), () => t.Get("gmcm.carry.tip"), 1, 20, 1);
             menu.AddNumberOption(manifest, () => config().BatteryOutOfStockPercent, v => config().BatteryOutOfStockPercent = v, () => t.Get("gmcm.out.name"), () => t.Get("gmcm.out.tip"), 0, 90, 5, p => $"{p}%");
             menu.AddNumberOption(manifest, () => config().BatteryLowStockPercent, v => config().BatteryLowStockPercent = v, () => t.Get("gmcm.low.name"), () => t.Get("gmcm.low.tip"), 0, 90, 5, p => $"{p}%");
-            menu.AddNumberOption(manifest, () => config().BatterySlots, v => config().BatterySlots = v, () => t.Get("gmcm.slots.name"), () => t.Get("gmcm.slots.tip"), 1, 4, 1);
         }
     }
 }

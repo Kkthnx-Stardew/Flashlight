@@ -8,19 +8,18 @@ public class ModConfigTests
         var config = new ModConfig();
         Assert.Equal("F", config.ToggleKey);
         Assert.Equal(7, config.BeamLengthTiles);
-        Assert.Equal(4, config.BatteryHours);
+        Assert.Equal(2, config.BatteryHours);
         Assert.True(config.UseBatteryPacks);
-        Assert.Equal(12, config.BatteryPackHours);
-        Assert.Equal(130, config.BatteryPackBeamPercent);
+        Assert.Equal(4, config.BatteryPackHours);
+        Assert.Equal(120, config.BatteryPackBeamPercent);
         Assert.True(config.ShowInHand);
         Assert.Equal(600, config.FlashlightPrice);
-        Assert.Equal(60, config.BatteryPrice);
+        Assert.Equal(15, config.BatteryPrice);
         Assert.True(config.SoldAtCarpenter);
-        Assert.Equal(2, config.BatterySlots);
         Assert.Equal(15, config.BatteryOutOfStockPercent);
         Assert.Equal(25, config.BatteryLowStockPercent);
-        Assert.Equal(4, config.BatteryDailyStock);
-        Assert.Equal(4, config.MaxBatteriesCarried);
+        Assert.Equal(16, config.BatteryDailyStock);
+        Assert.Equal(16, config.MaxBatteriesCarried);
         Assert.Equal(40, config.FlickerSecondsBetween);
     }
 
@@ -38,7 +37,7 @@ public class ModConfigTests
 
     [Theory]
     [InlineData(0, 1, 50, 100)]
-    [InlineData(12, 12, 130, 130)]
+    [InlineData(4, 4, 120, 120)]
     [InlineData(500, 48, 900, 200)]
     public void BatteryPackSettingsAreKeptInRange(int hours, int expectedHours, int percent, int expectedPercent)
     {
@@ -56,16 +55,6 @@ public class ModConfigTests
         Assert.Equal(3, config.BatteryDailyStock);
     }
 
-    [Theory]
-    [InlineData(0, 1)]
-    [InlineData(2, 2)]
-    [InlineData(9, 4)]
-    public void TheNumberOfBatterySlotsIsKeptInRange(int set, int expected)
-    {
-        var config = new ModConfig { BatterySlots = set };
-        config.Clamp();
-        Assert.Equal(expected, config.BatterySlots);
-    }
 
     [Fact]
     public void TheCarryLimitIsKeptInRange()
@@ -99,7 +88,7 @@ public class ModConfigCopyTests
     {
         var changed = new ModConfig
         {
-            ToggleKey = "G", BeamLengthTiles = 5, BatteryHours = 7, BatterySlots = 3, FlashlightPrice = 111, BatteryPrice = 22,
+            ToggleKey = "G", BeamLengthTiles = 5, BatteryHours = 7, FlashlightPrice = 111, BatteryPrice = 22,
             SoldAtCarpenter = false, BatteryDailyStock = 7, BatteryOutOfStockPercent = 33, BatteryLowStockPercent = 44,
             MaxBatteriesCarried = 9, FlickerSecondsBetween = 77, UseBatteryPacks = false, BatteryPackHours = 20, BatteryPackBeamPercent = 150, ShowInHand = false,
         };
@@ -115,7 +104,7 @@ public class ModConfigCopyTests
         // guards the test above: a new setting that it does not change would make the copy check pass for nothing
         var changed = new ModConfig
         {
-            ToggleKey = "G", BeamLengthTiles = 5, BatteryHours = 7, BatterySlots = 3, FlashlightPrice = 111, BatteryPrice = 22,
+            ToggleKey = "G", BeamLengthTiles = 5, BatteryHours = 7, FlashlightPrice = 111, BatteryPrice = 22,
             SoldAtCarpenter = false, BatteryDailyStock = 7, BatteryOutOfStockPercent = 33, BatteryLowStockPercent = 44,
             MaxBatteriesCarried = 9, FlickerSecondsBetween = 77, UseBatteryPacks = false, BatteryPackHours = 20, BatteryPackBeamPercent = 150, ShowInHand = false,
         };

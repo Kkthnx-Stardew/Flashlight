@@ -29,12 +29,13 @@ namespace Flashlight
             LitToday++;
         }
 
-        public void CellUsed(CellKind kind)
+        /// <summary>A matched pair of cells was used up, two of the kind.</summary>
+        public void PairUsed(CellKind kind)
         {
             if (kind == CellKind.Dry)
-                DryCellsUsed++;
+                DryCellsUsed += 2;
             else if (kind == CellKind.Pack)
-                PacksUsed++;
+                PacksUsed += 2;
         }
 
         public void DayEnded()

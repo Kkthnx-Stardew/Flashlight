@@ -28,6 +28,9 @@ namespace Flashlight
         /// <summary>Called when someone tries to load a cell into a spare flashlight. Set by the mod.</summary>
         public static Action? SpareRefused { get; set; }
 
+        /// <summary>Called when a cell is refused because it does not match the one already loaded. Set by the mod.</summary>
+        public static Action? MismatchRefused { get; set; }
+
         /// <summary>Called when a second flashlight is refused because the farmer already carries one. Set by the mod.</summary>
         public static Action? SecondRefused { get; set; }
 
@@ -82,17 +85,20 @@ namespace Flashlight
 
         // ---------------------------------------------------------------- battery slots
 
-        /// <summary>A slot of the flashlight in use takes a Dry Cell or a Battery Pack and nothing else. A spare flashlight takes nothing.</summary>
-        private static void CanThisBeAttachedPostfix(Tool __instance, StardewValley.Object o, ref bool __result)
+        /// <summary>
+        /// A slot of the flashlight in use takes a Dry Cell or a Battery Pack and nothing else, and only one that matches the cell in the
+        /// other slot. A spare flashlight takes nothing.
+        /// </summary>
+        private static void CanThisBeAttachedPostfix(Tool __instance, StardewValley.Object o, int slot, ref bool __result)
         {
             if (!FlashlightState.IsFlashlight(__instance))
                 return;
-            __result = FlashlightState.CanLoad(o) && FlashlightState.IsActive(__instance);
+            __result = FlashlightState.CanLoadInto(__instance, o, slot) && FlashlightState.IsActive(__instance);
         }
 
         /// <summary>
-        /// Loading puts one cell in the first empty slot and hands the rest of the stack back, so the flashlight can never
-        /// hold more cells than it has slots. Taking out (an empty hand) gives back the first loaded cell.
+        /// Loading puts one cell in the first empty slot and hands the rest of the stack back, so the flashlight can never hold more
+        /// cells than it has slots. The two cells have to match. Taking out (an empty hand) gives back the first loaded cell.
         /// </summary>
         private static bool AttachPrefix(Tool __instance, StardewValley.Object o, ref StardewValley.Object __result)
         {
@@ -128,6 +134,11 @@ namespace Flashlight
             {
                 if (slots[i] is not null)
                     continue;
+                if (!FlashlightState.CanLoadInto(__instance, o, i))
+                {
+                    MismatchRefused?.Invoke(); // the two batteries must be the same kind
+                    return false;
+                }
                 var one = (StardewValley.Object)o.getOne();
                 one.Stack = 1;
                 slots[i] = one;

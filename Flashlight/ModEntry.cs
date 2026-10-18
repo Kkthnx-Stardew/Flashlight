@@ -58,6 +58,7 @@ namespace Flashlight
             FlashlightPatches.Apply(Monitor);
             FlashlightPatches.SpareRefused = () => Notice("message.one-flashlight");
             FlashlightPatches.SecondRefused = () => Notice("message.carry-one");
+            FlashlightPatches.MismatchRefused = () => Notice("message.match");
             FlashlightPatches.ChargeText = fraction => helper.Translation.Get("tooltip.charge", new { percent = (int)Math.Round(fraction * 100) });
             FlashlightVisuals.ToolsLoader = () => helper.GameContent.Load<Texture2D>(ContentSetup.ToolsTexture);
             HeldFlashlight.HeldLoader = () => helper.GameContent.Load<Texture2D>(ContentSetup.HeldTexture);
@@ -238,9 +239,9 @@ namespace Flashlight
             {
                 if (items[i] is not Tool tool || !FlashlightState.IsFlashlight(tool))
                     continue;
-                // a flashlight made before the slot count was raised in the settings gets the extra slots
-                if (tool.AttachmentSlotsCount < _config.BatterySlots)
-                    tool.AttachmentSlotsCount = _config.BatterySlots;
+                // a flashlight always has exactly two slots, whatever an earlier build gave it
+                if (tool.AttachmentSlotsCount != FlashlightState.Slots)
+                    tool.AttachmentSlotsCount = FlashlightState.Slots;
                 // only the flashlight in use can be lit, and only while the light is on
                 if (FlashlightState.IsLit(tool) && !(_on.Value && ReferenceEquals(tool, _tool.Value)))
                     FlashlightState.SetLit(tool, false);
@@ -313,7 +314,7 @@ namespace Flashlight
 
             FlashlightState.Commit(flashlight, step);
             if (step.CellUsed)
-                _stats.CellUsed(step.InUse);
+                _stats.PairUsed(step.InUse);
             FlashlightState.SetLit(flashlight, true);
             _reserve.Value = FlashlightState.Reserve(flashlight);
             _warnedLow.Value = _reserve.Value < ChargeBar.LowFraction;
@@ -368,7 +369,7 @@ namespace Flashlight
             if (step.LightOn)
                 _stats.Tick();
             if (step.CellUsed)
-                _stats.CellUsed(step.InUse);
+                _stats.PairUsed(step.InUse);
             _reserve.Value = FlashlightState.Reserve(flashlight);
 
             if (!step.LightOn)

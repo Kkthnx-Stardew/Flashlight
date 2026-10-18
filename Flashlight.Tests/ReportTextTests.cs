@@ -39,15 +39,15 @@ public class UsageStatsTests
     }
 
     [Fact]
-    public void CellsAreCountedByKind()
+    public void PairsAreCountedAsTwoCellsOfTheirKind()
     {
         var stats = new UsageStats();
-        stats.CellUsed(CellKind.Dry);
-        stats.CellUsed(CellKind.Dry);
-        stats.CellUsed(CellKind.Pack);
-        stats.CellUsed(CellKind.None);
-        Assert.Equal(2, stats.DryCellsUsed);
-        Assert.Equal(1, stats.PacksUsed);
+        stats.PairUsed(CellKind.Dry);
+        stats.PairUsed(CellKind.Dry);
+        stats.PairUsed(CellKind.Pack);
+        stats.PairUsed(CellKind.None);
+        Assert.Equal(4, stats.DryCellsUsed);
+        Assert.Equal(2, stats.PacksUsed);
     }
 }
 

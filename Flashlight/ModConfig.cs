@@ -9,17 +9,17 @@ namespace Flashlight
         /// <summary>How far the beam reaches, in tiles.</summary>
         public int BeamLengthTiles { get; set; } = 7;
 
-        /// <summary>How long one battery lasts, in in-game hours.</summary>
-        public int BatteryHours { get; set; } = 4;
+        /// <summary>How long a matched pair of Dry Cells lasts, in in-game hours.</summary>
+        public int BatteryHours { get; set; } = 2;
 
         /// <summary>Whether the game's Battery Pack can be loaded as a longer lasting, brighter cell.</summary>
         public bool UseBatteryPacks { get; set; } = true;
 
-        /// <summary>How long one Battery Pack lasts, in in-game hours.</summary>
-        public int BatteryPackHours { get; set; } = 12;
+        /// <summary>How long a matched pair of Battery Packs lasts, in in-game hours.</summary>
+        public int BatteryPackHours { get; set; } = 4;
 
         /// <summary>How long the beam is while a Battery Pack is in use, as a percentage of the normal beam.</summary>
-        public int BatteryPackBeamPercent { get; set; } = 130;
+        public int BatteryPackBeamPercent { get; set; } = 120;
 
         /// <summary>Whether the farmer is drawn holding the flashlight while it is the selected tool.</summary>
         public bool ShowInHand { get; set; } = true;
@@ -28,16 +28,13 @@ namespace Flashlight
         public int FlashlightPrice { get; set; } = 600;
 
         /// <summary>The price of one battery in the shop.</summary>
-        public int BatteryPrice { get; set; } = 60;
+        public int BatteryPrice { get; set; } = 15;
 
         /// <summary>Whether Robin's Carpenter's Shop sells the flashlight and batteries.</summary>
         public bool SoldAtCarpenter { get; set; } = true;
 
-        /// <summary>How many batteries the flashlight holds at once, like the bait slot of a fishing rod.</summary>
-        public int BatterySlots { get; set; } = 2;
-
         /// <summary>How many batteries the shop sells to one player each day.</summary>
-        public int BatteryDailyStock { get; set; } = 4;
+        public int BatteryDailyStock { get; set; } = 16;
 
         /// <summary>The chance, in percent, that on a given day Robin has no Dry Cells at all. It is the same all day.</summary>
         public int BatteryOutOfStockPercent { get; set; } = 15;
@@ -46,7 +43,7 @@ namespace Flashlight
         public int BatteryLowStockPercent { get; set; } = 25;
 
         /// <summary>The shop stops selling batteries to a player who already carries this many.</summary>
-        public int MaxBatteriesCarried { get; set; } = 4;
+        public int MaxBatteriesCarried { get; set; } = 16;
 
         /// <summary>
         /// On average, how many seconds of use pass between random flickers, like an old flashlight with a loose cell.
@@ -75,7 +72,6 @@ namespace Flashlight
             BatteryPackBeamPercent = Math.Clamp(BatteryPackBeamPercent, 100, 200);
             FlashlightPrice = Math.Clamp(FlashlightPrice, 0, 100_000);
             BatteryPrice = Math.Clamp(BatteryPrice, 0, 10_000);
-            BatterySlots = Math.Clamp(BatterySlots, 1, 4);
             MaxBatteriesCarried = Math.Clamp(MaxBatteriesCarried, 1, 20);
             BatteryDailyStock = Math.Clamp(BatteryDailyStock, 1, MaxBatteriesCarried);
             BatteryOutOfStockPercent = Math.Clamp(BatteryOutOfStockPercent, 0, 90);

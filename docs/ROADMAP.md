@@ -5,7 +5,7 @@ Nothing here is promised for a date. The order follows what players report, and 
 ## Done
 
 - The flashlight in the farmer's hand while it is the selected tool. The picture is placed from the measured hand of the arm the game draws in the current frame, drawn just under the arm so the fingers close over the handle. The beam starts at the lens. From the front and back it is held in the right hand, offset from the body.
-- The game's Battery Pack as a better cell: 12 hours of light, a beam 30 percent longer and brighter.
+- The game's Battery Pack as a better cell: a pair of them lasts 4 hours, with a beam 20 percent longer and a little brighter.
 - A local usage tally and a `flashlight_report` console command, so balance feedback can come with numbers.
 
 ## Next

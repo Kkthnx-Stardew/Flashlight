@@ -28,7 +28,7 @@ namespace Flashlight
         private const string BeamTexturePrefix = "Mods/" + ModId + "/Beam";
 
         /// <summary>What a battery sells for. It is well under the shop price and under the cost of the recipe's ingredients.</summary>
-        private const int BatterySellPrice = 15;
+        private const int BatterySellPrice = 3;
 
         private readonly ITranslationHelper _i18n;
         private readonly Func<ModConfig> _config;
@@ -90,7 +90,7 @@ namespace Flashlight
                 // ingredients / where it is made / result and count / is it a big craftable / how it is learned / display name
                 // 334 is a Copper Bar and 382 is Coal. The recipe is learned at Mining level 2.
                 e.Edit(asset => asset.AsDictionary<string, string>().Data[BatteryId] =
-                    $"334 1 382 1/Home/{BatteryId} 3/false/s Mining 2/{_i18n.Get("recipe.battery.name")}");
+                    $"334 1 382 1/Home/{BatteryId} 12/false/s Mining 2/{_i18n.Get("recipe.battery.name")}");
             }
             else if (e.NameWithoutLocale.IsEquivalentTo("Data/Shops") && config.SoldAtCarpenter)
             {
@@ -115,7 +115,7 @@ namespace Flashlight
             SpriteIndex = 0,
             MenuSpriteIndex = 0,
             SalePrice = salePrice,
-            AttachmentSlots = _config().BatterySlots,
+            AttachmentSlots = FlashlightState.Slots,
             CanBeLostOnDeath = false,
         };
 

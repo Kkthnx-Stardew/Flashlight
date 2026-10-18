@@ -8,11 +8,11 @@ namespace Flashlight
         /// <summary>The mod's own Dry Cell.</summary>
         Dry = 1,
 
-        /// <summary>The game's Battery Pack: a longer burn and a brighter, longer beam.</summary>
+        /// <summary>The game's Battery Pack: a longer burn and a slightly brighter, longer beam.</summary>
         Pack = 2,
     }
 
-    /// <summary>How many ticks of light each kind of cell holds.</summary>
+    /// <summary>How many ticks of light a matched pair of each kind of cell gives.</summary>
     public readonly record struct CellCapacities(int Dry, int Pack)
     {
         public int Of(CellKind kind) => kind switch
@@ -24,9 +24,10 @@ namespace Flashlight
     }
 
     /// <summary>
-    /// The battery rules, kept apart from the game so they can be tested. Time moves in ticks of 10 in-game minutes, and each
-    /// kind of cell holds a number of ticks of light (see <see cref="CapacityTicks"/>). The flashlight keeps the charge of the
-    /// cell in use and has slots for spare cells. When the charge runs out the next loaded cell, in slot order, is used by itself.
+    /// The battery rules, kept apart from the game so they can be tested. Time moves in ticks of 10 in-game minutes. The
+    /// flashlight has two slots and only works with both filled by the same kind of cell, like a real one. A matched pair is
+    /// used up together and gives <see cref="CapacityTicks"/> of light. The flashlight keeps the charge of the pair in use, and
+    /// when that runs out it takes the next matched pair if there is one.
     /// </summary>
     public static class ChargeModel
     {
@@ -36,81 +37,80 @@ namespace Flashlight
         public static int CapacityTicks(int batteryHours) => batteryHours * TicksPerHour;
 
         /// <summary>The result of one step of the model.</summary>
-        /// <param name="Charge">Ticks of light left in the cell in use afterwards.</param>
-        /// <param name="InUse">The kind of the cell in use afterwards. None when the flashlight is flat.</param>
-        /// <param name="SlotUsed">The slot a cell was taken from to carry on, or -1 when none was.</param>
+        /// <param name="Charge">Ticks of light left in the pair in use afterwards.</param>
+        /// <param name="InUse">The kind of the pair in use afterwards. None when the flashlight is flat.</param>
+        /// <param name="PairUsed">Whether a loaded pair was taken out of the slots to carry on.</param>
         /// <param name="LightOn">Whether the flashlight can shine after this step.</param>
-        public readonly record struct Step(int Charge, CellKind InUse, int SlotUsed, bool LightOn)
+        public readonly record struct Step(int Charge, CellKind InUse, bool PairUsed, bool LightOn)
         {
-            public bool CellUsed => SlotUsed >= 0;
+            public bool CellUsed => PairUsed;
         }
 
-        /// <summary>The first slot that holds a cell, or -1.</summary>
-        public static int FirstLoaded(ReadOnlySpan<CellKind> slots)
+        /// <summary>
+        /// The kind of the loaded pair: both slots hold the same kind of cell. None when a slot is empty, the two kinds differ, or
+        /// there are not two slots.
+        /// </summary>
+        public static CellKind PairKind(ReadOnlySpan<CellKind> slots)
         {
-            for (var i = 0; i < slots.Length; i++)
-            {
-                if (slots[i] != CellKind.None)
-                    return i;
-            }
-            return -1;
+            if (slots.Length != 2 || slots[0] == CellKind.None || slots[0] != slots[1])
+                return CellKind.None;
+            return slots[0];
         }
 
-        /// <summary>Tries to switch the flashlight on. It needs some charge, or a loaded cell to take one from.</summary>
+        /// <summary>Whether a cell of this kind may be loaded into a slot, given what the other slot holds.</summary>
+        public static bool CanLoad(CellKind kind, CellKind other) => kind != CellKind.None && (other == CellKind.None || other == kind);
+
+        /// <summary>Tries to switch the flashlight on. It needs some charge, or a matched pair to take one from.</summary>
         public static Step TurnOn(int charge, CellKind inUse, ReadOnlySpan<CellKind> slots, CellCapacities caps)
         {
             if (charge > 0)
-                return new Step(charge, Known(inUse), -1, true);
+                return new Step(charge, Known(inUse), false, true);
 
-            var slot = FirstLoaded(slots);
-            if (slot < 0)
-                return new Step(0, CellKind.None, -1, false);
-            return new Step(caps.Of(slots[slot]), slots[slot], slot, true);
+            var pair = PairKind(slots);
+            if (pair == CellKind.None)
+                return new Step(0, CellKind.None, false, false);
+            return new Step(caps.Of(pair), pair, true, true);
         }
 
         /// <summary>Spends one tick of light while the flashlight is on.</summary>
         public static Step Tick(int charge, CellKind inUse, ReadOnlySpan<CellKind> slots, CellCapacities caps)
         {
-            var slot = -1;
+            var used = false;
             if (charge <= 0)
             {
-                slot = FirstLoaded(slots);
-                if (slot < 0)
-                    return new Step(0, CellKind.None, -1, false);
-                inUse = slots[slot];
-                charge = caps.Of(inUse);
+                var pair = PairKind(slots);
+                if (pair == CellKind.None)
+                    return new Step(0, CellKind.None, false, false);
+                inUse = pair;
+                charge = caps.Of(pair);
+                used = true;
             }
-            return new Step(charge - 1, Known(inUse), slot, true);
+            return new Step(charge - 1, Known(inUse), used, true);
         }
 
         /// <summary>A charge from before the kinds existed has no kind recorded, and was always a Dry Cell.</summary>
         private static CellKind Known(CellKind kind) => kind == CellKind.None ? CellKind.Dry : kind;
 
         /// <summary>
-        /// How much of a full load is left, from 0 to 1. A full load is every slot holding a fresh cell of the best kind that is
-        /// in the flashlight (the Dry Cell at least), so a flashlight of Dry Cells reads as full when every slot has one, and a
-        /// mix that includes a Battery Pack is measured against a load of packs. Loading spare cells while one is part used is capped at 1.
+        /// How much of a full load is left, from 0 to 1. A full load is one fresh pair of the best kind in the flashlight (the Dry
+        /// Cell at least), so a Dry Cell pair reads as full and a Battery Pack pair is measured against packs. A pair that is
+        /// loaded while another is part used is capped at 1.
         /// </summary>
-        public static float ReserveFraction(int charge, CellKind inUse, ReadOnlySpan<CellKind> slots, int slotCount, CellCapacities caps)
+        public static float ReserveFraction(int charge, CellKind inUse, ReadOnlySpan<CellKind> slots, CellCapacities caps)
         {
+            var pair = PairKind(slots);
             var best = caps.Dry;
             if (charge > 0)
                 best = Math.Max(best, caps.Of(Known(inUse)));
-            long left = Math.Max(0, charge);
-            for (var i = 0; i < slots.Length; i++)
-            {
-                best = Math.Max(best, caps.Of(slots[i]));
-                left += caps.Of(slots[i]);
-            }
-
-            var full = (long)slotCount * best;
-            if (full <= 0)
+            best = Math.Max(best, caps.Of(pair));
+            if (best <= 0)
                 return 0f;
-            return Math.Clamp((float)left / full, 0f, 1f);
+            long left = Math.Max(0, charge) + caps.Of(pair);
+            return Math.Clamp((float)left / best, 0f, 1f);
         }
 
         /// <summary>
-        /// The share of the Battery Pack's extra brightness to give the beam, from 0 (a Dry Cell) to 1 (a Battery Pack).
+        /// The share of the Battery Pack's extra brightness to give the beam, from 0 (Dry Cells) to 1 (Battery Packs).
         /// A flat flashlight that is not shining has none.
         /// </summary>
         public static float Boost(CellKind inUse, int charge) => charge > 0 && inUse == CellKind.Pack ? 1f : 0f;

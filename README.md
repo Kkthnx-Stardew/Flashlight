@@ -11,9 +11,9 @@ This is an early build. It has been run in Stardew Valley 1.6.15 with SMAPI 4.5.
 - **Flashlight** (a tool): sold at Robin's Carpenter's Shop, one to a player. Press **F** (or use the tool) to switch it on and off. It keeps shining while you use other tools, which a torch cannot do. The toolbar picture shows when it is on, and a charge bar under it works like the water bar of the watering can.
 - **A cone of light**: a beam 7 tiles long in the direction you face, with nothing lit around you, like a real flashlight. It flickers now and then like an old flashlight with a loose cell, and much more often once the charge falls under a tenth of a full load.
 - **Held in your hand**: while the flashlight is the selected tool you are drawn holding it. It follows your hand as you walk, the beam starts at its lens, and from the front and back it is held in one hand.
-- **Battery slots**: the flashlight has two, like the bait slot on a fishing rod. Right-click the flashlight with cells on the cursor to load them, one to a slot, and right-click it with an empty hand to take one out. Hover it to see what is loaded.
-- **Dry Cell** (a battery): sold at Robin's in limited numbers, or crafted from 1 Copper Bar and 1 Coal for 3 cells once you reach Mining level 2. Each lasts 4 in-game hours, and only while it is dark where you are.
-- **Battery Pack** (the game's own): a slot takes one too. A pack lasts 12 hours, three times a Dry Cell, and while it is in use the beam is 30 percent longer and brighter. It is found from a Lightning Rod or a Solar Panel, never sold, so using one is a choice.
+- **Battery slots**: the flashlight has two, always two, like the bait slot on a fishing rod. It runs on a matching pair and needs both loaded, like a real one: two Dry Cells or two Battery Packs, never one of each and never just one. Right-click the flashlight with cells on the cursor to load them, one to a slot, and right-click it with an empty hand to take one out. Hover it to see what is loaded.
+- **Dry Cell** (a battery): sold at Robin's in limited numbers, or crafted from 1 Copper Bar and 1 Coal for 12 cells once you reach Mining level 2. A pair lasts 2 in-game hours, and only while it is dark where you are.
+- **Battery Pack** (the game's own): a pair of them goes in the slots instead. A pair of packs lasts 4 hours, two more than a pair of Dry Cells, and while it is in use the beam is 20 percent longer and a little brighter. Packs are found from a Lightning Rod or a Solar Panel, never sold, and you need two, so using them is a choice.
 
 | | |
 | --- | --- |
@@ -25,7 +25,7 @@ This is an early build. It has been run in Stardew Valley 1.6.15 with SMAPI 4.5.
 
 | | |
 | --- | --- |
-| ![The shop](docs/images/shop.png) | ![The tooltip with two cells loaded](docs/images/tooltip.png) |
+| ![The shop](docs/images/shop.png) | ![The tooltip with a pair loaded](docs/images/tooltip.png) |
 
 ![The toolbar with the flashlight on](docs/images/toolbar.png)
 
@@ -40,16 +40,15 @@ Edit `config.json` in the mod folder after the first run, or change them in game
 | `ToggleKey` | `F` | The button or buttons that switch the flashlight on and off, such as `F, LeftShoulder`. |
 | `BeamLengthTiles` | `7` | How far the beam reaches (3 to 12). |
 | `ShowInHand` | `true` | Draw the flashlight in your hand while it is selected. |
-| `BatteryHours` | `4` | In-game hours one Dry Cell lasts (1 to 12). |
+| `BatteryHours` | `2` | In-game hours a pair of Dry Cells lasts (1 to 12). |
 | `UseBatteryPacks` | `true` | Whether the game's Battery Pack can be loaded. |
-| `BatteryPackHours` | `12` | In-game hours one Battery Pack lasts (1 to 48). |
-| `BatteryPackBeamPercent` | `130` | Beam length while a pack is in use, as a percentage (100 to 200). |
-| `BatterySlots` | `2` | How many cells a new flashlight holds (1 to 4). |
+| `BatteryPackHours` | `4` | In-game hours a pair of Battery Packs lasts (1 to 48). |
+| `BatteryPackBeamPercent` | `120` | Beam length while a pack is in use, as a percentage (100 to 200). |
 | `FlashlightPrice` | `600` | Shop price of the flashlight. |
-| `BatteryPrice` | `60` | Shop price of one Dry Cell. |
+| `BatteryPrice` | `15` | Shop price of one Dry Cell. |
 | `SoldAtCarpenter` | `true` | Whether Robin sells them. Turn off if another mod handles shops. |
-| `BatteryDailyStock` | `4` | How many Dry Cells the shop sells to one player each day. |
-| `MaxBatteriesCarried` | `4` | The shop stops selling Dry Cells to someone carrying this many. |
+| `BatteryDailyStock` | `16` | How many Dry Cells the shop sells to one player each day. |
+| `MaxBatteriesCarried` | `16` | The shop stops selling Dry Cells to someone carrying this many. |
 | `BatteryOutOfStockPercent` | `15` | Chance in percent that Robin has no Dry Cells on a day. |
 | `BatteryLowStockPercent` | `25` | Chance in percent that Robin has half the stock on a day. |
 | `FlickerSecondsBetween` | `40` | Average seconds of use between random flickers. 0 turns them off. |

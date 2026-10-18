@@ -7,11 +7,11 @@ Versions follow [Semantic Versioning](https://semver.org/). Newest first.
 First build. It compiles against Stardew Valley 1.6.15 and SMAPI 4.5.2 with no warnings and passes its tests. It was run in the game on a throwaway farm with only this mod loaded: the items and shop entries load, the cone shows at night in all four directions, loaded cells drain and are swapped in turn (Dry Cells and Battery Packs, in slot order), the charge survives saving, the slots take only one cell each, the flicker and the lit toolbar picture work, and the farmer is drawn holding the flashlight while it is selected, standing and walking. Multiplayer, Linux and long play are untested.
 
 - Flashlight tool and Dry Cell battery, sold at Robin's Carpenter's Shop, with a Dry Cell recipe.
-- Two battery slots on the flashlight that work like the bait slot of a fishing rod: right-click to load one cell per slot or take one out, and hover to see them.
-- The game's Battery Pack can be loaded too. It lasts 12 in-game hours (three Dry Cells) and while it is in use the beam is 30 percent longer and brighter. Settings: `UseBatteryPacks`, `BatteryPackHours`, `BatteryPackBeamPercent`.
+- Two battery slots on the flashlight, always two, that work like the bait slot of a fishing rod. It runs on a matching pair and needs both loaded: two Dry Cells or two Battery Packs, never mixed and never one alone. Right-click to load one cell to a slot or take one out, and hover to see them.
+- The game's Battery Pack can be loaded as a pair. A pair lasts 4 in-game hours (a pair of Dry Cells lasts 2) and while it is in use the beam is 20 percent longer and a little brighter. Settings: `UseBatteryPacks`, `BatteryPackHours`, `BatteryPackBeamPercent`.
 - A forward cone of light in the four facing directions, with nothing lit around the farmer, like a real flashlight. The toolbar picture shows when it is on.
 - The farmer is drawn holding the flashlight while it is the selected tool. It follows the hand through the walking frames, the beam starts at its lens, and from the front and back it is held in one hand, off to the side, with the lens clear of the fingers. `ShowInHand` turns it off.
-- Batteries drain while the flashlight is on and it is dark where the farmer is. The next loaded cell is used automatically.
+- Batteries drain while the flashlight is on and it is dark where the farmer is. A matched pair is used up together and the next matched pair is taken automatically. With no matching pair loaded it goes out.
 - A random flicker now and then, more often when the last cell is nearly flat, and a message when it goes out. It switches off when the farmer goes to bed.
 - A charge bar under the flashlight's picture like the water bar of the watering can (green, yellow, orange, red as it falls) and a charge line in the tooltip.
 - Under a tenth of a full load the flicker gets steadily more frequent, about every 12 seconds at 5 percent and every 3 seconds when nearly empty.
