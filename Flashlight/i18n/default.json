@@ -1,0 +1,12 @@
+{
+    "item.flashlight.name": "Flashlight",
+    "item.flashlight.description": "Casts a beam in the direction you face. Runs on batteries and keeps working while you use other tools.",
+    "item.battery.name": "Dry Cell",
+    "item.battery.description": "Powers a flashlight. The flashlight takes a new one from your backpack when it runs out.",
+    "recipe.battery.name": "Dry Cell",
+    "message.on": "Flashlight on",
+    "message.off": "Flashlight off",
+    "message.no-battery": "The flashlight has no battery. Put a Dry Cell in your backpack.",
+    "message.low": "The flashlight is running low.",
+    "message.empty": "The flashlight went dark."
+}
