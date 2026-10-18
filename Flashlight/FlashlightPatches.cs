@@ -7,13 +7,15 @@ using StardewValley;
 namespace Flashlight
 {
     /// <summary>
-    /// Four small Harmony patches that only act on the flashlight and leave every other item alone.
+    /// Small Harmony patches that only act on the flashlight and leave every other item alone.
     ///
     /// Battery slots work like the bait slot of a fishing rod. The game already has the slots, their drawing and the clicking
     /// for any tool, but a plain tool accepts any item in them and a whole stack at once, so two patches make the flashlight
     /// take only Dry Cells, one to a slot.
     ///
     /// The charge bar is drawn under the picture like the water bar of the watering can, and the tooltip says how much charge is left.
+    ///
+    /// A farmer can only carry one flashlight: the game's add-to-inventory methods are told a second one does not fit.
     /// </summary>
     internal static class FlashlightPatches
     {
@@ -25,6 +27,9 @@ namespace Flashlight
 
         /// <summary>Called when someone tries to load a cell into a spare flashlight. Set by the mod.</summary>
         public static Action? SpareRefused { get; set; }
+
+        /// <summary>Called when a second flashlight is refused because the farmer already carries one. Set by the mod.</summary>
+        public static Action? SecondRefused { get; set; }
 
         public static void Apply(IMonitor monitor)
         {
@@ -39,6 +44,18 @@ namespace Flashlight
                 original: AccessTools.Method(typeof(Tool), nameof(Tool.drawInMenu), new[] { typeof(SpriteBatch), typeof(Vector2), typeof(float), typeof(float), typeof(float), typeof(StackDrawType), typeof(Color), typeof(bool) }),
                 prefix: new HarmonyMethod(typeof(FlashlightPatches), nameof(DrawInMenuPrefix)),
                 postfix: new HarmonyMethod(typeof(FlashlightPatches), nameof(DrawInMenuPostfix))));
+            Patch(monitor, "one flashlight in the backpack", () =>
+            {
+                harmony.Patch(
+                    original: AccessTools.Method(typeof(Farmer), nameof(Farmer.addItemToInventory), new[] { typeof(Item), typeof(List<Item>) }),
+                    prefix: new HarmonyMethod(typeof(FlashlightPatches), nameof(AddItemPrefix)));
+                harmony.Patch(
+                    original: AccessTools.Method(typeof(Farmer), nameof(Farmer.addItemToInventory), new[] { typeof(Item), typeof(int) }),
+                    prefix: new HarmonyMethod(typeof(FlashlightPatches), nameof(AddItemPrefix)));
+                harmony.Patch(
+                    original: AccessTools.Method(typeof(Farmer), nameof(Farmer.couldInventoryAcceptThisItem), new[] { typeof(Item) }),
+                    postfix: new HarmonyMethod(typeof(FlashlightPatches), nameof(CouldAcceptPostfix)));
+            });
             Patch(monitor, "tooltip charge line", () => harmony.Patch(
                 original: AccessTools.Method(typeof(Tool), nameof(Tool.getDescription), Type.EmptyTypes),
                 postfix: new HarmonyMethod(typeof(FlashlightPatches), nameof(GetDescriptionPostfix))));
@@ -112,6 +129,33 @@ namespace Flashlight
                 return false;
             }
             return false; // every slot is full; the cell stays in the hand
+        }
+
+        // ---------------------------------------------------------------- one flashlight in the backpack
+
+        /// <summary>Whether this is a second flashlight for a farmer who already has one in the backpack.</summary>
+        private static bool IsSecondFlashlight(Farmer farmer, Item? item) =>
+            FlashlightState.IsFlashlight(item) && FlashlightState.ActiveIn(farmer) is { } have && !ReferenceEquals(have, item);
+
+        /// <summary>
+        /// A farmer who carries a flashlight cannot take a second one. The game is told the item did not fit, so a pickup stays
+        /// where it is and a chest keeps it, which means nothing is lost and nothing can bounce back and forth.
+        /// </summary>
+        private static bool AddItemPrefix(Farmer __instance, Item item, ref Item __result)
+        {
+            if (!IsSecondFlashlight(__instance, item))
+                return true;
+            __result = item;
+            if (__instance.IsLocalPlayer)
+                SecondRefused?.Invoke();
+            return false;
+        }
+
+        /// <summary>Menus that ask whether an item would fit (crafting, rewards) get the same answer.</summary>
+        private static void CouldAcceptPostfix(Farmer __instance, Item item, ref bool __result)
+        {
+            if (__result && IsSecondFlashlight(__instance, item))
+                __result = false;
         }
 
         // ---------------------------------------------------------------- how it looks

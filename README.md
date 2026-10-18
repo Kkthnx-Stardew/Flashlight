@@ -41,7 +41,7 @@ Needs Stardew Valley 1.6.9 or newer.
 
 ## Known limits
 
-- The battery slots, the charge bar and the tooltip line use four small Harmony patches on the game's own code. They only act on the flashlight. SMAPI lists the mod as one that changes game code for that reason.
+- The battery slots, the charge bar, the tooltip line and the one-flashlight rule use a few small Harmony patches on the game's own code. They only act on the flashlight. SMAPI lists the mod as one that changes game code for that reason.
 - The settings can also be changed in game with Generic Mod Config Menu, when it is installed.
 - In multiplayer other players see the game's ordinary round light, because the custom cone picture is only drawn on the machine that owns the flashlight. Multiplayer is untested.
 - Shop days for Robin and the Mining level of the recipe are not checked against the rest of the game.

@@ -51,7 +51,8 @@ namespace Flashlight
 
             _content = new ContentSetup(helper.Translation, () => _config);
             FlashlightPatches.Apply(Monitor);
-            FlashlightPatches.SpareRefused = NoticeSpare;
+            FlashlightPatches.SpareRefused = () => Notice("message.one-flashlight");
+            FlashlightPatches.SecondRefused = () => Notice("message.carry-one");
             FlashlightPatches.ChargeText = fraction => helper.Translation.Get("tooltip.charge", new { percent = (int)Math.Round(fraction * 100) });
             FlashlightVisuals.ToolsLoader = () => helper.GameContent.Load<Texture2D>(ContentSetup.ToolsTexture);
             FlashlightVisuals.OnError = reason => Monitor.Log("Could not load a picture for the flashlight, so it will be drawn plainly: " + reason, LogLevel.Error);
@@ -143,13 +144,13 @@ namespace Flashlight
             return chosen;
         }
 
-        /// <summary>Tells the player a spare flashlight does nothing, at most once every few seconds.</summary>
-        private void NoticeSpare()
+        /// <summary>Shows a message about the one-flashlight rule, at most once every few seconds so a pickup that keeps being refused does not fill the screen.</summary>
+        private void Notice(string key)
         {
             if (Game1.ticks - _lastSpareNotice < 180 && _lastSpareNotice > 0)
                 return;
             _lastSpareNotice = Game1.ticks;
-            Game1.addHUDMessage(new HUDMessage(Helper.Translation.Get("message.one-flashlight"), HUDMessage.error_type));
+            Game1.addHUDMessage(new HUDMessage(Helper.Translation.Get(key), HUDMessage.error_type));
         }
 
         // ---------------------------------------------------------------- keeping every flashlight in order
@@ -214,7 +215,7 @@ namespace Flashlight
             if (RefreshTool(player) is null)
                 return;
             if (!ReferenceEquals(player.CurrentTool, _tool.Value))
-                NoticeSpare(); // a spare flashlight in the hand does nothing
+                Notice("message.one-flashlight"); // a spare flashlight in the hand does nothing
             else
                 Toggle(player);
         }

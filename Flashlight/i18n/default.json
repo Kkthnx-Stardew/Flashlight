@@ -9,6 +9,7 @@
     "message.off": "Flashlight off",
     "message.no-battery": "The flashlight has no battery. Right-click it with a Dry Cell to load one.",
     "message.one-flashlight": "You can only use one flashlight at a time.",
+    "message.carry-one": "You can only carry one flashlight.",
     "message.low": "The flashlight is running low.",
     "message.empty": "The flashlight went dark.",
     "gmcm.use": "Using the flashlight",
