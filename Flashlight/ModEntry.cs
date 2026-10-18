@@ -26,10 +26,10 @@ namespace Flashlight
         private readonly PerScreen<string?> _lightId = new();
         private readonly PerScreen<string?> _lightLocation = new();
         private readonly PerScreen<bool> _warnedLow = new();
-        private readonly PerScreen<bool> _warnedExtra = new();
         private readonly PerScreen<int> _flickerTicks = new();
         private readonly PerScreen<Tool?> _tool = new();        // the flashlight in use, found again whenever the backpack changes
         private readonly PerScreen<float> _reserve = new();     // the share of a full load left, refreshed twice a second
+        private int _lastSpareNotice;                           // the tick of the last "one flashlight" message, so clicking a spare does not fill the screen
 
         private readonly Texture2D?[] _beams = new Texture2D?[4];
 
@@ -51,6 +51,7 @@ namespace Flashlight
 
             _content = new ContentSetup(helper.Translation, () => _config);
             FlashlightPatches.Apply(Monitor);
+            FlashlightPatches.SpareRefused = NoticeSpare;
             FlashlightPatches.ChargeText = fraction => helper.Translation.Get("tooltip.charge", new { percent = (int)Math.Round(fraction * 100) });
             FlashlightVisuals.ToolsLoader = () => helper.GameContent.Load<Texture2D>(ContentSetup.ToolsTexture);
             FlashlightVisuals.OnError = reason => Monitor.Log("Could not load a picture for the flashlight, so it will be drawn plainly: " + reason, LogLevel.Error);
@@ -127,30 +128,28 @@ namespace Flashlight
         // ---------------------------------------------------------------- finding the flashlight
 
         /// <summary>
-        /// Finds the flashlight to use. A player is meant to have only one, and the shop sells one to a player who has none. If
-        /// there are more (found, or kept from before), only the first counts, so charge cannot be stored in spares.
-        /// Runs when the backpack changes, not every update.
+        /// Finds the flashlight to use: the first one in the backpack. A player is meant to have only one, and the shop sells one
+        /// to a player who has none, but others can turn up (found, or given by another mod). Those are inert spares: they take no
+        /// cells and cannot be lit, so owning several can never store extra light or give a second beam.
+        /// Runs when the backpack changes or a key is pressed, not every update.
         /// </summary>
         private Tool? RefreshTool(Farmer player)
         {
-            Tool? first = null;
-            var count = 0;
-            var items = player.Items;
-            for (var i = 0; i < items.Count; i++)
-            {
-                if (items[i] is Tool tool && FlashlightState.IsFlashlight(tool))
-                {
-                    first ??= tool;
-                    count++;
-                }
-            }
-            if (count > 1 && !_warnedExtra.Value)
-            {
-                _warnedExtra.Value = true;
-                Game1.addHUDMessage(new HUDMessage(Helper.Translation.Get("message.one-flashlight"), HUDMessage.error_type));
-            }
-            _tool.Value = first;
-            return first;
+            var chosen = FlashlightState.ActiveIn(player);
+            // while the light is on it belongs to the lit flashlight; if that was dropped or sold the light goes out
+            if (_on.Value && chosen is not null && !FlashlightState.IsLit(chosen))
+                chosen = null;
+            _tool.Value = chosen;
+            return chosen;
+        }
+
+        /// <summary>Tells the player a spare flashlight does nothing, at most once every few seconds.</summary>
+        private void NoticeSpare()
+        {
+            if (Game1.ticks - _lastSpareNotice < 180 && _lastSpareNotice > 0)
+                return;
+            _lastSpareNotice = Game1.ticks;
+            Game1.addHUDMessage(new HUDMessage(Helper.Translation.Get("message.one-flashlight"), HUDMessage.error_type));
         }
 
         // ---------------------------------------------------------------- keeping every flashlight in order
@@ -179,7 +178,6 @@ namespace Flashlight
         {
             _on.Value = false;
             _flickerTicks.Value = 0;
-            _warnedExtra.Value = false;
             _warnedLow.Value = false;
             if (!Context.IsWorldReady)
                 return;
@@ -196,7 +194,7 @@ namespace Flashlight
         {
             if (!_toggleKeys.JustPressed() || !CanAct())
                 return;
-            if (_tool.Value is null && RefreshTool(Game1.player) is null)
+            if (RefreshTool(Game1.player) is null)
                 return;
 
             Helper.Input.SuppressActiveKeybinds(_toggleKeys);
@@ -209,11 +207,16 @@ namespace Flashlight
             if (!CanAct() || !e.Button.IsUseToolButton())
                 return;
             var player = Game1.player;
-            if (!FlashlightState.IsFlashlight(player.CurrentTool) || (_tool.Value is null && RefreshTool(player) is null))
+            if (!FlashlightState.IsFlashlight(player.CurrentTool))
                 return;
 
             Helper.Input.Suppress(e.Button);
-            Toggle(player);
+            if (RefreshTool(player) is null)
+                return;
+            if (!ReferenceEquals(player.CurrentTool, _tool.Value))
+                NoticeSpare(); // a spare flashlight in the hand does nothing
+            else
+                Toggle(player);
         }
 
         private void Toggle(Farmer player)

@@ -26,8 +26,8 @@ Edit `config.json` in the mod folder after the first run.
 | `FlashlightPrice` | `600` | Shop price of the flashlight. |
 | `BatteryPrice` | `60` | Shop price of one battery. |
 | `SoldAtCarpenter` | `true` | Whether Robin sells them. Turn off if another mod handles shops. |
-| `BatteryDailyStock` | `6` | How many batteries the shop sells to one player each day. |
-| `MaxBatteriesCarried` | `6` | The shop stops selling batteries to someone carrying this many. |
+| `BatteryDailyStock` | `4` | How many batteries the shop sells to one player each day. |
+| `MaxBatteriesCarried` | `4` | The shop stops selling batteries to someone carrying this many. |
 | `BatteryOutOfStockPercent` | `15` | Chance in percent that Robin has no batteries on a day. |
 | `BatteryLowStockPercent` | `25` | Chance in percent that Robin has half the stock on a day. |
 | `FlickerSecondsBetween` | `40` | Average seconds of use between random flickers. 0 turns them off. |

@@ -19,6 +19,25 @@ namespace Flashlight
 
         public static bool IsFlashlight(Item? item) => item?.ItemId == ContentSetup.FlashlightId;
 
+        /// <summary>
+        /// The one flashlight that works: the first in the backpack. Any others are inert spares, so owning several can never
+        /// store extra cells or give a second light.
+        /// </summary>
+        public static Tool? ActiveIn(Farmer? player)
+        {
+            var items = player?.Items;
+            if (items is null)
+                return null;
+            for (var i = 0; i < items.Count; i++)
+            {
+                if (items[i] is Tool tool && IsFlashlight(tool))
+                    return tool;
+            }
+            return null;
+        }
+
+        public static bool IsActive(Item? item) => item is Tool tool && ReferenceEquals(ActiveIn(Game1.player), tool);
+
         public static bool IsLit(Item? item) => item is not null && item.modData.ContainsKey(LitKey);
 
         public static void SetLit(Item flashlight, bool lit)

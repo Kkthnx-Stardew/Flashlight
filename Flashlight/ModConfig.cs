@@ -25,7 +25,7 @@ namespace Flashlight
         public int BatterySlots { get; set; } = 2;
 
         /// <summary>How many batteries the shop sells to one player each day.</summary>
-        public int BatteryDailyStock { get; set; } = 6;
+        public int BatteryDailyStock { get; set; } = 4;
 
         /// <summary>The chance, in percent, that on a given day Robin has no Dry Cells at all. It is the same all day.</summary>
         public int BatteryOutOfStockPercent { get; set; } = 15;
@@ -34,7 +34,7 @@ namespace Flashlight
         public int BatteryLowStockPercent { get; set; } = 25;
 
         /// <summary>The shop stops selling batteries to a player who already carries this many.</summary>
-        public int MaxBatteriesCarried { get; set; } = 6;
+        public int MaxBatteriesCarried { get; set; } = 4;
 
         /// <summary>
         /// On average, how many seconds of use pass between random flickers, like an old flashlight with a loose cell.

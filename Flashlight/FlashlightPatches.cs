@@ -23,6 +23,9 @@ namespace Flashlight
         /// <summary>Builds the line of text about the charge for the tooltip, from a share of a full load. Set by the mod.</summary>
         public static Func<float, string>? ChargeText { get; set; }
 
+        /// <summary>Called when someone tries to load a cell into a spare flashlight. Set by the mod.</summary>
+        public static Action? SpareRefused { get; set; }
+
         public static void Apply(IMonitor monitor)
         {
             var harmony = new Harmony(ContentSetup.ModId);
@@ -55,12 +58,12 @@ namespace Flashlight
 
         // ---------------------------------------------------------------- battery slots
 
-        /// <summary>A slot of the flashlight takes a Dry Cell and nothing else.</summary>
+        /// <summary>A slot of the flashlight in use takes a Dry Cell and nothing else. A spare flashlight takes nothing.</summary>
         private static void CanThisBeAttachedPostfix(Tool __instance, StardewValley.Object o, ref bool __result)
         {
             if (!FlashlightState.IsFlashlight(__instance))
                 return;
-            __result = o?.QualifiedItemId == ContentSetup.QualifiedBatteryId;
+            __result = o?.QualifiedItemId == ContentSetup.QualifiedBatteryId && FlashlightState.IsActive(__instance);
         }
 
         /// <summary>
@@ -91,6 +94,11 @@ namespace Flashlight
             __result = o;
             if (o.QualifiedItemId != ContentSetup.QualifiedBatteryId)
                 return false;
+            if (!FlashlightState.IsActive(__instance))
+            {
+                SpareRefused?.Invoke(); // a spare flashlight takes no cells, so owning several stores nothing extra
+                return false;
+            }
 
             for (var i = 0; i < slots.Count; i++)
             {

@@ -15,8 +15,8 @@ public class ModConfigTests
         Assert.Equal(2, config.BatterySlots);
         Assert.Equal(15, config.BatteryOutOfStockPercent);
         Assert.Equal(25, config.BatteryLowStockPercent);
-        Assert.Equal(6, config.BatteryDailyStock);
-        Assert.Equal(6, config.MaxBatteriesCarried);
+        Assert.Equal(4, config.BatteryDailyStock);
+        Assert.Equal(4, config.MaxBatteriesCarried);
         Assert.Equal(40, config.FlickerSecondsBetween);
     }
 
@@ -84,7 +84,7 @@ public class ModConfigCopyTests
         var changed = new ModConfig
         {
             ToggleKey = "G", BeamLengthTiles = 5, BatteryHours = 7, BatterySlots = 3, FlashlightPrice = 111, BatteryPrice = 22,
-            SoldAtCarpenter = false, BatteryDailyStock = 4, BatteryOutOfStockPercent = 33, BatteryLowStockPercent = 44,
+            SoldAtCarpenter = false, BatteryDailyStock = 7, BatteryOutOfStockPercent = 33, BatteryLowStockPercent = 44,
             MaxBatteriesCarried = 9, FlickerSecondsBetween = 77,
         };
         var target = new ModConfig();
@@ -100,7 +100,7 @@ public class ModConfigCopyTests
         var changed = new ModConfig
         {
             ToggleKey = "G", BeamLengthTiles = 5, BatteryHours = 7, BatterySlots = 3, FlashlightPrice = 111, BatteryPrice = 22,
-            SoldAtCarpenter = false, BatteryDailyStock = 4, BatteryOutOfStockPercent = 33, BatteryLowStockPercent = 44,
+            SoldAtCarpenter = false, BatteryDailyStock = 7, BatteryOutOfStockPercent = 33, BatteryLowStockPercent = 44,
             MaxBatteriesCarried = 9, FlickerSecondsBetween = 77,
         };
         var defaults = new ModConfig();

@@ -49,9 +49,9 @@ The vanilla Battery Pack is rare and sells for 500g, so it is not used. This mod
 
 | Way it could be abused | What stops it |
 | --- | --- |
-| Owning several flashlights to store charge in the spares | The shop only sells one to a player who has none, and only the first flashlight in the backpack works. A second one shows a message. |
+| Owning several flashlights to store charge in the spares | The shop only sells one to a player who has none. If more turn up, only the first in the backpack works. Spares cannot be lit and take no cells, so they cannot store extra light, and using one shows a message. |
 | Stacking beams from several flashlights | There is one light per player, however many flashlights are carried. |
-| Hoarding batteries so the upkeep never matters | The shop sells at most 6 a day and stops selling to a player carrying 6. Robin has none on about 15 of 100 days and half the stock on about 21 more (the roll is the same all day for every player, however often the shop is opened). That averages about 4.5 cells a day. |
+| Hoarding batteries so the upkeep never matters | The shop sells at most 4 a day and stops selling to a player carrying 4. Robin has none on about 15 of 100 days and half the stock on about 21 more (the roll is the same all day for every player, however often the shop is opened). That averages about 4.5 cells a day. |
 | Buying cells and selling them back | Sell price is 15g against 60g to buy. |
 | Crafting cells to sell them | A craft costs 5 Copper Ore and 2 Coal for 45g of cells at the sell price. |
 | Loading a whole stack of cells into a slot | A slot takes exactly one cell. |
