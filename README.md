@@ -4,7 +4,7 @@ A flashlight for Stardew Valley that casts a beam in the direction you face and 
 
 ![The beam at night](docs/images/night-beam.png)
 
-This is an early build. It has been run in Stardew Valley 1.6.15 with SMAPI 4.5.2 on Windows and the beam, battery slots, shop, Battery Pack, flicker and held flashlight work. The art and the numbers are a first pass and it has not had real play-time yet, so feedback is very welcome (see below).
+This is an early build. It has been run in Stardew Valley 1.6.15 with SMAPI 4.5.2 and the beam, battery slots, shop, Battery Pack, flicker and held flashlight work. The art and the numbers are a first pass and it has not had real play-time yet, so feedback is very welcome (see below).
 
 ## What it adds
 
@@ -74,7 +74,6 @@ Type `flashlight_report` in the SMAPI console and paste what it prints. It lists
 
 - The battery slots, the charge bar, the tooltip line, the held flashlight and the one-flashlight rule use a few small Harmony patches on the game's own code. They only act on the flashlight. SMAPI lists the mod as one that changes game code for that reason.
 - Multiplayer is untested. It has never been run with a second player, so it is not known whether it works. From reading the code, other players may see the game's ordinary round light for the beam instead of the cone, but that is a guess. Please report what you find.
-- Tested on Windows. Linux and Mac are untested.
 - Shop days for Robin and the Mining level of the recipe are not checked against the rest of the game.
 - If another mod changes how the farmer is drawn (a different farmer sheet or a custom farmer renderer), the held flashlight might sit in the wrong place. Turn it off with `ShowInHand` and report it.
 
