@@ -44,7 +44,7 @@ The game's Battery Pack sells for 500g and is not sold in any shop. It comes fro
 | Flashlight price | 600g | A new game starts with 500g, so it cannot be bought on day one, and it is the cost of a good early harvest. |
 | Battery price | 15g a cell | A pair is 30g for 4 hours, which is 7.5g for each hour of light. A full spring night (6 hours, a pair and a half) is about 45g, and only the dark hours count. |
 | Battery sell price | 3g | A fifth of the shop price, so buying cells to sell them again loses money. |
-| Where it is sold | Robin's Carpenter's Shop | She already sells the lamp-post recipes (500g and 1,000g). Shop hours are not verified. |
+| Where it is sold | Robin's Carpenter's Shop, Clint's Blacksmith as an option | Robin already sells the lamp-post recipes (500g and 1,000g). Clint's is off by default. The game counts daily stock for each shop on its own, so with both on the daily stock is shared between them. Shop hours are not verified. |
 | Battery Pack life | A pair of Battery Packs lasts 6 in-game hours | Two more hours than a pair of Dry Cells. The game sells a pack for 500g and uses it for lamp-posts and sprinklers, and the flashlight needs two, so burning a pair is a real choice and never a bargain. Lightning rod storms and a week of a solar panel cannot carry a season of nights. |
 | Battery recipe | 1 Copper Bar + 1 Coal makes 12 Dry Cells | A Copper Bar is 5 Copper Ore and 1 Coal at a furnace (wiki), so a craft is 5 ore and 2 coal for 12 cells, which is 24 hours of light. Learned at Mining level 2, which is a placeholder and not verified. |
 

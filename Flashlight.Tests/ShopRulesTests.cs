@@ -5,6 +5,25 @@ namespace Flashlight.Tests;
 public class ShopRulesTests
 {
     [Theory]
+    [InlineData(true, true, false, LetterSender.Robin)]
+    [InlineData(true, true, true, LetterSender.RobinAndClint)]
+    [InlineData(true, false, true, LetterSender.Clint)]
+    [InlineData(true, false, false, LetterSender.None)]
+    [InlineData(false, true, false, LetterSender.None)]
+    [InlineData(false, true, true, LetterSender.None)]
+    public void TheLetterFollowsTheShopsThatSellTheFlashlight(bool mail, bool carpenter, bool blacksmith, LetterSender expected) =>
+        Assert.Equal(expected, ShopRules.LetterFor(mail, carpenter, blacksmith));
+
+    [Theory]
+    [InlineData(16, 1, 16)]
+    [InlineData(16, 2, 8)]
+    [InlineData(15, 2, 8)]
+    [InlineData(1, 2, 1)]
+    [InlineData(16, 0, 16)]
+    public void TheDailyStockIsSharedBetweenTheShops(int stock, int shops, int expected) =>
+        Assert.Equal(expected, ShopRules.StockPerShop(stock, shops));
+
+    [Theory]
     [InlineData(0, "0")]
     [InlineData(15, "0.15")]
     [InlineData(25, "0.25")]

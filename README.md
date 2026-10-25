@@ -14,7 +14,7 @@ This is an early build. It has been run in Stardew Valley 1.6.15 with SMAPI 4.5.
 - **Battery slots**: the flashlight has two, always two, like the bait slot on a fishing rod. It runs on a matching pair and needs both loaded, like a real one: two Dry Cells or two Battery Packs, never one of each and never just one. Right-click the flashlight with cells on the cursor to load them, one to a slot, and right-click it with an empty hand to take one out. Hover it to see what is loaded.
 - **Dry Cell** (a battery): sold at Robin's in limited numbers, or crafted from 1 Copper Bar and 1 Coal for 12 cells once you reach Mining level 2. A pair lasts 4 in-game hours, and only while it is dark where you are.
 - **Battery Pack** (the game's own): a pair of them goes in the slots instead. A pair of packs lasts 6 hours, two more than a pair of Dry Cells, and while it is in use the beam is 20 percent longer and a little brighter. Packs are found from a Lightning Rod or a Solar Panel, never sold, and you need two, so using them is a choice.
-- **A letter from Robin**: a few days into a save she sends one letter about the flashlight to a player who does not have one yet. It is sent once for each player and only while she sells it. `SendMail` turns it off.
+- **A letter about the flashlight**: a few days into a save, one letter comes to a player who does not have one yet. It is from Robin, or from Clint if only he sells it, once for each player and only while a shop sells it. `SendMail` turns it off.
 
 | | |
 | --- | --- |
@@ -49,8 +49,8 @@ Edit `config.json` in the mod folder after the first run, or change them in game
 | `FlashlightPrice` | `600` | Shop price of the flashlight. |
 | `BatteryPrice` | `15` | Shop price of one Dry Cell. |
 | `SoldAtCarpenter` | `true` | Whether Robin sells them. Turn off if another mod handles shops. |
-| `SoldAtBlacksmith` | `false` | Whether Clint's Blacksmith sells them too. Works alone or together with Robin's. |
-| `SendMail` | `true` | Whether Robin sends one letter about the flashlight. Only sent while she sells it. |
+| `SoldAtBlacksmith` | `false` | Whether Clint's Blacksmith sells them too. Works alone or together with Robin's. With both on, the daily Dry Cell stock is shared between the two shops. |
+| `SendMail` | `true` | Whether one letter about the flashlight is sent. From Robin, or Clint if only he sells it. Only sent while a shop sells it. |
 | `BatteryDailyStock` | `16` | How many Dry Cells the shop sells to one player each day. |
 | `MaxBatteriesCarried` | `16` | The shop stops selling Dry Cells to someone carrying this many. |
 | `BatteryOutOfStockPercent` | `15` | Chance in percent that Robin has no Dry Cells on a day. |

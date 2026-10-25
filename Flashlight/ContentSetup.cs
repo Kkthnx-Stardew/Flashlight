@@ -105,7 +105,7 @@ namespace Flashlight
             {
                 // the text, then [#] and the title shown on the envelope
                 e.Edit(asset => asset.AsDictionary<string, string>().Data[MailId] =
-                    $"{_i18n.Get("mail.robin.text", new { price = config.FlashlightPrice, cell = config.BatteryPrice })}[#]{_i18n.Get("mail.robin.title")}");
+                    $"{LetterText(config)}[#]{_i18n.Get("mail.robin.title")}");
             }
             else if (e.NameWithoutLocale.IsEquivalentTo("Data/TriggerActions") && MailWanted(config))
             {
@@ -123,25 +123,38 @@ namespace Flashlight
                 e.Edit(asset =>
                 {
                     var shops = asset.AsDictionary<string, ShopData>().Data;
+                    var stock = ShopRules.StockPerShop(config.BatteryDailyStock, (config.SoldAtCarpenter ? 1 : 0) + (config.SoldAtBlacksmith ? 1 : 0));
                     if (config.SoldAtCarpenter)
-                        AddToShop(shops, CarpenterShopId, config);
+                        AddToShop(shops, CarpenterShopId, config, stock);
                     if (config.SoldAtBlacksmith)
-                        AddToShop(shops, BlacksmithShopId, config);
+                        AddToShop(shops, BlacksmithShopId, config, stock);
                 });
             }
         }
 
         /// <summary>Adds the flashlight and the Dry Cell to a shop. A shop that is missing or renamed by another mod sells nothing instead of breaking.</summary>
-        private static void AddToShop(IDictionary<string, ShopData> shops, string shopId, ModConfig config)
+        private static void AddToShop(IDictionary<string, ShopData> shops, string shopId, ModConfig config, int stock)
         {
             if (!shops.TryGetValue(shopId, out var shop))
                 return;
             shop.Items.Add(FlashlightShopItem(config));
-            shop.Items.Add(BatteryShopItem(config));
+            shop.Items.Add(BatteryShopItem(config, stock));
         }
 
-        /// <summary>The letter advertises the shop, so it is only sent while the shop sells the flashlight.</summary>
-        internal static bool MailWanted(ModConfig config) => config.SendMail && config.SoldAtCarpenter;
+        /// <summary>The letter advertises the shop, so it is only sent while a shop sells the flashlight.</summary>
+        internal static bool MailWanted(ModConfig config) =>
+            ShopRules.LetterFor(config.SendMail, config.SoldAtCarpenter, config.SoldAtBlacksmith) != LetterSender.None;
+
+        private string LetterText(ModConfig config)
+        {
+            var tokens = new { price = config.FlashlightPrice, cell = config.BatteryPrice };
+            return ShopRules.LetterFor(config.SendMail, config.SoldAtCarpenter, config.SoldAtBlacksmith) switch
+            {
+                LetterSender.RobinAndClint => _i18n.Get("mail.both.text", tokens),
+                LetterSender.Clint => _i18n.Get("mail.clint.text", tokens),
+                _ => _i18n.Get("mail.robin.text", tokens),
+            };
+        }
 
         private ToolData NewFlashlight(int salePrice) => new()
         {
@@ -167,12 +180,12 @@ namespace Flashlight
         };
 
         /// <summary>Batteries are limited each day, and are not sold to someone who is already carrying the most.</summary>
-        internal static ShopItemData BatteryShopItem(ModConfig config) => new()
+        internal static ShopItemData BatteryShopItem(ModConfig config, int stock) => new()
         {
             Id = BatteryId,
             ItemId = QualifiedBatteryId,
             Price = config.BatteryPrice,
-            AvailableStock = config.BatteryDailyStock,
+            AvailableStock = stock,
             AvailableStockLimit = LimitedStockMode.Player,
             // A random roll that is the same all day for every player however often the shop is opened, and does not depend on what else is for sale.
             AvailableStockModifiers = new List<QuantityModifier>
