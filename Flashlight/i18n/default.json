@@ -5,6 +5,8 @@
     "item.battery.description": "Powers a flashlight, two at a time. Right-click a flashlight with it to load it.",
     "recipe.battery.name": "Dry Cell",
     "tooltip.charge": "Charge: {{percent}}%",
+    "tooltip.empty-in-use": "Slots are empty because a pair is in use. Load another to keep it going.",
+    "tooltip.empty-none": "No batteries. Load two matching ones.",
     "mail.robin.title": "New at the shop",
     "mail.robin.text": "Dear @,^^A flashlight came in at the Carpenter's Shop. It lights a beam in front of you after dark and runs on a matching pair of Dry Cells.^^It is {{price}}g and Dry Cells are {{cell}}g each. Come by when I am open.^^   -Robin",
     "mail.both.text": "Dear @,^^A flashlight came in at the Carpenter's Shop. It lights a beam in front of you after dark and runs on a matching pair of Dry Cells. Clint has them at the Blacksmith too.^^It is {{price}}g and Dry Cells are {{cell}}g each. Come by when I am open.^^   -Robin",

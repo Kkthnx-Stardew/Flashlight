@@ -25,6 +25,9 @@ namespace Flashlight
         /// <summary>Builds the line of text about the charge for the tooltip, from a share of a full load. Set by the mod.</summary>
         public static Func<float, string>? ChargeText { get; set; }
 
+        /// <summary>Builds the note under the charge line when both slots are empty, told whether a pair is still in use. Set by the mod.</summary>
+        public static Func<bool, string>? EmptySlotsNote { get; set; }
+
         /// <summary>Called when someone tries to load a cell into a spare flashlight. Set by the mod.</summary>
         public static Action? SpareRefused { get; set; }
 
@@ -220,8 +223,12 @@ namespace Flashlight
 
         private static void GetDescriptionPostfix(Tool __instance, ref string __result)
         {
-            if (ChargeText is not null && FlashlightState.IsFlashlight(__instance))
-                __result += "\n\n" + ChargeText(FlashlightState.Reserve(__instance));
+            if (ChargeText is null || !FlashlightState.IsFlashlight(__instance))
+                return;
+            __result += "\n\n" + ChargeText(FlashlightState.Reserve(__instance));
+            // A pair is used up as soon as it is switched on, so empty slots next to a full charge look like a fault without a word of explanation.
+            if (EmptySlotsNote is not null && FlashlightState.IsActive(__instance) && FlashlightState.LoadedCount(__instance) == 0)
+                __result += "\n" + EmptySlotsNote(FlashlightState.ReadCharge(__instance) > 0);
         }
     }
 }

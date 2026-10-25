@@ -99,6 +99,18 @@ namespace Flashlight
             return count;
         }
 
+        /// <summary>How many slots hold a cell the flashlight uses.</summary>
+        public static int LoadedCount(Tool flashlight)
+        {
+            var count = 0;
+            for (var i = 0; i < flashlight.attachments.Count; i++)
+            {
+                if (KindOf(flashlight.attachments[i]) != CellKind.None)
+                    count++;
+            }
+            return count;
+        }
+
         /// <summary>Tries to switch the flashlight on. Nothing is changed: <see cref="Commit"/> applies the result.</summary>
         public static ChargeModel.Step TurnOn(Tool flashlight)
         {

@@ -63,6 +63,7 @@ namespace Flashlight
             FlashlightPatches.SpareRefused = () => Notice("message.one-flashlight");
             FlashlightPatches.SecondRefused = () => Notice("message.carry-one");
             FlashlightPatches.MismatchRefused = () => Notice("message.match");
+            FlashlightPatches.EmptySlotsNote = inUse => helper.Translation.Get(inUse ? "tooltip.empty-in-use" : "tooltip.empty-none");
             FlashlightPatches.ChargeText = fraction => helper.Translation.Get("tooltip.charge", new { percent = (int)Math.Round(fraction * 100) });
             FlashlightVisuals.ToolsLoader = () => helper.GameContent.Load<Texture2D>(ContentSetup.ToolsTexture);
             HeldFlashlight.HeldLoader = () => helper.GameContent.Load<Texture2D>(ContentSetup.HeldTexture);

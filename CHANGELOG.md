@@ -5,6 +5,7 @@ Versions follow [Semantic Versioning](https://semver.org/). Newest first.
 ## Unreleased
 
 - Fixed: with the flashlight selected, clicking another toolbar slot with the mouse switched the light on and off instead of selecting that slot. A click on the toolbar, the clock or any other on-screen menu now goes to the game and never toggles the light. Number keys already worked. Reported by mikezorz13 on Nexus.
+- The tooltip now explains empty battery slots. A pair is used up as soon as the light is switched on, so a flashlight could show empty slots next to a full charge, which looked like a fault. With both slots empty it says either that a pair is in use or that there are no batteries. Raised by mikezorz13 on Nexus.
 - The flashlight and Dry Cells can also be sold at Clint's Blacksmith. The new `SoldAtBlacksmith` setting (off by default) adds them there, alone or together with Robin's `SoldAtCarpenter`, so players with crowded shops can pick where it is sold. With both on, the daily Dry Cell stock is shared between the two shops (half each, rounded up), because the game counts a shop's daily stock for each shop on its own and two shops would otherwise sell twice the limit.
 - The letter about the flashlight follows the shops. It is Robin's when she sells it, Robin's with a line about Clint when both do, and a short letter from Clint when only he does. It is still one letter for each player, and players who already had Robin's letter do not get another.
 
