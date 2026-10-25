@@ -1,13 +1,8 @@
 # Flashlight 1.1.0 release text
 
-Ready to paste when the release goes out. Nothing here has been published.
+Published on 2026-10-25. The tag `v1.1.0` and the GitHub release are up, and on Nexus the zip went in as an update to the 1.0.0 file (so 1.0.0 moved to old files) with the page text from `NEXUS.bbcode`.
 
-## Before publishing
-
-- Play it in game first and get the go-ahead. The installed copy in the Mods folder is this build.
-- Tag `v1.1.0` on the commit that holds this file, push, then create the GitHub release with `Flashlight 1.1.0.zip` attached.
-- On Nexus, upload `Flashlight 1.1.0.zip` as a new main file, mark the old file as old, and paste the page text from `NEXUS.bbcode`.
-- Anyone who played 1.0.0 keeps `BatteryHours` 2 and `BatteryPackHours` 4 in their saved `config.json`, so say that in the notes (it is in the text below).
+The text below is what was used. Anyone who played 1.0.0 keeps `BatteryHours` 2 and `BatteryPackHours` 4 in their saved `config.json`, which the notes say.
 
 ## GitHub release notes
 
