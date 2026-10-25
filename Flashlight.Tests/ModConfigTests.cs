@@ -8,14 +8,16 @@ public class ModConfigTests
         var config = new ModConfig();
         Assert.Equal("F", config.ToggleKey);
         Assert.Equal(7, config.BeamLengthTiles);
-        Assert.Equal(2, config.BatteryHours);
+        Assert.Equal(4, config.BatteryHours);
         Assert.True(config.UseBatteryPacks);
-        Assert.Equal(4, config.BatteryPackHours);
+        Assert.Equal(6, config.BatteryPackHours);
         Assert.Equal(120, config.BatteryPackBeamPercent);
         Assert.True(config.ShowInHand);
+        Assert.True(config.BeamShadows);
         Assert.Equal(600, config.FlashlightPrice);
         Assert.Equal(15, config.BatteryPrice);
         Assert.True(config.SoldAtCarpenter);
+        Assert.True(config.SendMail);
         Assert.Equal(15, config.BatteryOutOfStockPercent);
         Assert.Equal(25, config.BatteryLowStockPercent);
         Assert.Equal(16, config.BatteryDailyStock);
@@ -89,8 +91,8 @@ public class ModConfigCopyTests
         var changed = new ModConfig
         {
             ToggleKey = "G", BeamLengthTiles = 5, BatteryHours = 7, FlashlightPrice = 111, BatteryPrice = 22,
-            SoldAtCarpenter = false, BatteryDailyStock = 7, BatteryOutOfStockPercent = 33, BatteryLowStockPercent = 44,
-            MaxBatteriesCarried = 9, FlickerSecondsBetween = 77, UseBatteryPacks = false, BatteryPackHours = 20, BatteryPackBeamPercent = 150, ShowInHand = false,
+            SoldAtCarpenter = false, SendMail = false, BatteryDailyStock = 7, BatteryOutOfStockPercent = 33, BatteryLowStockPercent = 44,
+            MaxBatteriesCarried = 9, FlickerSecondsBetween = 77, UseBatteryPacks = false, BatteryPackHours = 20, BatteryPackBeamPercent = 150, ShowInHand = false, BeamShadows = false,
         };
         var target = new ModConfig();
         target.CopyFrom(changed);
@@ -105,8 +107,8 @@ public class ModConfigCopyTests
         var changed = new ModConfig
         {
             ToggleKey = "G", BeamLengthTiles = 5, BatteryHours = 7, FlashlightPrice = 111, BatteryPrice = 22,
-            SoldAtCarpenter = false, BatteryDailyStock = 7, BatteryOutOfStockPercent = 33, BatteryLowStockPercent = 44,
-            MaxBatteriesCarried = 9, FlickerSecondsBetween = 77, UseBatteryPacks = false, BatteryPackHours = 20, BatteryPackBeamPercent = 150, ShowInHand = false,
+            SoldAtCarpenter = false, SendMail = false, BatteryDailyStock = 7, BatteryOutOfStockPercent = 33, BatteryLowStockPercent = 44,
+            MaxBatteriesCarried = 9, FlickerSecondsBetween = 77, UseBatteryPacks = false, BatteryPackHours = 20, BatteryPackBeamPercent = 150, ShowInHand = false, BeamShadows = false,
         };
         var defaults = new ModConfig();
         foreach (var property in typeof(ModConfig).GetProperties())

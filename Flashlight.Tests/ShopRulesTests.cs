@@ -45,6 +45,12 @@ public class ShopRulesTests
     public void ACarryLimitOfOneStopsSellingToAnyoneWhoHasOne() =>
         Assert.Equal("PLAYER_HAS_ITEM Current (O)Cell 0 0", ShopRules.CarryLimit("(O)Cell", 1));
 
+    [Theory]
+    [InlineData(4, "!PLAYER_HAS_ITEM Current (T)Light, DAYS_PLAYED 4")]
+    [InlineData(0, "!PLAYER_HAS_ITEM Current (T)Light, DAYS_PLAYED 1")]
+    public void TheLetterIsOnlyForSomeoneWithoutAFlashlightAfterAFewDays(int days, string expected) =>
+        Assert.Equal(expected, ShopRules.MailAd("(T)Light", days));
+
     [Fact]
     public void TheFlashlightIsOnlySoldToSomeoneWithoutOne() =>
         Assert.Equal("!PLAYER_HAS_ITEM Current (T)Light", ShopRules.OneFlashlight("(T)Light"));

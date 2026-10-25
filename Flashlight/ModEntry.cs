@@ -28,6 +28,7 @@ namespace Flashlight
         private readonly PerScreen<bool> _on = new();
         private readonly PerScreen<string?> _lightId = new();
         private readonly PerScreen<string?> _lightLocation = new();
+        private readonly PerScreen<int> _signalFrom = new();     // the first tick the beam's size is sent in the texture index
         private readonly PerScreen<bool> _warnedLow = new();
         private readonly PerScreen<int> _flickerTicks = new();
         private readonly PerScreen<Tool?> _tool = new();        // the flashlight in use, found again whenever the backpack changes
@@ -35,6 +36,8 @@ namespace Flashlight
         private int _lastSpareNotice;                           // the tick of the last "one flashlight" message, so clicking a spare does not fill the screen
 
         private readonly Texture2D?[] _beams = new Texture2D?[4];
+        private readonly BeamMask _mask = new();
+        private RemoteBeams _remote = null!; // set in Entry
 
         public override void Entry(IModHelper helper)
         {
@@ -55,6 +58,7 @@ namespace Flashlight
             helper.ConsoleCommands.Add("flashlight_report", "Prints a block of text about your settings and how the flashlight has been used, to paste into a bug report or feedback. Nothing is sent anywhere.", (_, _) => Monitor.Log(Report(), LogLevel.Info));
 
             _content = new ContentSetup(helper.Translation, () => _config);
+            _remote = new RemoteBeams(BeamFor, () => _config.BeamShadows, message => Monitor.Log(message, LogLevel.Error));
             FlashlightPatches.Apply(Monitor);
             FlashlightPatches.SpareRefused = () => Notice("message.one-flashlight");
             FlashlightPatches.SecondRefused = () => Notice("message.carry-one");
@@ -74,6 +78,7 @@ namespace Flashlight
             helper.Events.Input.ButtonsChanged += OnButtonsChanged;
             helper.Events.Input.ButtonPressed += OnButtonPressed;
             helper.Events.GameLoop.UpdateTicked += OnUpdateTicked;
+            helper.Events.GameLoop.UpdateTicked += (_, _) => _remote.Update();
             helper.Events.GameLoop.TimeChanged += OnTimeChanged;
             helper.Events.GameLoop.SaveLoaded += (_, _) => Reset();
             helper.Events.GameLoop.DayStarted += (_, _) => Reset();
@@ -87,8 +92,11 @@ namespace Flashlight
             helper.Events.GameLoop.ReturnedToTitle += (_, _) =>
             {
                 ForgetLight();
+                _mask.Forget(); // lets go of the place it last looked at
+                _remote.Forget();
                 SaveStats();
             };
+            helper.Events.Multiplayer.PeerDisconnected += (_, e) => DropLights(e.Peer.PlayerID);
             helper.Events.Player.Warped += OnWarped;
             helper.Events.Player.InventoryChanged += (_, e) =>
             {
@@ -124,6 +132,8 @@ namespace Flashlight
             ApplyConfig(save: true);
             InvalidateContent();
             Array.Clear(_beams);
+            _mask.Forget();
+            _remote.Forget();
         }
 
         private void InvalidateContent()
@@ -132,6 +142,8 @@ namespace Flashlight
             Helper.GameContent.InvalidateCache("Data/Tools");
             Helper.GameContent.InvalidateCache("Data/CraftingRecipes");
             Helper.GameContent.InvalidateCache("Data/Shops");
+            Helper.GameContent.InvalidateCache("Data/Mail");
+            Helper.GameContent.InvalidateCache("Data/TriggerActions");
         }
 
         private void OnAssetsInvalidated(object? sender, AssetsInvalidatedEventArgs e)
@@ -145,6 +157,8 @@ namespace Flashlight
                     FlashlightVisuals.ForgetTextures();
                     HeldFlashlight.ForgetTextures();
                     Array.Clear(_beams);
+                    _mask.Forget();
+                    _remote.Forget();
                     return;
                 }
             }
@@ -248,6 +262,20 @@ namespace Flashlight
             }
         }
 
+        /// <summary>
+        /// Takes a player's beam out of every place. The game removes the light of a ring when its player leaves, but not one added
+        /// by a mod, so a player who dropped out with the flashlight on would leave a beam behind that shows again when they rejoin.
+        /// </summary>
+        private static void DropLights(long playerId)
+        {
+            var id = $"{ContentSetup.ModId}_{playerId}";
+            Utility.ForEachLocation(location =>
+            {
+                location.removeLightSource(id);
+                return true;
+            });
+        }
+
         private void Reset()
         {
             _on.Value = false;
@@ -255,6 +283,7 @@ namespace Flashlight
             _warnedLow.Value = false;
             if (!Context.IsWorldReady)
                 return;
+            DropLights(Game1.player.UniqueMultiplayerID); // a beam left from before this player dropped out
             RefreshTool(Game1.player);
             Normalize(Game1.player);
         }
@@ -393,6 +422,28 @@ namespace Flashlight
             return _beams[facing] ??= Helper.GameContent.Load<Texture2D>(ContentSetup.BeamAssetName(facing));
         }
 
+        /// <summary>
+        /// The picture to draw the beam with: the cone, with the shadows of whatever stands in its way cut out of it when that is on
+        /// in the settings. The shadows are worked out for the radius the light is drawn with, so this must follow the flicker.
+        /// </summary>
+        private Texture2D TextureFor(Farmer player, GameLocation location, Vector2 origin, float radius)
+        {
+            var cone = BeamFor(player.FacingDirection);
+            if (!_config.BeamShadows || radius <= 0f)
+                return cone;
+            try
+            {
+                return _mask.Build(Game1.graphics.GraphicsDevice, cone, player.FacingDirection, origin, radius, location, player) ?? cone;
+            }
+            catch (Exception ex)
+            {
+                // a shadow that cannot be worked out must never stop the light, so it falls back to the plain cone and says so once
+                _config.BeamShadows = false;
+                Monitor.Log($"Could not work out the beam's shadows, so the beam is drawn without them until the game is restarted. ({ex.Message})", LogLevel.Error);
+                return cone;
+            }
+        }
+
         private float Radius => _config.BeamLengthTiles * 64f / ConePixels;
 
         /// <summary>How much brighter than a Dry Cell the beam is with the given share of a Battery Pack's boost (0 to 1).</summary>
@@ -431,13 +482,24 @@ namespace Flashlight
             RemoveLight();
             var id = $"{ContentSetup.ModId}_{player.UniqueMultiplayerID}";
             var boost = _tool.Value is { } flashlight ? FlashlightState.Boost(flashlight) : 0f;
-            var light = new LightSource(id, LightSource.lantern, BeamOrigin(player), Radius * Brightness(boost), ColorFor(boost), LightSource.LightContext.None, player.UniqueMultiplayerID, location.NameOrUniqueName)
+            var origin = BeamOrigin(player);
+            var radius = Radius * Brightness(boost);
+            var light = new LightSource(id, LightSource.lantern, origin, radius, ColorFor(boost), LightSource.LightContext.None, player.UniqueMultiplayerID, location.NameOrUniqueName)
             {
-                lightTexture = BeamFor(player.FacingDirection),
+                lightTexture = TextureFor(player, location, origin, radius),
             };
             location.sharedLights.AddLight(light);
             _lightId.Value = id;
             _lightLocation.Value = location.NameOrUniqueName;
+            // the light is first sent as the game's lantern, so a player without this mod always has a picture to draw
+            _signalFrom.Value = Game1.ticks + 1;
+        }
+
+        /// <summary>Tells the other players the true size of the beam, which the game would hold back while it flickers.</summary>
+        private void Signal(LightSource light)
+        {
+            if (Context.HasRemotePlayers && Game1.ticks >= _signalFrom.Value)
+                light.textureIndex.Value = BeamSignal.Encode(light.radius.Value);
         }
 
         private void RemoveLight()
@@ -461,6 +523,8 @@ namespace Flashlight
 
         private void OnWarped(object? sender, WarpedEventArgs e)
         {
+            if (e.IsLocalPlayer)
+                _remote.Forget(); // the masks belong to the place that was left
             if (!e.IsLocalPlayer || !_on.Value)
                 return;
             // move the light into the new place
@@ -494,13 +558,15 @@ namespace Flashlight
                     _warnedLow.Value = false;
             }
 
-            location.repositionLightSource(_lightId.Value, BeamOrigin(player));
-            light.lightTexture = BeamFor(player.FacingDirection);
+            var origin = BeamOrigin(player);
+            location.repositionLightSource(_lightId.Value, origin);
 
             // no beam during a cutscene or a festival, where the farmer is moved by the script
             if (Game1.eventUp)
             {
+                light.lightTexture = BeamFor(player.FacingDirection);
                 light.radius.Value = 0f;
+                Signal(light);
                 return;
             }
 
@@ -517,6 +583,8 @@ namespace Flashlight
             var boost = _tool.Value is { } held ? FlashlightState.Boost(held) : 0f;
             light.color.Value = ColorFor(boost);
             light.radius.Value = Radius * Brightness(boost) * strength;
+            light.lightTexture = TextureFor(player, location, origin, light.radius.Value);
+            Signal(light);
         }
     }
 }

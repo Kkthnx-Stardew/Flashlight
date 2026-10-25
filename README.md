@@ -9,11 +9,12 @@ This is an early build. It has been run in Stardew Valley 1.6.15 with SMAPI 4.5.
 ## What it adds
 
 - **Flashlight** (a tool): sold at Robin's Carpenter's Shop, one to a player. Press **F** (or use the tool) to switch it on and off. It keeps shining while you use other tools, which a torch cannot do. The toolbar picture shows when it is on, and a charge bar under it works like the water bar of the watering can.
-- **A cone of light**: a beam 7 tiles long in the direction you face, with nothing lit around you, like a real flashlight. It flickers now and then like an old flashlight with a loose cell, and much more often once the charge falls under a tenth of a full load.
+- **A cone of light**: a beam 7 tiles long in the direction you face, with nothing lit around you, like a real flashlight. It flickers now and then like an old flashlight with a loose cell, and much more often once the charge falls under a tenth of a full load. Trees, boulders, buildings and walls stop the beam and throw a shadow behind them, and other players in a multiplayer game see the same cone.
 - **Held in your hand**: while the flashlight is the selected tool you are drawn holding it. It follows your hand as you walk, the beam starts at its lens, and from the front and back it is held in one hand.
 - **Battery slots**: the flashlight has two, always two, like the bait slot on a fishing rod. It runs on a matching pair and needs both loaded, like a real one: two Dry Cells or two Battery Packs, never one of each and never just one. Right-click the flashlight with cells on the cursor to load them, one to a slot, and right-click it with an empty hand to take one out. Hover it to see what is loaded.
-- **Dry Cell** (a battery): sold at Robin's in limited numbers, or crafted from 1 Copper Bar and 1 Coal for 12 cells once you reach Mining level 2. A pair lasts 2 in-game hours, and only while it is dark where you are.
-- **Battery Pack** (the game's own): a pair of them goes in the slots instead. A pair of packs lasts 4 hours, two more than a pair of Dry Cells, and while it is in use the beam is 20 percent longer and a little brighter. Packs are found from a Lightning Rod or a Solar Panel, never sold, and you need two, so using them is a choice.
+- **Dry Cell** (a battery): sold at Robin's in limited numbers, or crafted from 1 Copper Bar and 1 Coal for 12 cells once you reach Mining level 2. A pair lasts 4 in-game hours, and only while it is dark where you are.
+- **Battery Pack** (the game's own): a pair of them goes in the slots instead. A pair of packs lasts 6 hours, two more than a pair of Dry Cells, and while it is in use the beam is 20 percent longer and a little brighter. Packs are found from a Lightning Rod or a Solar Panel, never sold, and you need two, so using them is a choice.
+- **A letter from Robin**: a few days into a save she sends one letter about the flashlight to a player who does not have one yet. It is sent once for each player and only while she sells it. `SendMail` turns it off.
 
 | | |
 | --- | --- |
@@ -40,13 +41,15 @@ Edit `config.json` in the mod folder after the first run, or change them in game
 | `ToggleKey` | `F` | The button or buttons that switch the flashlight on and off, such as `F, LeftShoulder`. |
 | `BeamLengthTiles` | `7` | How far the beam reaches (3 to 12). |
 | `ShowInHand` | `true` | Draw the flashlight in your hand while it is selected. |
-| `BatteryHours` | `2` | In-game hours a pair of Dry Cells lasts (1 to 12). |
+| `BeamShadows` | `true` | Trees, boulders, buildings and walls stop the beam and throw a shadow behind them. Turn it off for the plain cone. |
+| `BatteryHours` | `4` | In-game hours a pair of Dry Cells lasts (1 to 12). |
 | `UseBatteryPacks` | `true` | Whether the game's Battery Pack can be loaded. |
-| `BatteryPackHours` | `4` | In-game hours a pair of Battery Packs lasts (1 to 48). |
+| `BatteryPackHours` | `6` | In-game hours a pair of Battery Packs lasts (1 to 48). |
 | `BatteryPackBeamPercent` | `120` | Beam length while a pack is in use, as a percentage (100 to 200). |
 | `FlashlightPrice` | `600` | Shop price of the flashlight. |
 | `BatteryPrice` | `15` | Shop price of one Dry Cell. |
 | `SoldAtCarpenter` | `true` | Whether Robin sells them. Turn off if another mod handles shops. |
+| `SendMail` | `true` | Whether Robin sends one letter about the flashlight. Only sent while she sells it. |
 | `BatteryDailyStock` | `16` | How many Dry Cells the shop sells to one player each day. |
 | `MaxBatteriesCarried` | `16` | The shop stops selling Dry Cells to someone carrying this many. |
 | `BatteryOutOfStockPercent` | `15` | Chance in percent that Robin has no Dry Cells on a day. |
@@ -73,7 +76,7 @@ Type `flashlight_report` in the SMAPI console and paste what it prints. It lists
 ## Known limits
 
 - The battery slots, the charge bar, the tooltip line, the held flashlight and the one-flashlight rule use a few small Harmony patches on the game's own code. They only act on the flashlight. SMAPI lists the mod as one that changes game code for that reason.
-- Multiplayer is untested. It has never been run with a second player, so it is not known whether it works. From reading the code, other players may see the game's ordinary round light for the beam instead of the cone, but that is a guess. Please report what you find.
+- Multiplayer has had a small test and no more. With a host and one joining player on the same computer, each saw the other's beam as a cone pointing the right way, the flicker showed on both screens, and a beam was removed when its player left. Everyone in the game needs the mod to see the cone: a player without it sees a plain round glow. Three or more players, split screen, other people's internet connections and other mods that change lights are untested. Please report what you find.
 - Shop days for Robin and the Mining level of the recipe are not checked against the rest of the game.
 - If another mod changes how the farmer is drawn (a different farmer sheet or a custom farmer renderer), the held flashlight might sit in the wrong place. Turn it off with `ShowInHand` and report it.
 

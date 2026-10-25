@@ -25,8 +25,8 @@ The game's Battery Pack sells for 500g and is not sold in any shop. It comes fro
 ## How it works
 
 - **Battery slots.** The flashlight always has two slots, like the bait slot of a fishing rod, and it is not a setting. It needs both filled with the same kind of cell, as a real flashlight does: two Dry Cells or two Battery Packs. One cell alone does nothing and a Dry Cell next to a Battery Pack is refused and handed back. Right-click the flashlight in the backpack with cells on the cursor to load one into each slot, and right-click it with an empty hand to take one out. Hover it to see what is loaded.
-- **Charge.** A matched pair is used up together the moment the flashlight needs light and gives a fixed time, 2 hours for Dry Cells. The flashlight keeps that charge and, when it runs out, takes the next matched pair if one is loaded. With no matching pair it goes out. A pair can be loaded while the light is already on.
-- **Battery Pack.** A pair of Battery Packs goes in the slots instead of Dry Cells. A pair lasts 4 hours (two more than Dry Cells) and while it is in use the beam is 20 percent longer (about 8.4 tiles) and takes more of the darkness away. Packs are found, not bought, and it takes two, so a pair is 1,000g of items the game would sell for 4 hours of a slightly better beam. That is deliberately a poor trade, so packs are a treat and not the default. The charge bar is measured against the best pair in the flashlight, so a Dry Cell pair reads full and a pair of packs reads full.
+- **Charge.** A matched pair is used up together the moment the flashlight needs light and gives a fixed time, 4 hours for Dry Cells. The flashlight keeps that charge and, when it runs out, takes the next matched pair if one is loaded. With no matching pair it goes out. A pair can be loaded while the light is already on.
+- **Battery Pack.** A pair of Battery Packs goes in the slots instead of Dry Cells. A pair lasts 6 hours (two more than Dry Cells) and while it is in use the beam is 20 percent longer (about 8.4 tiles) and takes more of the darkness away. Packs are found, not bought, and it takes two, so a pair is 1,000g of items the game would sell for 6 hours of a slightly better beam. That is deliberately a poor trade, so packs are a treat and not the default. The charge bar is measured against the best pair in the flashlight, so a Dry Cell pair reads full and a pair of packs reads full.
 - **Only a cone.** Like a real flashlight it lights what it points at and nothing around the farmer, so it does not replace a torch for work at close range or a glow ring that lights every way.
 - **Switching.** A key (F, or a list such as `F, LeftShoulder` for a controller) or using the tool switches it on and off. The toolbar picture changes to a lit one while it is on.
 - **Charge bar.** Under the picture is a bar like the water bar of the watering can. It shows how much of a full load (one fresh pair, running or loaded) is left, in steps: green above half, yellow above a quarter, orange above a tenth, red below that. The tooltip gives the same figure as a percentage.
@@ -39,14 +39,14 @@ The game's Battery Pack sells for 500g and is not sold in any shop. It comes fro
 | --- | --- | --- |
 | Beam length | 7 tiles (9 with a Battery Pack) | More reach than a Small Glow Ring, far less coverage than a Glow Ring. |
 | Beam spread | 30 degrees each side of the facing | Narrow on purpose. |
-| Battery slots | 2, fixed, a matched pair | A real flashlight takes two batteries that work together. Two Dry Cells is one pair, which is 2 in-game hours of light, so a full night takes several pairs and the bag matters. |
-| Battery life | A pair of Dry Cells lasts 2 in-game hours (12 ticks of 10 minutes) | About 85 real seconds a pair. Short on purpose, so the flashlight is something you feed and not something you set and forget. |
+| Battery slots | 2, fixed, a matched pair | A real flashlight takes two batteries that work together. Two Dry Cells is one pair, which is 4 in-game hours of light, so a full night takes a pair and a half and the bag still matters. |
+| Battery life | A pair of Dry Cells lasts 4 in-game hours (24 ticks of 10 minutes) | About 170 real seconds a pair. It was 2 hours in 1.0.0 and was doubled so a pair covers most of an evening. The flashlight is still something you feed and not something you set and forget. |
 | Flashlight price | 600g | A new game starts with 500g, so it cannot be bought on day one, and it is the cost of a good early harvest. |
-| Battery price | 15g a cell | A pair is 30g for 2 hours, which is 15g for each hour of light. A full spring night (6 hours, 3 pairs) is about 90g, and only the dark hours count. |
+| Battery price | 15g a cell | A pair is 30g for 4 hours, which is 7.5g for each hour of light. A full spring night (6 hours, a pair and a half) is about 45g, and only the dark hours count. |
 | Battery sell price | 3g | A fifth of the shop price, so buying cells to sell them again loses money. |
 | Where it is sold | Robin's Carpenter's Shop | She already sells the lamp-post recipes (500g and 1,000g). Shop hours are not verified. |
-| Battery Pack life | A pair of Battery Packs lasts 4 in-game hours | Two more hours than a pair of Dry Cells. The game sells a pack for 500g and uses it for lamp-posts and sprinklers, and the flashlight needs two, so burning a pair is a real choice and never a bargain. Lightning rod storms and a week of a solar panel cannot carry a season of nights. |
-| Battery recipe | 1 Copper Bar + 1 Coal makes 12 Dry Cells | A Copper Bar is 5 Copper Ore and 1 Coal at a furnace (wiki), so a craft is 5 ore and 2 coal for 12 cells, which is 12 hours of light. Learned at Mining level 2, which is a placeholder and not verified. |
+| Battery Pack life | A pair of Battery Packs lasts 6 in-game hours | Two more hours than a pair of Dry Cells. The game sells a pack for 500g and uses it for lamp-posts and sprinklers, and the flashlight needs two, so burning a pair is a real choice and never a bargain. Lightning rod storms and a week of a solar panel cannot carry a season of nights. |
+| Battery recipe | 1 Copper Bar + 1 Coal makes 12 Dry Cells | A Copper Bar is 5 Copper Ore and 1 Coal at a furnace (wiki), so a craft is 5 ore and 2 coal for 12 cells, which is 24 hours of light. Learned at Mining level 2, which is a placeholder and not verified. |
 
 ## Keeping it fair
 
@@ -54,7 +54,7 @@ The game's Battery Pack sells for 500g and is not sold in any shop. It comes fro
 | --- | --- |
 | Owning several flashlights to store charge in the spares | The shop only sells one to a player who has none. A second one cannot be picked up or moved into the backpack (the game is told it does not fit, so it stays where it was and nothing is lost). If one still gets in some other way, only the first in the backpack works. Spares cannot be lit and take no cells, so they cannot store extra light, and using one shows a message. |
 | Stacking beams from several flashlights | There is one light per player, however many flashlights are carried. |
-| Hoarding batteries so the upkeep never matters | The shop sells at most 16 a day and stops selling to a player carrying 16. Robin has none on about 15 of 100 days and half the stock on about 21 more (the roll is the same all day for every player, however often the shop is opened). That averages about 11 cells a day, which is 11 hours of light, with the shop closed one day in seven. |
+| Hoarding batteries so the upkeep never matters | The shop sells at most 16 a day and stops selling to a player carrying 16. Robin has none on about 15 of 100 days and half the stock on about 21 more (the roll is the same all day for every player, however often the shop is opened). That averages about 11 cells a day, which is 22 hours of light, with the shop closed one day in seven. |
 | Buying cells and selling them back | Sell price is 3g against 15g to buy. |
 | Crafting cells to sell them | A craft costs 5 Copper Ore and 2 Coal for 36g of cells at the sell price. |
 | Loading a whole stack of cells into a slot | A slot takes exactly one cell. |
@@ -66,22 +66,28 @@ Not blocked on purpose: batteries made by crafting are not limited, since each n
 
 ## Multiplayer
 
-The light is added as a shared light, so other players see a light at the right place. Multiplayer has not been tested at all, so none of this is known. From reading the code, they may see the game's ordinary round light, because the custom cone picture is only drawn on the machine that owns the flashlight.
+The light is added as a shared light, so other players see a light at the right place, at the size and colour the owner sends. The game does not send a light's picture, though, so on its own every other player would see the plain round lantern glow. Each machine with the mod therefore draws the cone itself for the flashlights of the other players in the same place, facing the way their farmer faces, with the shadows worked out on that machine.
+
+The flicker needed one more step. The game holds back a new radius until the old one has settled, so a flicker that changes the size every few updates never arrived (measured: the owner's beam changed size 30 times in 15 seconds and the other player's copy received none). The owner now also sends the true beam size in the light's texture index, which the game sends at once and ignores when the number is not one of its own pictures, and the other machine draws the cone at that size. A player without the mod keeps the lantern glow and the slow radius.
+
+When a player leaves the game, the game removes the light of a ring but not one added by a mod, so the host removes the beams of a player who dropped and every player clears their own old beam when a day starts.
+
+Here is what was tested, with a host and one joining player on one computer over a local game. The joining player's copy of the old build showed the host's beam as the lantern glow, and the new build shows the cone in two directions with shadows from trees. It also works the other way, with the joining player's flashlight seen on the host's screen. The flicker reaches the other screen too (the cone changed size 10 times for the 30 changes the owner made, since the game sends changes about 20 times a second), and the beam of a player who closed their game is removed on the host. Not tested yet are three or more players, split screen, play over the internet with lag, a player joining while a beam is already lit, and other mods that change lights.
 
 ## Supply against use
 
-`docs/balance_sim.py` plays a year (112 days) with the shop open six days in seven and a player who buys up to the carry limit each open day, reloads from the bag, and needs the same hours of light every day. Crafting and Battery Packs are left out. Each cell is one hour of light, because a pair is used together for 2 hours.
+`docs/balance_sim.py` plays a year (112 days) with the shop open six days in seven and a player who buys up to the carry limit each open day, reloads from the bag, and needs the same hours of light every day. Crafting and Battery Packs are left out. Each cell is two hours of light, because a pair is used together for 4 hours. (With the 1.0.0 life of 2 hours a pair, every hours figure below was half as large: 4 hours of light a day cost 59g and 10 hours ran short a third of the time.)
 
 | Hours of light a day | Days with too little light | Cells bought a day | Cost a day |
 | --- | --- | --- | --- |
-| 3 | 0% | 3.0 | 45g |
-| 4 | 0% | 4.0 | 59g |
-| 6 | 2% | 5.9 | 88g |
-| 8 | 7% | 7.4 | 112g |
-| 10 | 34% | 8.4 | 126g |
-| 12 | 36% | 9.2 | 138g |
+| 4 | 0% | 2.0 | 30g |
+| 6 | 0% | 3.0 | 45g |
+| 8 | 0.2% | 4.0 | 59g |
+| 12 | 2% | 5.9 | 88g |
+| 16 | 7% | 7.4 | 111g |
+| 20 | 34% | 8.5 | 127g |
 
-Reading it: a player who lights a normal night (4 to 6 hours) is covered by the shop and pays about 60 to 90g a day. A player who runs the flashlight all day, such as through long Mines trips, runs short on one day in three at 10 hours, so they need to craft cells (12 from a Copper Bar and a Coal) or spend Battery Packs. That is the intended pressure, and the first thing to check against real play.
+Reading it: a player who lights a normal night (4 to 6 hours) is covered by the shop and pays about 30 to 45g a day. Only someone who runs the flashlight for most of the day, such as through long Mines trips, runs short, one day in three at 20 hours, and then needs to craft cells (12 from a Copper Bar and a Coal) or spend Battery Packs. Doubling the battery life halved the upkeep, so the pressure is much lighter than in 1.0.0. If real play says it is now too easy, `BatteryDailyStock` and `BatteryOutOfStockPercent` are the levers that bring it back without shortening the battery.
 
 ## What would change the numbers
 

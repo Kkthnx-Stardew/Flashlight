@@ -21,7 +21,7 @@ namespace Flashlight
         public const string QualifiedPackId = "(O)787";
 
         /// <summary>Ticks of light in each kind of cell. Set from the settings.</summary>
-        public static CellCapacities Capacities { get; set; } = new(ChargeModel.CapacityTicks(2), ChargeModel.CapacityTicks(4));
+        public static CellCapacities Capacities { get; set; } = new(ChargeModel.CapacityTicks(4), ChargeModel.CapacityTicks(6));
 
         /// <summary>Whether a Battery Pack can be loaded. A pack that is already loaded keeps working if this is turned off.</summary>
         public static bool PacksAllowed { get; set; } = true;

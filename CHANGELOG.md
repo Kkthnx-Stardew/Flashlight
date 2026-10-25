@@ -2,6 +2,18 @@
 
 Versions follow [Semantic Versioning](https://semver.org/). Newest first.
 
+## 1.1.0 (2026-10-25)
+
+Built against Stardew Valley 1.6.15 and SMAPI 4.5.2 with no warnings, and 140 tests pass. It was run in the game on a throwaway farm with only this mod loaded, and in a game with one host and one joining player on one computer. Real play and larger multiplayer games are untested.
+
+- Other players now see your beam as a cone. Before, the game sent the light to them but not its picture, so they saw a plain round glow around you. Each machine now draws the cone for the other players' flashlights, facing the way they face, with the shadows worked out there. A player without the mod still sees the round glow.
+- The flicker, including the steady flicker of a nearly flat battery, now shows to other players. The game holds back a quickly changing light size, so the owner also sends the true size in a way the game sends at once.
+- A beam is removed when its player leaves the game, so a player who drops out with the flashlight on no longer leaves a beam behind that comes back when they rejoin.
+- Multiplayer was tested with one host and one joining player on one computer, and the other cases are still untested, see docs/BALANCE.md.
+- Batteries last two hours longer. A pair of Dry Cells lasts 4 in-game hours instead of 2, and a pair of Battery Packs 6 instead of 4, so a pair no longer runs out in the middle of an evening. This halves the upkeep (about 7.5g for an hour of light instead of 15g) and the shop's supply now covers about twice the hours, so it may make the flashlight too easy, which docs/BALANCE.md says how to pull back. The new numbers are the defaults. A `config.json` written by 1.0.0 keeps `BatteryHours` at 2 and `BatteryPackHours` at 4, so set them to 4 and 6 or delete the file to get them.
+- Robin sends each player one letter about the flashlight, a few days into a save, to a player who has none. It names the prices, is sent once for each player in a save, and is only sent while Robin sells the flashlight. `SendMail` turns it off.
+- The beam is stopped by tall things. Full-grown trees, boulders, buildings and walls throw a shadow behind them instead of being lit all the way through, and the side of a tree the beam cannot reach stays dark. Facing away from the screen the farmer no longer lights the back of their own head. `BeamShadows` turns it off. The shadows are cheap: about 0.2 ms a frame while walking and almost nothing standing still, with no garbage for the game to clear (see docs/PERFORMANCE.md).
+
 ## 1.0.0 (2026-10-18)
 
 First release. The numbers are a first pass and real play will change them, see docs/BALANCE.md.

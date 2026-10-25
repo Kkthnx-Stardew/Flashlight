@@ -1,12 +1,21 @@
 [size=4][b]Flashlight[/b][/size]
 A flashlight for Stardew Valley that lights a cone in the direction you face and runs on a pair of batteries. Buy it from Robin, keep it in your backpack, and see at night without holding a torch.
 
-This is a first release and I want to be straight about it. The mod has been played in the game and the pieces work, but the numbers (prices, battery life, shop stock) are my best reasoning and a simulation, not hundreds of hours of play. Please tell me where they feel wrong. How to do that is at the bottom.
+The mod has been played in the game and the pieces work, but the numbers (prices, battery life, shop stock) are still my best reasoning and a simulation, not hundreds of hours of play. Please tell me where they feel wrong. How to do that is at the bottom.
+
+[size=3][b]New in 1.1.0[/b][/size]
+[list]
+[*]In multiplayer, other players see your beam as a cone, flicker included. Before, they saw a plain round glow. Everyone needs the mod for it, and what was tested is under "What is not verified".
+[*]The beam is stopped by trees, boulders, buildings and walls and throws a shadow, instead of lighting straight through them. The Beam shadows setting turns it off.
+[*]Batteries last two hours longer. A pair of Dry Cells lasts 4 hours and a pair of Battery Packs 6. If you played 1.0.0, your config.json still has the old 2 and 4, so change the two pair life settings or delete the file to get the new ones.
+[*]Robin sends one letter about the flashlight a few days into a save, to a player who does not have one yet. The Letter from Robin setting turns it off.
+[*]A beam is removed when its player leaves a multiplayer game, and the shadows are cheap: about 0.2 ms a frame while moving and almost nothing standing still.
+[/list]
 
 [size=3][b]How it works[/b][/size]
 [list]
 [*][b]Flashlight[/b] (a tool): sold at Robin's Carpenter's Shop for 600g, one to a player. Select it and press [b]F[/b] (or click) to switch it on and off. It keeps shining while you use other tools, which a torch cannot do. The toolbar picture shows when it is on and a charge bar under it works like the watering can's water bar.
-[*][b]A cone, like a real flashlight[/b]: a beam 7 tiles long in the direction you face. Nothing around you is lit. It flickers now and then like an old flashlight with a loose connection, and much more often when the charge is nearly gone.
+[*][b]A cone, like a real flashlight[/b]: a beam 7 tiles long in the direction you face. Nothing around you is lit, and tall things such as trees and walls throw a shadow. It flickers now and then like an old flashlight with a loose connection, and much more often when the charge is nearly gone.
 [*][b]Held in your hand[/b]: you are drawn holding it while it is selected, standing or walking, and the beam starts at its lens.
 [*][b]Two slots, one matching pair[/b]: the flashlight always has two battery slots, like the bait slot on a fishing rod. It needs both filled with the [i]same[/i] kind of battery, like a real one. One alone does nothing, and a Dry Cell next to a Battery Pack is refused. Right-click it with batteries on the cursor to load them, right-click with an empty hand to take one out, and hover it to see what is loaded.
 [*][b]Batteries only drain when light matters[/b]: indoors, in the Mines, outside after dark or in the rain. Left on in daylight it costs nothing. It switches off when you go to bed.
@@ -14,14 +23,14 @@ This is a first release and I want to be straight about it. The mod has been pla
 
 [size=3][b]Getting batteries[/b][/size]
 [list]
-[*][b]Dry Cell[/b] (added by this mod): sold at Robin's for 15g each, up to 16 a day per player, and you can carry at most 16 when you buy. Robin has none on about one day in seven and half the stock on about one day in four, so you cannot rely on the shop alone. You can also craft them: 1 Copper Bar and 1 Coal make 12 Dry Cells once you reach Mining level 2. A pair of Dry Cells lasts 2 in-game hours.
-[*][b]Battery Pack[/b] (the game's own): a pair of these goes in the slots instead. Lightning Rods and Solar Panels make them, they are never sold, and you need two. A pair lasts 4 hours, two more than Dry Cells, and while it is in use the beam is 20 percent longer and a little brighter. The game sells a Battery Pack for 500g and uses it in lamp-posts and sprinklers, so burning a pair is a treat and a choice, not the cheap way to run the flashlight.
+[*][b]Dry Cell[/b] (added by this mod): sold at Robin's for 15g each, up to 16 a day per player, and you can carry at most 16 when you buy. Robin has none on about one day in seven and half the stock on about one day in four, so you cannot rely on the shop alone. You can also craft them: 1 Copper Bar and 1 Coal make 12 Dry Cells once you reach Mining level 2. A pair of Dry Cells lasts 4 in-game hours.
+[*][b]Battery Pack[/b] (the game's own): a pair of these goes in the slots instead. Lightning Rods and Solar Panels make them, they are never sold, and you need two. A pair lasts 6 hours, two more than Dry Cells, and while it is in use the beam is 20 percent longer and a little brighter. The game sells a Battery Pack for 500g and uses it in lamp-posts and sprinklers, so burning a pair is a treat and a choice, not the cheap way to run the flashlight.
 [/list]
 
 [size=3][b]How I tried to balance it[/b][/size]
 [list]
 [*]The goal: an early game tool that costs thought, does not replace the Glow Rings, and cannot be farmed for gold. It lights a cone, so a torch or a ring still wins at close range and in every direction.
-[*]Upkeep is about 15g for every hour of light. A full spring night (6 dark hours) is around 90g. A simulation of a year, with the shop open six days in seven, says a normal night of 4 to 6 hours is covered by the shop. Someone who runs it all day through long Mines trips runs short on about one day in three and has to craft cells or use Battery Packs. That pressure is on purpose.
+[*]Upkeep is about 7.5g for every hour of light. A full spring night (6 dark hours) is around 45g. A simulation of a year, with the shop open six days in seven, says a normal night of 4 to 6 hours is covered by the shop. Someone who runs it for 20 hours a day through long Mines trips runs short on about one day in three and has to craft cells or use Battery Packs. That pressure is on purpose.
 [*]It cannot be abused for money: cells sell for 3g against 15g to buy and a craft is worth less than its ingredients. You can only own one flashlight, so you cannot store charge in spares, and there is only one light per player.
 [*]The reasoning, the table of every number, the simulation and what I would change first are all written down: [url=https://github.com/Kkthnx-Stardew/Flashlight/blob/main/docs/BALANCE.md]docs/BALANCE.md[/url].
 [/list]
@@ -30,12 +39,12 @@ This is a first release and I want to be straight about it. The mod has been pla
 [list]
 [*]Real play-time. Prices, stock and battery life are a first pass.
 [*]Robin's open days and hours and the Mining level of the recipe are not checked against the rest of the game.
-[*][b]Multiplayer is untested.[/b] I have never run it with another player, so I do not know whether it works. From reading the code, other players may see the game's ordinary round light for your beam instead of the cone, but that is a guess and it may be worse than that. Please do not treat it as supported in multiplayer, and tell me what happens if you try.
+[*][b]Multiplayer has had only a small test.[/b] With a host and one joining player on the same computer, each saw the other's beam as a cone pointing the right way, the flicker showed on both screens, and a beam went away when its player left. Everyone in the game needs the mod to see the cone, and a player without it sees a plain round glow. Three or more players, split screen, internet play with lag and other mods that change lights are untested. Tell me what happens if you try.
 [*]If another mod changes how the farmer is drawn, the held flashlight might sit in the wrong place. Turn it off with the Show in hand setting and tell me.
 [/list]
 
 [size=3][b]Settings[/b][/size]
-Everything below can be changed in game with Generic Mod Config Menu (optional), or in config.json: toggle key (keyboard or controller buttons, such as F, LeftShoulder), beam length, Dry Cell and Battery Pack pair life, Battery Pack beam bonus, whether Battery Packs are allowed, show in hand, prices, daily stock, carry limit, chance of a thin or empty shelf, and flicker. If another mod handles Robin's shop, turn off Sold at Robin's.
+Everything below can be changed in game with Generic Mod Config Menu (optional), or in config.json: toggle key (keyboard or controller buttons, such as F, LeftShoulder), beam length, Dry Cell and Battery Pack pair life, Battery Pack beam bonus, whether Battery Packs are allowed, show in hand, beam shadows, prices, the letter from Robin, daily stock, carry limit, chance of a thin or empty shelf, and flicker. If another mod handles Robin's shop, turn off Sold at Robin's.
 
 [size=3][b]Install[/b][/size]
 [list=1]

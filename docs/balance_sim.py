@@ -2,15 +2,15 @@
 
 Run: python docs/balance_sim.py
 
-The flashlight runs on two matching cells used together. A pair of Dry Cells lasts 2 hours, so the model counts cells as one
-hour of light each. Cells cost 15g.
+The flashlight runs on two matching cells used together. A pair of Dry Cells lasts 4 hours, so the model counts cells as two
+hours of light each. Cells cost 15g.
 Assumptions: the shop is open six days of seven, the player buys up to the carry limit on every open day, reloads from the
 bag during the day, and needs the same number of hours of light every day. Crafting and Battery Packs are left out, so a shortfall here
 is what a player has to cover by crafting or by packs.
 """
 import random
 
-HOURS_PER_CELL = 1   # two cells are used together and last 2 hours, so one cell is one hour of light
+HOURS_PER_CELL = 2   # two cells are used together and last 4 hours, so one cell is two hours of light
 SLOTS = 2
 DAILY_STOCK = 16
 CARRY = 16
@@ -46,7 +46,7 @@ def year(hours_per_day, rng):
 def main():
     rng = random.Random(7)
     print("hours of light a day -> share of days with too little light, cells bought a day")
-    for hours in (3, 4, 6, 8, 10, 12, 14):
+    for hours in (4, 6, 8, 12, 16, 20):
         runs = [year(hours, rng) for _ in range(400)]
         short = sum(r[0] for r in runs) / len(runs)
         bought = sum(r[1] for r in runs) / len(runs)

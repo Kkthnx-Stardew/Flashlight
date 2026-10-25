@@ -10,19 +10,22 @@ namespace Flashlight
         public int BeamLengthTiles { get; set; } = 7;
 
         /// <summary>How long a matched pair of Dry Cells lasts, in in-game hours.</summary>
-        public int BatteryHours { get; set; } = 2;
+        public int BatteryHours { get; set; } = 4;
 
         /// <summary>Whether the game's Battery Pack can be loaded as a longer lasting, brighter cell.</summary>
         public bool UseBatteryPacks { get; set; } = true;
 
         /// <summary>How long a matched pair of Battery Packs lasts, in in-game hours.</summary>
-        public int BatteryPackHours { get; set; } = 4;
+        public int BatteryPackHours { get; set; } = 6;
 
         /// <summary>How long the beam is while a Battery Pack is in use, as a percentage of the normal beam.</summary>
         public int BatteryPackBeamPercent { get; set; } = 120;
 
         /// <summary>Whether the farmer is drawn holding the flashlight while it is the selected tool.</summary>
         public bool ShowInHand { get; set; } = true;
+
+        /// <summary>Whether trees, boulders, buildings and walls stop the beam and throw a shadow, instead of being lit through.</summary>
+        public bool BeamShadows { get; set; } = true;
 
         /// <summary>The price of the flashlight in the shop.</summary>
         public int FlashlightPrice { get; set; } = 600;
@@ -32,6 +35,9 @@ namespace Flashlight
 
         /// <summary>Whether Robin's Carpenter's Shop sells the flashlight and batteries.</summary>
         public bool SoldAtCarpenter { get; set; } = true;
+
+        /// <summary>Whether Robin sends each player one letter about the flashlight. It is only sent when the shop sells it.</summary>
+        public bool SendMail { get; set; } = true;
 
         /// <summary>How many batteries the shop sells to one player each day.</summary>
         public int BatteryDailyStock { get; set; } = 16;

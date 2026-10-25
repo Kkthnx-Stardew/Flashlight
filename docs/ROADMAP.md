@@ -5,7 +5,7 @@ Nothing here is promised for a date. The order follows what players report, and 
 ## Done
 
 - The flashlight in the farmer's hand while it is the selected tool. The picture is placed from the measured hand of the arm the game draws in the current frame, drawn just under the arm so the fingers close over the handle. The beam starts at the lens. From the front and back it is held in the right hand, offset from the body.
-- The game's Battery Pack as a better cell: a pair of them lasts 4 hours, with a beam 20 percent longer and a little brighter.
+- The game's Battery Pack as a better cell: a pair of them lasts 6 hours, with a beam 20 percent longer and a little brighter.
 - A local usage tally and a `flashlight_report` console command, so balance feedback can come with numbers.
 
 ## Next
@@ -16,7 +16,7 @@ The first release is the first test of the prices, the stock and the battery lif
 
 ### Multiplayer
 
-Multiplayer has never been tested, so whether the mod works there is unknown. By reading the code, other players may see the game's ordinary round light for the beam, because the cone picture is only drawn on the machine that owns the flashlight. The first step is to test it with a second player and write down what happens.
+The cone, its flicker and the clean-up of a beam when a player leaves work with one host and one joining player (see [BALANCE.md](BALANCE.md)). Still to test: three or more players, split screen, play over the internet with lag, a player joining while a beam is already lit, and other mods that change lights.
 
 ### Translations
 

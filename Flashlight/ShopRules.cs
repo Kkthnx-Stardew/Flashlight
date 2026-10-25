@@ -12,6 +12,10 @@ namespace Flashlight
         /// <summary>The flashlight is only on sale to a player who does not already carry one.</summary>
         public static string OneFlashlight(string qualifiedFlashlightId) => $"!PLAYER_HAS_ITEM Current {qualifiedFlashlightId}";
 
+        /// <summary>Robin's letter is only for a player who has no flashlight yet and has played at least <paramref name="minDays"/> days.</summary>
+        public static string MailAd(string qualifiedFlashlightId, int minDays) =>
+            $"{OneFlashlight(qualifiedFlashlightId)}, DAYS_PLAYED {Math.Max(1, minDays).ToString(CultureInfo.InvariantCulture)}";
+
         /// <summary>Cells are only on sale to a player who carries fewer than <paramref name="maxCarried"/>.</summary>
         public static string CarryLimit(string qualifiedBatteryId, int maxCarried) =>
             $"PLAYER_HAS_ITEM Current {qualifiedBatteryId} 0 {Math.Max(0, maxCarried - 1).ToString(CultureInfo.InvariantCulture)}";

@@ -30,6 +30,11 @@ namespace Flashlight
         /// <summary>What a battery sells for. It is well under the shop price and under the cost of the recipe's ingredients.</summary>
         private const int BatterySellPrice = 3;
 
+        public const string MailId = ModId + "_RobinAd";
+
+        /// <summary>Robin's letter waits until the save is this many days old, so it does not land on the first morning.</summary>
+        private const int MailAfterDays = 4;
+
         private readonly ITranslationHelper _i18n;
         private readonly Func<ModConfig> _config;
 
@@ -92,6 +97,23 @@ namespace Flashlight
                 e.Edit(asset => asset.AsDictionary<string, string>().Data[BatteryId] =
                     $"334 1 382 1/Home/{BatteryId} 12/false/s Mining 2/{_i18n.Get("recipe.battery.name")}");
             }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/Mail") && MailWanted(config))
+            {
+                // the text, then [#] and the title shown on the envelope
+                e.Edit(asset => asset.AsDictionary<string, string>().Data[MailId] =
+                    $"{_i18n.Get("mail.robin.text", new { price = config.FlashlightPrice, cell = config.BatteryPrice })}[#]{_i18n.Get("mail.robin.title")}");
+            }
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/TriggerActions") && MailWanted(config))
+            {
+                e.Edit(asset => asset.GetData<List<TriggerActionData>>().Add(new TriggerActionData
+                {
+                    Id = MailId,
+                    Trigger = "DayStarted",
+                    Condition = ShopRules.MailAd(QualifiedFlashlightId, MailAfterDays),
+                    Action = $"AddMail Current {MailId} Tomorrow",
+                    MarkActionApplied = true, // once for each player in a save, however often the day starts
+                }));
+            }
             else if (e.NameWithoutLocale.IsEquivalentTo("Data/Shops") && config.SoldAtCarpenter)
             {
                 e.Edit(asset =>
@@ -104,6 +126,9 @@ namespace Flashlight
                 });
             }
         }
+
+        /// <summary>The letter advertises the shop, so it is only sent while the shop sells the flashlight.</summary>
+        internal static bool MailWanted(ModConfig config) => config.SendMail && config.SoldAtCarpenter;
 
         private ToolData NewFlashlight(int salePrice) => new()
         {

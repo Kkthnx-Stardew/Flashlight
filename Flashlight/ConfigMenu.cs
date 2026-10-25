@@ -24,6 +24,7 @@ namespace Flashlight
             menu.AddNumberOption(manifest, () => config().BeamLengthTiles, v => config().BeamLengthTiles = v, () => t.Get("gmcm.beam.name"), () => t.Get("gmcm.beam.tip"), 3, 12, 1);
             menu.AddNumberOption(manifest, () => config().BatteryHours, v => config().BatteryHours = v, () => t.Get("gmcm.hours.name"), () => t.Get("gmcm.hours.tip"), 1, 12, 1);
             menu.AddBoolOption(manifest, () => config().ShowInHand, v => config().ShowInHand = v, () => t.Get("gmcm.hand.name"), () => t.Get("gmcm.hand.tip"));
+            menu.AddBoolOption(manifest, () => config().BeamShadows, v => config().BeamShadows = v, () => t.Get("gmcm.shadows.name"), () => t.Get("gmcm.shadows.tip"));
             menu.AddBoolOption(manifest, () => config().UseBatteryPacks, v => config().UseBatteryPacks = v, () => t.Get("gmcm.packs.name"), () => t.Get("gmcm.packs.tip"));
             menu.AddNumberOption(manifest, () => config().BatteryPackHours, v => config().BatteryPackHours = v, () => t.Get("gmcm.packhours.name"), () => t.Get("gmcm.packhours.tip"), 1, 48, 1);
             menu.AddNumberOption(manifest, () => config().BatteryPackBeamPercent, v => config().BatteryPackBeamPercent = v, () => t.Get("gmcm.packbeam.name"), () => t.Get("gmcm.packbeam.tip"), 100, 200, 5, p => $"{p}%");
@@ -32,6 +33,7 @@ namespace Flashlight
 
             menu.AddSectionTitle(manifest, () => t.Get("gmcm.shop"), () => t.Get("gmcm.shop.tip"));
             menu.AddBoolOption(manifest, () => config().SoldAtCarpenter, v => config().SoldAtCarpenter = v, () => t.Get("gmcm.sold.name"), () => t.Get("gmcm.sold.tip"));
+            menu.AddBoolOption(manifest, () => config().SendMail, v => config().SendMail = v, () => t.Get("gmcm.mail.name"), () => t.Get("gmcm.mail.tip"));
             menu.AddNumberOption(manifest, () => config().FlashlightPrice, v => config().FlashlightPrice = v, () => t.Get("gmcm.price.name"), null, 0, 5000, 50);
             menu.AddNumberOption(manifest, () => config().BatteryPrice, v => config().BatteryPrice = v, () => t.Get("gmcm.cellprice.name"), null, 0, 500, 5);
             menu.AddNumberOption(manifest, () => config().BatteryDailyStock, v => config().BatteryDailyStock = v, () => t.Get("gmcm.stock.name"), () => t.Get("gmcm.stock.tip"), 1, 20, 1);
