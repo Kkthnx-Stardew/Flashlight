@@ -51,7 +51,7 @@ Edit `config.json` in the mod folder after the first run, or change them in game
 | `SoldAtCarpenter` | `true` | Whether Robin sells them. Turn off if another mod handles shops. |
 | `SoldAtBlacksmith` | `false` | Whether Clint's Blacksmith sells them too. Works alone or together with Robin's. With both on, the daily Dry Cell stock is shared between the two shops. |
 | `SendMail` | `true` | Whether one letter about the flashlight is sent. From Robin, or Clint if only he sells it. Only sent while a shop sells it. |
-| `BatteryDailyStock` | `16` | How many Dry Cells the shop sells to one player each day. |
+| `BatteryDailyStock` | `16` | How many Dry Cells one player can buy each day. With both Robin and Clint selling, it is shared between the two shops. |
 | `MaxBatteriesCarried` | `16` | The shop stops selling Dry Cells to someone carrying this many. |
 | `BatteryOutOfStockPercent` | `15` | Chance in percent that Robin has no Dry Cells on a day. |
 | `BatteryLowStockPercent` | `25` | Chance in percent that Robin has half the stock on a day. |

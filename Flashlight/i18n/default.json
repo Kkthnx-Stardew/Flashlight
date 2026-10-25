@@ -50,7 +50,7 @@
     "gmcm.price.name": "Flashlight price",
     "gmcm.cellprice.name": "Dry Cell price",
     "gmcm.stock.name": "Dry Cells sold per day",
-    "gmcm.stock.tip": "How many cells one player can buy in a day. They are used two at a time.",
+    "gmcm.stock.tip": "How many cells one player can buy in a day. They are used two at a time. With Robin and Clint both selling, the number is shared between the two shops.",
     "gmcm.carry.name": "Most Dry Cells carried",
     "gmcm.carry.tip": "The shop stops selling to a player who carries this many.",
     "gmcm.out.name": "Chance of no stock",

@@ -5,6 +5,7 @@ using StardewModdingAPI.Events;
 using StardewModdingAPI.Utilities;
 using StardewValley;
 using StardewValley.Extensions;
+using StardewValley.Menus;
 
 namespace Flashlight
 {
@@ -296,16 +297,19 @@ namespace Flashlight
 
         /// <summary>
         /// Whether a mouse click lands on the toolbar, the clock or another on-screen menu. The game uses that click itself (to select
-        /// a toolbar slot, say), so it must not also switch the flashlight.
+        /// a toolbar slot, say), so it must not also switch the flashlight. This follows the game's own test for such a click, in the
+        /// interface's scale, which is not the same as the world's when the two sliders in the options differ.
         /// </summary>
         private static bool IsOverHud(SButton button)
         {
             if (button != SButton.MouseLeft)
                 return false;
-            var x = Game1.getMouseX();
-            var y = Game1.getMouseY();
+            var x = Game1.getMouseX(true);
+            var y = Game1.getMouseY(true);
             foreach (var menu in Game1.onScreenMenus)
             {
+                if (!(Game1.IsHudDrawn || menu == Game1.chatBox) || menu is LevelUpMenu { informationUp: false })
+                    continue;
                 if (menu.isWithinBounds(x, y))
                     return true;
             }
