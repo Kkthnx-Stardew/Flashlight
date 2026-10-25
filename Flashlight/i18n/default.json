@@ -41,6 +41,8 @@
     "gmcm.shop.tip": "Prices and stock take effect once the settings are saved.",
     "gmcm.sold.name": "Sold at Robin's",
     "gmcm.sold.tip": "Turn this off if another mod decides where the flashlight is sold.",
+    "gmcm.blacksmith.name": "Sold at Clint's",
+    "gmcm.blacksmith.tip": "Also sells the flashlight and Dry Cells at Clint's Blacksmith. It can be on together with Robin's, or on its own. The letter is still Robin's, so it is only sent while Robin sells it.",
     "gmcm.price.name": "Flashlight price",
     "gmcm.cellprice.name": "Dry Cell price",
     "gmcm.stock.name": "Dry Cells sold per day",

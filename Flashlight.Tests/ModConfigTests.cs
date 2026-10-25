@@ -17,6 +17,7 @@ public class ModConfigTests
         Assert.Equal(600, config.FlashlightPrice);
         Assert.Equal(15, config.BatteryPrice);
         Assert.True(config.SoldAtCarpenter);
+        Assert.False(config.SoldAtBlacksmith);
         Assert.True(config.SendMail);
         Assert.Equal(15, config.BatteryOutOfStockPercent);
         Assert.Equal(25, config.BatteryLowStockPercent);
@@ -91,7 +92,7 @@ public class ModConfigCopyTests
         var changed = new ModConfig
         {
             ToggleKey = "G", BeamLengthTiles = 5, BatteryHours = 7, FlashlightPrice = 111, BatteryPrice = 22,
-            SoldAtCarpenter = false, SendMail = false, BatteryDailyStock = 7, BatteryOutOfStockPercent = 33, BatteryLowStockPercent = 44,
+            SoldAtCarpenter = false, SoldAtBlacksmith = true, SendMail = false, BatteryDailyStock = 7, BatteryOutOfStockPercent = 33, BatteryLowStockPercent = 44,
             MaxBatteriesCarried = 9, FlickerSecondsBetween = 77, UseBatteryPacks = false, BatteryPackHours = 20, BatteryPackBeamPercent = 150, ShowInHand = false, BeamShadows = false,
         };
         var target = new ModConfig();
@@ -107,7 +108,7 @@ public class ModConfigCopyTests
         var changed = new ModConfig
         {
             ToggleKey = "G", BeamLengthTiles = 5, BatteryHours = 7, FlashlightPrice = 111, BatteryPrice = 22,
-            SoldAtCarpenter = false, SendMail = false, BatteryDailyStock = 7, BatteryOutOfStockPercent = 33, BatteryLowStockPercent = 44,
+            SoldAtCarpenter = false, SoldAtBlacksmith = true, SendMail = false, BatteryDailyStock = 7, BatteryOutOfStockPercent = 33, BatteryLowStockPercent = 44,
             MaxBatteriesCarried = 9, FlickerSecondsBetween = 77, UseBatteryPacks = false, BatteryPackHours = 20, BatteryPackBeamPercent = 150, ShowInHand = false, BeamShadows = false,
         };
         var defaults = new ModConfig();

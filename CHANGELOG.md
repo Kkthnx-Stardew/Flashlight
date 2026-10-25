@@ -2,6 +2,11 @@
 
 Versions follow [Semantic Versioning](https://semver.org/). Newest first.
 
+## Unreleased
+
+- Fixed: with the flashlight selected, clicking another toolbar slot with the mouse switched the light on and off instead of selecting that slot. A click on the toolbar, the clock or any other on-screen menu now goes to the game and never toggles the light. Number keys already worked. Reported by mikezorz13 on Nexus.
+- The flashlight and Dry Cells can also be sold at Clint's Blacksmith. The new `SoldAtBlacksmith` setting (off by default) adds them there, alone or together with Robin's `SoldAtCarpenter`, so players with crowded shops can pick where it is sold. The letter is still Robin's and is only sent while she sells it.
+
 ## 1.1.0 (2026-10-25)
 
 Built against Stardew Valley 1.6.15 and SMAPI 4.5.2 with no warnings, and 140 tests pass. It was run in the game on a throwaway farm with only this mod loaded, and in a game with one host and one joining player on one computer. Real play and larger multiplayer games are untested.

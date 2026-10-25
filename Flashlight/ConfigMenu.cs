@@ -33,6 +33,7 @@ namespace Flashlight
 
             menu.AddSectionTitle(manifest, () => t.Get("gmcm.shop"), () => t.Get("gmcm.shop.tip"));
             menu.AddBoolOption(manifest, () => config().SoldAtCarpenter, v => config().SoldAtCarpenter = v, () => t.Get("gmcm.sold.name"), () => t.Get("gmcm.sold.tip"));
+            menu.AddBoolOption(manifest, () => config().SoldAtBlacksmith, v => config().SoldAtBlacksmith = v, () => t.Get("gmcm.blacksmith.name"), () => t.Get("gmcm.blacksmith.tip"));
             menu.AddBoolOption(manifest, () => config().SendMail, v => config().SendMail = v, () => t.Get("gmcm.mail.name"), () => t.Get("gmcm.mail.tip"));
             menu.AddNumberOption(manifest, () => config().FlashlightPrice, v => config().FlashlightPrice = v, () => t.Get("gmcm.price.name"), null, 0, 5000, 50);
             menu.AddNumberOption(manifest, () => config().BatteryPrice, v => config().BatteryPrice = v, () => t.Get("gmcm.cellprice.name"), null, 0, 500, 5);

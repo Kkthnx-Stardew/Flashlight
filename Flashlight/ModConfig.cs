@@ -36,6 +36,9 @@ namespace Flashlight
         /// <summary>Whether Robin's Carpenter's Shop sells the flashlight and batteries.</summary>
         public bool SoldAtCarpenter { get; set; } = true;
 
+        /// <summary>Whether Clint's Blacksmith shop sells the flashlight and batteries. It can be on together with <see cref="SoldAtCarpenter"/>.</summary>
+        public bool SoldAtBlacksmith { get; set; } = false;
+
         /// <summary>Whether Robin sends each player one letter about the flashlight. It is only sent when the shop sells it.</summary>
         public bool SendMail { get; set; } = true;
 

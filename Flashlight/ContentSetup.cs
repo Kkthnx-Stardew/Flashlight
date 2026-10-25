@@ -32,6 +32,10 @@ namespace Flashlight
 
         public const string MailId = ModId + "_RobinAd";
 
+        /// <summary>The ids of Robin's and Clint's shops in Data/Shops.</summary>
+        internal const string CarpenterShopId = "Carpenter";
+        internal const string BlacksmithShopId = "Blacksmith";
+
         /// <summary>Robin's letter waits until the save is this many days old, so it does not land on the first morning.</summary>
         private const int MailAfterDays = 4;
 
@@ -114,17 +118,26 @@ namespace Flashlight
                     MarkActionApplied = true, // once for each player in a save, however often the day starts
                 }));
             }
-            else if (e.NameWithoutLocale.IsEquivalentTo("Data/Shops") && config.SoldAtCarpenter)
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/Shops") && (config.SoldAtCarpenter || config.SoldAtBlacksmith))
             {
                 e.Edit(asset =>
                 {
                     var shops = asset.AsDictionary<string, ShopData>().Data;
-                    if (!shops.TryGetValue("Carpenter", out var shop))
-                        return; // Robin's shop is missing or renamed by another mod, so sell nothing instead of breaking
-                    shop.Items.Add(FlashlightShopItem(config));
-                    shop.Items.Add(BatteryShopItem(config));
+                    if (config.SoldAtCarpenter)
+                        AddToShop(shops, CarpenterShopId, config);
+                    if (config.SoldAtBlacksmith)
+                        AddToShop(shops, BlacksmithShopId, config);
                 });
             }
+        }
+
+        /// <summary>Adds the flashlight and the Dry Cell to a shop. A shop that is missing or renamed by another mod sells nothing instead of breaking.</summary>
+        private static void AddToShop(IDictionary<string, ShopData> shops, string shopId, ModConfig config)
+        {
+            if (!shops.TryGetValue(shopId, out var shop))
+                return;
+            shop.Items.Add(FlashlightShopItem(config));
+            shop.Items.Add(BatteryShopItem(config));
         }
 
         /// <summary>The letter advertises the shop, so it is only sent while the shop sells the flashlight.</summary>

@@ -293,6 +293,24 @@ namespace Flashlight
         /// <summary>Whether a key or click is for the flashlight: the world is up, the farmer is free to move, and no one is typing in the chat or a text box.</summary>
         private static bool CanAct() => Context.IsWorldReady && Context.IsPlayerFree && Game1.keyboardDispatcher?.Subscriber is null;
 
+        /// <summary>
+        /// Whether a mouse click lands on the toolbar, the clock or another on-screen menu. The game uses that click itself (to select
+        /// a toolbar slot, say), so it must not also switch the flashlight.
+        /// </summary>
+        private static bool IsOverHud(SButton button)
+        {
+            if (button != SButton.MouseLeft)
+                return false;
+            var x = Game1.getMouseX();
+            var y = Game1.getMouseY();
+            foreach (var menu in Game1.onScreenMenus)
+            {
+                if (menu.isWithinBounds(x, y))
+                    return true;
+            }
+            return false;
+        }
+
         private void OnButtonsChanged(object? sender, ButtonsChangedEventArgs e)
         {
             if (!_toggleKeys.JustPressed() || !CanAct())
@@ -307,7 +325,7 @@ namespace Flashlight
         /// <summary>Using the tool (clicking with it selected) switches it too, with no swing.</summary>
         private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
         {
-            if (!CanAct() || !e.Button.IsUseToolButton())
+            if (!CanAct() || !e.Button.IsUseToolButton() || IsOverHud(e.Button))
                 return;
             var player = Game1.player;
             if (!FlashlightState.IsFlashlight(player.CurrentTool))

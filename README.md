@@ -8,7 +8,7 @@ This is an early build. It has been run in Stardew Valley 1.6.15 with SMAPI 4.5.
 
 ## What it adds
 
-- **Flashlight** (a tool): sold at Robin's Carpenter's Shop, one to a player. Press **F** (or use the tool) to switch it on and off. It keeps shining while you use other tools, which a torch cannot do. The toolbar picture shows when it is on, and a charge bar under it works like the water bar of the watering can.
+- **Flashlight** (a tool): sold at Robin's Carpenter's Shop (and Clint's Blacksmith if you turn on `SoldAtBlacksmith`), one to a player. Press **F** (or use the tool) to switch it on and off. It keeps shining while you use other tools, which a torch cannot do. The toolbar picture shows when it is on, and a charge bar under it works like the water bar of the watering can.
 - **A cone of light**: a beam 7 tiles long in the direction you face, with nothing lit around you, like a real flashlight. It flickers now and then like an old flashlight with a loose cell, and much more often once the charge falls under a tenth of a full load. Trees, boulders, buildings and walls stop the beam and throw a shadow behind them, and other players in a multiplayer game see the same cone.
 - **Held in your hand**: while the flashlight is the selected tool you are drawn holding it. It follows your hand as you walk, the beam starts at its lens, and from the front and back it is held in one hand.
 - **Battery slots**: the flashlight has two, always two, like the bait slot on a fishing rod. It runs on a matching pair and needs both loaded, like a real one: two Dry Cells or two Battery Packs, never one of each and never just one. Right-click the flashlight with cells on the cursor to load them, one to a slot, and right-click it with an empty hand to take one out. Hover it to see what is loaded.
@@ -49,6 +49,7 @@ Edit `config.json` in the mod folder after the first run, or change them in game
 | `FlashlightPrice` | `600` | Shop price of the flashlight. |
 | `BatteryPrice` | `15` | Shop price of one Dry Cell. |
 | `SoldAtCarpenter` | `true` | Whether Robin sells them. Turn off if another mod handles shops. |
+| `SoldAtBlacksmith` | `false` | Whether Clint's Blacksmith sells them too. Works alone or together with Robin's. |
 | `SendMail` | `true` | Whether Robin sends one letter about the flashlight. Only sent while she sells it. |
 | `BatteryDailyStock` | `16` | How many Dry Cells the shop sells to one player each day. |
 | `MaxBatteriesCarried` | `16` | The shop stops selling Dry Cells to someone carrying this many. |
