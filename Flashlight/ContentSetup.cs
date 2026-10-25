@@ -101,9 +101,10 @@ namespace Flashlight
                 e.Edit(asset => asset.AsDictionary<string, string>().Data[BatteryId] =
                     $"334 1 382 1/Home/{BatteryId} 12/false/s Mining 2/{_i18n.Get("recipe.battery.name")}");
             }
-            else if (e.NameWithoutLocale.IsEquivalentTo("Data/Mail") && MailWanted(config))
+            else if (e.NameWithoutLocale.IsEquivalentTo("Data/Mail"))
             {
-                // the text, then [#] and the title shown on the envelope
+                // Always defined, even when the letter is switched off, so a letter that already reached a mailbox still has its text.
+                // The text, then [#] and the title shown on the envelope
                 e.Edit(asset => asset.AsDictionary<string, string>().Data[MailId] =
                     $"{LetterText(config)}[#]{_i18n.Get("mail.robin.title")}");
             }
@@ -148,7 +149,7 @@ namespace Flashlight
         private string LetterText(ModConfig config)
         {
             var tokens = new { price = config.FlashlightPrice, cell = config.BatteryPrice };
-            return ShopRules.LetterFor(config.SendMail, config.SoldAtCarpenter, config.SoldAtBlacksmith) switch
+            return ShopRules.LetterFor(true, config.SoldAtCarpenter, config.SoldAtBlacksmith) switch
             {
                 LetterSender.RobinAndClint => _i18n.Get("mail.both.text", tokens),
                 LetterSender.Clint => _i18n.Get("mail.clint.text", tokens),
