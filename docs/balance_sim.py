@@ -1,16 +1,16 @@
 """Rough model of Dry Cell supply against use over a year, for checking docs/BALANCE.md.
 
-Run: python docs/balance_sim.py
+Run: python docs/balance_sim.py [daily stock] [carry limit]
 
-The flashlight runs on two matching cells used together. A pair of Dry Cells lasts 4 hours, so the model counts cells as two
-hours of light each. Cells cost 15g.
+The flashlight runs on two matching cells used together. A pair of Dry Cells lasts 10 hours, so the model counts cells as five
+hours of light each. Cells cost 30g.
 Assumptions: the shop is open six days of seven, the player buys up to the carry limit on every open day, reloads from the
 bag during the day, and needs the same number of hours of light every day. Crafting and Battery Packs are left out, so a shortfall here
 is what a player has to cover by crafting or by packs.
 """
 import random
 
-HOURS_PER_CELL = 2   # two cells are used together and last 4 hours, so one cell is two hours of light
+HOURS_PER_CELL = 5   # two cells are used together and last 10 hours, so one cell is five hours of light
 SLOTS = 2
 DAILY_STOCK = 16
 CARRY = 16
@@ -44,13 +44,18 @@ def year(hours_per_day, rng):
 
 
 def main():
+    global DAILY_STOCK, CARRY
+    import sys
+    if len(sys.argv) == 3:
+        DAILY_STOCK, CARRY = int(sys.argv[1]), int(sys.argv[2])
+    print(f"daily stock {DAILY_STOCK}, carry limit {CARRY}")
     rng = random.Random(7)
     print("hours of light a day -> share of days with too little light, cells bought a day")
-    for hours in (4, 6, 8, 12, 16, 20):
+    for hours in (4, 6, 8, 12, 16, 20, 30, 40):
         runs = [year(hours, rng) for _ in range(400)]
         short = sum(r[0] for r in runs) / len(runs)
         bought = sum(r[1] for r in runs) / len(runs)
-        print(f"{hours:>2} h  {short:5.1f}% short   {bought:4.2f} cells a day   cost {bought * 15:5.0f}g a day")
+        print(f"{hours:>2} h  {short:5.1f}% short   {bought:4.2f} cells a day   cost {bought * 30:5.0f}g a day")
 
 
 if __name__ == "__main__":

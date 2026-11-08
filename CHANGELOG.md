@@ -2,6 +2,16 @@
 
 Versions follow [Semantic Versioning](https://semver.org/). Newest first.
 
+## 1.3.1 (2026-11-08)
+
+Built against Stardew Valley 1.6.15 and SMAPI 4.5.2 with no warnings, and 159 tests pass. Run in the game on a throwaway farm. Three or more players, split screen and play over the internet are still untested.
+
+
+- The shop sells fewer Dry Cells. The daily stock and the most a player may carry are 8 each, down from 16 each. With 10 hour batteries, 16 cells was 80 hours of light a day, and the yearly shop simulation (rerun for the 1.3.0 numbers, see docs/BALANCE.md) never ran short even at 20 hours of light a day, so the limits shaped nothing. At 8 a normal night is still always covered, at 24g to 36g, and only a player who lights most of the day, such as through long Mines trips, sometimes finds the shelf short. A `config.json` that still has 16 for either value is moved to 8 once, and a value you changed is kept. The settings file records a `ConfigVersion` of 3 for it.
+- docs/balance_sim.py now models 10 hour pairs and 30g cells, and takes the daily stock and the carry limit on the command line.
+- docs/BALANCE.md had old numbers in it. They were the sell price (6g, not 3g), the value of a craft (the bar and coal sell for 75g and its 12 cells for 72g, read from the game's data), the hours a cell gives and the yearly simulation. They are corrected.
+- Checked in the game with Clint's shop turned on. Clint and Robin each list the flashlight and the Dry Cell, with the daily stock shared between them. A full pair of Dry Cells lasts exactly 60 ten-minute steps and the light goes out on the next, as designed.
+
 ## 1.3.0 (2026-11-08)
 
 Built against Stardew Valley 1.6.15 and SMAPI 4.5.2 and run in the game on a throwaway farm, alone and with a host and one joining player on one computer. Three or more players, split screen and play over the internet are still untested.

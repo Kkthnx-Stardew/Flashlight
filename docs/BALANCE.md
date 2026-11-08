@@ -54,9 +54,9 @@ The game's Battery Pack sells for 500g and is not sold in any shop. It comes fro
 | --- | --- |
 | Owning several flashlights to store charge in the spares | The shop only sells one to a player who has none. A second one cannot be picked up or moved into the backpack (the game is told it does not fit, so it stays where it was and nothing is lost). If one still gets in some other way, only the first in the backpack works. Spares cannot be lit and take no cells, so they cannot store extra light, and using one shows a message. |
 | Stacking beams from several flashlights | There is one light per player, however many flashlights are carried. |
-| Hoarding batteries so the upkeep never matters | The shop sells at most 16 a day and stops selling to a player carrying 16. Robin has none on about 15 of 100 days and half the stock on about 21 more (the roll is the same all day for every player, however often the shop is opened). That averages about 11 cells a day, which is 22 hours of light, with the shop closed one day in seven. |
-| Buying cells and selling them back | Sell price is 3g against 15g to buy. |
-| Crafting cells to sell them | A craft costs 5 Copper Ore and 2 Coal for 36g of cells at the sell price. |
+| Hoarding batteries so the upkeep never matters | The shop sells at most 8 a day and stops selling to a player carrying 8, which is 40 hours of light carried at most. Robin has none on about 15 of 100 days and half the stock on about 21 more (the roll is the same all day for every player, however often the shop is opened), and the shop is closed one day in seven. That averages about 5 cells a day, which is 25 hours of light a day, more than anyone lights in a normal day. |
+| Buying cells and selling them back | Sell price is 6g against 30g to buy. |
+| Crafting cells to sell them | A craft uses a Copper Bar (60g) and a Coal (15g), which sell for 75g, and its 12 cells sell for 72g, so it loses a little. Prices read from the game's own data. |
 | Loading a whole stack of cells into a slot | A slot takes exactly one cell. |
 | Putting anything else in the slots | Only Dry Cells and Battery Packs are accepted, and only a matching pair runs the light. |
 | Burning cells in daylight | The charge does not drain outside by day. |
@@ -76,18 +76,21 @@ Here is what was tested, with a host and one joining player on one computer over
 
 ## Supply against use
 
-`docs/balance_sim.py` plays a year (112 days) with the shop open six days in seven and a player who buys up to the carry limit each open day, reloads from the bag, and needs the same hours of light every day. Crafting and Battery Packs are left out. Each cell is two hours of light, because a pair is used together for 4 hours. (With the 1.0.0 life of 2 hours a pair, every hours figure below was half as large: 4 hours of light a day cost 59g and 10 hours ran short a third of the time.)
+`docs/balance_sim.py` plays a year (112 days) with the shop open six days in seven and a player who buys up to the carry limit each open day, reloads from the bag, and needs the same hours of light every day. Crafting and Battery Packs are left out. Each cell is five hours of light, because a pair is used together for 10 hours. Run `python docs/balance_sim.py 8 8` to try other limits (daily stock, then carry limit).
 
-| Hours of light a day | Days with too little light | Cells bought a day | Cost a day |
-| --- | --- | --- | --- |
-| 4 | 0% | 2.0 | 30g |
-| 6 | 0% | 3.0 | 45g |
-| 8 | 0.2% | 4.0 | 59g |
-| 12 | 2% | 5.9 | 88g |
-| 16 | 7% | 7.4 | 111g |
-| 20 | 34% | 8.5 | 127g |
+Share of days with too little light, and what the cells cost a day at 30g, with the shop limits at 16 and 16 (the 1.3.0 defaults) and at 8 and 8 (the defaults from the version after it):
 
-Reading it: a player who lights a normal night (4 to 6 hours) is covered by the shop and pays about 30 to 45g a day. Only someone who runs the flashlight for most of the day, such as through long Mines trips, runs short, one day in three at 20 hours, and then needs to craft cells (12 from a Copper Bar and a Coal) or spend Battery Packs. Doubling the battery life halved the upkeep, so the pressure is much lighter than in 1.0.0. If real play says it is now too easy, `BatteryDailyStock` and `BatteryOutOfStockPercent` are the levers that bring it back without shortening the battery.
+| Hours of light a day | Short at 16 and 16 | Short at 8 and 8 | Cells bought a day (8 and 8) | Cost a day (8 and 8) |
+| --- | --- | --- | --- | --- |
+| 4 | 0% | 0% | 0.8 | 24g |
+| 6 | 0% | 0% | 1.2 | 36g |
+| 8 | 0% | 0% | 1.6 | 47g |
+| 12 | 0% | 0.6% | 2.4 | 71g |
+| 16 | 0% | 4.3% | 3.1 | 93g |
+| 20 | 0.2% | 7.0% | 3.8 | 113g |
+| 30 | 1.8% | 34.4% | 4.8 | 142g |
+
+Reading it: with the 1.3.0 batteries a pair covers 10 hours, so 16 cells a day (80 hours) was far more than anyone lights, and the shop limits shaped nothing. At 8 and 8 a normal night (4 to 6 hours) is still always covered and costs 24 to 36g, and only a player who runs the flashlight most of the day, such as through long Mines trips, sometimes finds the shelf short and then crafts cells (12 from a Copper Bar and a Coal) or spends Battery Packs. A day is 20 hours long from 6am to 2am, so 20 hours is the most anyone can light. The simulation is a model with a player who lights the same hours every day, not a measurement of real play.
 
 ## What would change the numbers
 
@@ -123,6 +126,15 @@ Three numbers moved together, so the upkeep did not fall by accident.
 | Dry Cell price | 15g | 30g | Hours per cell went up by 2.5 times. At 15g the cost of an hour of light would have dropped from 7.5g to 3g, so a night would cost about 18g. At 30g an hour is 6g and a night about 36g, in the middle of the 30g to 45g a night the last two versions charged. At 38g an hour would match the old 7.5g exactly, but a pair at 76g is a bigger single purchase for a player who has just bought a 600g flashlight. |
 | Dry Cell sell price | 3g | 6g | Kept at a fifth of the shop price, so buying to resell still loses money. |
 
-Not changed, but worth watching. The daily stock (16) and the carry limit (16) now cover 80 hours of light a day for each player, far more than anyone lights in a day, so the shop limits no longer shape play. If upkeep feels too light, lower `BatteryDailyStock` and `MaxBatteriesCarried` to 8 before raising the price again.
+Not changed in 1.3.0, but flagged. The daily stock (16) and the carry limit (16) covered 80 hours of light a day for each player, far more than anyone lights in a day, so the shop limits no longer shaped play. The next version lowers both to 8, see below.
 
-A config.json from an older version has its values moved to these numbers only where they still equal the old defaults (7 tiles, 4 and 6 hours, 15g), and a value a player changed is kept. The yearly shop simulation in docs/balance_sim.py was not rerun for these numbers because Python is not installed on the machine used for this pass. The figures above are hand arithmetic.
+A config.json from an older version has its values moved to these numbers only where they still equal the old defaults (7 tiles, 4 and 6 hours, 15g), and a value a player changed is kept. The yearly shop simulation in docs/balance_sim.py was rerun for these numbers afterwards, see Supply against use.
+
+## Shop limits lowered (after 1.3.0)
+
+| What | Was | Now | Why |
+| --- | --- | --- | --- |
+| Dry Cells sold a day (`BatteryDailyStock`) | 16 | 8 | With 10 hour pairs, 16 cells was 80 hours of light a day, and the simulation never ran short even at 20 hours a day. At 8 it is 40 hours, still far more than a normal night, and a long Mines day can sometimes find the shelf short. |
+| Most Dry Cells carried (`MaxBatteriesCarried`) | 16 | 8 | The same reasoning, so a player cannot stockpile more than 40 hours from the shop. |
+
+Nothing else moved, so the price per hour of light stays at 6g. A `config.json` that still has 16 for either value is moved to 8 once, and a value the player changed is kept. Both can be set back to 16 in `config.json` or in Generic Mod Config Menu.

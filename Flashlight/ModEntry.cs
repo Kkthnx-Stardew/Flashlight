@@ -56,7 +56,7 @@ namespace Flashlight
                 Monitor.Log($"Could not read config.json, so the default settings are used and the file is left as it is. Fix it or delete it. ({ex.Message})", LogLevel.Warn);
             }
             if (readable && _config.Upgrade())
-                Monitor.Log("The settings file was written by an older version, so the beam length and battery life that were still the old defaults are now the new ones (10 tiles, 10 and 12 hours, 30g a cell).", LogLevel.Info);
+                Monitor.Log("The settings file was written by an older version, so the values that were still the old defaults are now the new ones. See the changelog for the list.", LogLevel.Info);
             ApplyConfig(save: readable);
             LoadStats();
             helper.ConsoleCommands.Add("flashlight_report", "Prints a block of text about your settings and how the flashlight has been used, to paste into a bug report or feedback. Nothing is sent anywhere.", (_, _) => Monitor.Log(Report(), LogLevel.Info));

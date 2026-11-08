@@ -7,10 +7,13 @@ namespace Flashlight
         public int ConfigVersion { get; set; }
 
         /// <summary>The layout version this build writes.</summary>
-        public const int CurrentVersion = 2;
+        public const int CurrentVersion = 3;
 
         /// <summary>The beam length, Dry Cell life, Battery Pack life and Dry Cell price that were the defaults before version 2.</summary>
         private const int OldBeamLength = 7, OldBatteryHours = 4, OldBatteryPackHours = 6, OldBatteryPrice = 15;
+
+        /// <summary>The daily stock and the carry limit that were the defaults before version 3.</summary>
+        private const int OldDailyStock = 16, OldMaxCarried = 16;
 
         /// <summary>
         /// Moves a file written by an older build to the current defaults, but only for a value that still equals the old default,
@@ -22,6 +25,17 @@ namespace Flashlight
             if (ConfigVersion >= CurrentVersion)
                 return false;
 
+            var changed = false;
+            if (ConfigVersion < 2)
+                changed |= MoveToVersion2();
+            if (ConfigVersion < 3)
+                changed |= MoveToVersion3();
+            ConfigVersion = CurrentVersion;
+            return changed;
+        }
+
+        private bool MoveToVersion2()
+        {
             var changed = false;
             if (BeamLengthTiles == OldBeamLength)
             {
@@ -43,7 +57,22 @@ namespace Flashlight
                 BatteryPrice = new ModConfig().BatteryPrice;
                 changed = true;
             }
-            ConfigVersion = CurrentVersion;
+            return changed;
+        }
+
+        private bool MoveToVersion3()
+        {
+            var changed = false;
+            if (BatteryDailyStock == OldDailyStock)
+            {
+                BatteryDailyStock = new ModConfig().BatteryDailyStock;
+                changed = true;
+            }
+            if (MaxBatteriesCarried == OldMaxCarried)
+            {
+                MaxBatteriesCarried = new ModConfig().MaxBatteriesCarried;
+                changed = true;
+            }
             return changed;
         }
 
@@ -87,7 +116,7 @@ namespace Flashlight
         public bool SendMail { get; set; } = true;
 
         /// <summary>How many batteries the shop sells to one player each day.</summary>
-        public int BatteryDailyStock { get; set; } = 16;
+        public int BatteryDailyStock { get; set; } = 8;
 
         /// <summary>The chance, in percent, that on a given day Robin has no Dry Cells at all. It is the same all day.</summary>
         public int BatteryOutOfStockPercent { get; set; } = 15;
@@ -96,7 +125,7 @@ namespace Flashlight
         public int BatteryLowStockPercent { get; set; } = 25;
 
         /// <summary>The shop stops selling batteries to a player who already carries this many.</summary>
-        public int MaxBatteriesCarried { get; set; } = 16;
+        public int MaxBatteriesCarried { get; set; } = 8;
 
         /// <summary>
         /// On average, how many seconds of use pass between random flickers, like an old flashlight with a loose cell.

@@ -21,8 +21,8 @@ public class ModConfigTests
         Assert.True(config.SendMail);
         Assert.Equal(15, config.BatteryOutOfStockPercent);
         Assert.Equal(25, config.BatteryLowStockPercent);
-        Assert.Equal(16, config.BatteryDailyStock);
-        Assert.Equal(16, config.MaxBatteriesCarried);
+        Assert.Equal(8, config.BatteryDailyStock);
+        Assert.Equal(8, config.MaxBatteriesCarried);
         Assert.Equal(40, config.FlickerSecondsBetween);
     }
 
@@ -152,6 +152,39 @@ public class ModConfigUpgradeTests
         Assert.Equal(7, config.BeamLengthTiles);
         Assert.Equal(4, config.BatteryHours);
         Assert.Equal(6, config.BatteryPackHours);
+    }
+
+    [Fact]
+    public void AVersionTwoFileMovesOnlyTheShopLimitsThatAreStillTheOldDefaults()
+    {
+        var config = new ModConfig { ConfigVersion = 2, BeamLengthTiles = 7, BatteryHours = 4, BatteryDailyStock = 16, MaxBatteriesCarried = 16 };
+        Assert.True(config.Upgrade());
+        Assert.Equal(8, config.BatteryDailyStock);
+        Assert.Equal(8, config.MaxBatteriesCarried);
+        // the version 2 step is not run again, so a choice of 7 tiles made after that upgrade is kept
+        Assert.Equal(7, config.BeamLengthTiles);
+        Assert.Equal(4, config.BatteryHours);
+        Assert.Equal(ModConfig.CurrentVersion, config.ConfigVersion);
+    }
+
+    [Fact]
+    public void AShopLimitThePlayerChangedIsKeptThroughTheUpgrade()
+    {
+        var config = new ModConfig { ConfigVersion = 2, BatteryDailyStock = 12, MaxBatteriesCarried = 4 };
+        Assert.False(config.Upgrade());
+        Assert.Equal(12, config.BatteryDailyStock);
+        Assert.Equal(4, config.MaxBatteriesCarried);
+        Assert.Equal(ModConfig.CurrentVersion, config.ConfigVersion);
+    }
+
+    [Fact]
+    public void AFileFromBeforeVersionsGetsEveryStep()
+    {
+        var config = new ModConfig { ConfigVersion = 0, BeamLengthTiles = 7, BatteryDailyStock = 16, MaxBatteriesCarried = 16 };
+        Assert.True(config.Upgrade());
+        Assert.Equal(10, config.BeamLengthTiles);
+        Assert.Equal(8, config.BatteryDailyStock);
+        Assert.Equal(8, config.MaxBatteriesCarried);
     }
 
     [Fact]

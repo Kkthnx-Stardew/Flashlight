@@ -14,6 +14,12 @@ A flashlight for Stardew Valley that lights a cone in the direction you face and
 
 The mod has been played in the game and the pieces work, but the numbers (prices, battery life, shop stock) are still my best reasoning and a simulation, not hundreds of hours of play. Please tell me where they feel wrong. How to do that is at the bottom.
 
+[size=3][b]New in 1.3.1[/b][/size]
+[list]
+[*]The shop sells fewer Dry Cells: 8 a day and at most 8 carried, down from 16 each. With 10 hour batteries, 16 cells was 80 hours of light a day, which never ran short in my yearly simulation, so the limits did nothing. At 8 a normal night is still always covered and a long Mines day can sometimes find the shelf short. A config.json that still has 16 is moved to 8 once, and a value you changed is kept.
+[*]Corrected old numbers in the balance doc and reran the simulation for the 10 hour batteries.
+[/list]
+
 [size=3][b]New in 1.3.0[/b][/size]
 [list]
 [*]The beam is 10 tiles long, the same reach as a Glow Ring or a Glowstone Ring, and 12 tiles with a Battery Pack.
@@ -45,14 +51,14 @@ Most of this came from comments on this page, so thank you.
 
 [size=3][b]Getting batteries[/b][/size]
 [list]
-[*][b]Dry Cell[/b] (added by this mod): sold at Robin's for 30g each (Clint's too, if on), up to 16 a day per player, and you can carry at most 16 when you buy. Robin has none on about one day in seven and half the stock on about one day in four, so you cannot rely on the shop alone. You can also craft them: 1 Copper Bar and 1 Coal make 12 Dry Cells once you reach Mining level 2. A pair of Dry Cells lasts 10 in-game hours.
+[*][b]Dry Cell[/b] (added by this mod): sold at Robin's for 30g each (Clint's too, if on), up to 8 a day per player, and you can carry at most 8 when you buy. Robin has none on about one day in seven and half the stock on about one day in four, so you cannot rely on the shop alone. You can also craft them: 1 Copper Bar and 1 Coal make 12 Dry Cells once you reach Mining level 2. A pair of Dry Cells lasts 10 in-game hours.
 [*][b]Battery Pack[/b] (the game's own): a pair of these goes in the slots instead. Lightning Rods and Solar Panels make them, they are never sold, and you need two. A pair lasts 12 hours, two more than Dry Cells, and while it is in use the beam is 20 percent longer. The game sells a Battery Pack for 500g and uses it in lamp-posts and sprinklers, so burning a pair is a treat and a choice, not the cheap way to run the flashlight.
 [/list]
 
 [size=3][b]How I tried to balance it[/b][/size]
 [list]
 [*]The goal: an early game tool that costs thought, does not replace the Glow Rings, and cannot be farmed for gold. It lights a cone, so a torch or a ring still wins at close range and in every direction.
-[*]Upkeep is about 6g for every hour of light. A full spring night (6 dark hours) is around 36g. The yearly shop simulation in the docs was run for the older numbers and has not been rerun for 10 hour batteries, so the new upkeep is hand arithmetic until play says otherwise.
+[*]Upkeep is about 6g for every hour of light. A full spring night (6 dark hours) is around 36g. The yearly shop simulation in the docs was rerun for the 10 hour batteries.
 [*]It cannot be abused for money: cells sell for 6g against 30g to buy and a craft is worth less than its ingredients. You can only own one flashlight, so you cannot store charge in spares, and there is only one light per player.
 [*]The reasoning, the table of every number, the simulation and what I would change first are all written down: [url=https://github.com/Kkthnx-Stardew/Flashlight/blob/main/docs/BALANCE.md]docs/BALANCE.md[/url].
 [/list]

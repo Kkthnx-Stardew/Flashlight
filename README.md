@@ -4,7 +4,7 @@ A flashlight for Stardew Valley that casts a beam in the direction you face and 
 
 ![The beam at night](docs/images/night-beam.png)
 
-This is an early build. It has been run in Stardew Valley 1.6.15 with SMAPI 4.5.2 and the beam, battery slots, shop, Battery Pack, flicker and held flashlight work. The art and the numbers are a first pass and it has not had real play-time yet, so feedback is very welcome (see below).
+It has been run in Stardew Valley 1.6.15 with SMAPI 4.5.2 and the beam, battery slots, shop, Battery Pack, flicker and held flashlight work. The art and the numbers are still a first pass and it has had little real play-time, so feedback is very welcome (see below).
 
 ## What it adds
 
@@ -51,8 +51,8 @@ Edit `config.json` in the mod folder after the first run, or change them in game
 | `SoldAtCarpenter` | `true` | Whether Robin sells them. Turn off if another mod handles shops. |
 | `SoldAtBlacksmith` | `false` | Whether Clint's Blacksmith sells them too. Works alone or together with Robin's. With both on, the daily Dry Cell stock is shared between the two shops. |
 | `SendMail` | `true` | Whether one letter about the flashlight is sent. From Robin, or Clint if only he sells it. Only sent while a shop sells it. |
-| `BatteryDailyStock` | `16` | How many Dry Cells one player can buy each day. With both Robin and Clint selling, it is shared between the two shops. |
-| `MaxBatteriesCarried` | `16` | The shop stops selling Dry Cells to someone carrying this many. |
+| `BatteryDailyStock` | `8` | How many Dry Cells one player can buy each day. With both Robin and Clint selling, it is shared between the two shops. |
+| `MaxBatteriesCarried` | `8` | The shop stops selling Dry Cells to someone carrying this many. |
 | `BatteryOutOfStockPercent` | `15` | Chance in percent that Robin has no Dry Cells on a day. |
 | `BatteryLowStockPercent` | `25` | Chance in percent that Robin has half the stock on a day. |
 | `FlickerSecondsBetween` | `40` | Average seconds of use between random flickers. 0 turns them off. |
