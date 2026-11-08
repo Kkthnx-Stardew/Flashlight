@@ -2,6 +2,20 @@
 
 Versions follow [Semantic Versioning](https://semver.org/). Newest first.
 
+## 1.3.0 (2026-11-08)
+
+Built against Stardew Valley 1.6.15 and SMAPI 4.5.2 and run in the game on a throwaway farm, alone and with a host and one joining player on one computer. Three or more players, split screen and play over the internet are still untested.
+
+- The beam is 10 tiles long, up from 7, which is the light radius the game gives a Glow Ring and a Glowstone Ring (read from the game's code), with the same light colour. With a Battery Pack it is 12 tiles. Measured at night in the same spot, the centre of the beam adds a little more light than a ring, 10 to 20 percent from 1 to 5 tiles out, because a cone puts its light in a narrow strip.
+- Batteries last six hours longer. A pair of Dry Cells lasts 10 in-game hours and a pair of Battery Packs 12.
+- Dry Cells cost 30g each and sell for 6g, up from 15g and 3g, so the longer life does not make light more than twice as cheap. An hour of light is about 6g, and a spring night about 36g, in the middle of what the last two versions charged. The reasoning is in docs/BALANCE.md. The daily stock and carry limit are unchanged.
+- A `config.json` from an older version is moved to the new beam length, battery life and cell price, but only for a value that still equals the old default (7 tiles, 4 and 6 hours, 15g). A value you changed is kept. The file now records a `ConfigVersion` so this happens once.
+- The tooltip is shorter. The description is one short sentence, the two battery slots sit side by side instead of one above the other, and a new line reads "+1 Coolness" with a small pair of sunglasses, like the stat lines on boots and rings.
+- On-screen messages are shorter so they fit the box. The one for a flashlight with no batteries is now "Load two matching batteries."
+- The beam range, the light and the multiplayer behaviour were checked after a warp and after the other player leaves. A light is removed when its player leaves the game, a warp moves the light with the player and leaves none behind, and a second player sees the cone, its shadows and its size.
+- `BeamLengthTiles` now goes up to 16 and `BatteryHours` up to 24 in the settings.
+- The manifest lists Nexus mod 54143 for update checks, and a test keeps it there.
+
 ## 1.2.0 (2026-10-25)
 
 Built against Stardew Valley 1.6.15 and SMAPI 4.5.2 with no warnings, and 151 tests pass. It was run in the game on a throwaway farm with only this mod loaded. A day change with the light on and Clint's shop stock in multiplayer were not run, and the earlier multiplayer limits in docs/BALANCE.md still stand.

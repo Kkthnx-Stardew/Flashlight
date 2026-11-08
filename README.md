@@ -9,20 +9,20 @@ This is an early build. It has been run in Stardew Valley 1.6.15 with SMAPI 4.5.
 ## What it adds
 
 - **Flashlight** (a tool): sold at Robin's Carpenter's Shop (and Clint's Blacksmith if you turn on `SoldAtBlacksmith`), one to a player. Press **F** (or use the tool) to switch it on and off. It keeps shining while you use other tools, which a torch cannot do. The toolbar picture shows when it is on, and a charge bar under it works like the water bar of the watering can.
-- **A cone of light**: a beam 7 tiles long in the direction you face, with nothing lit around you, like a real flashlight. It flickers now and then like an old flashlight with a loose cell, and much more often once the charge falls under a tenth of a full load. Trees, boulders, buildings and walls stop the beam and throw a shadow behind them, and other players in a multiplayer game see the same cone.
+- **A cone of light**: a beam 10 tiles long in the direction you face, the same reach as a Glow Ring or a Glowstone Ring, with nothing lit around you, like a real flashlight. It flickers now and then like an old flashlight with a loose cell, and much more often once the charge falls under a tenth of a full load. Trees, boulders, buildings and walls stop the beam and throw a shadow behind them, and other players in a multiplayer game see the same cone.
 - **Held in your hand**: while the flashlight is the selected tool you are drawn holding it. It follows your hand as you walk, the beam starts at its lens, and from the front and back it is held in one hand.
 - **Battery slots**: the flashlight has two, always two, like the bait slot on a fishing rod. It runs on a matching pair and needs both loaded, like a real one: two Dry Cells or two Battery Packs, never one of each and never just one. Right-click the flashlight with cells on the cursor to load them, one to a slot, and right-click it with an empty hand to take one out. Hover it to see what is loaded.
-- **Dry Cell** (a battery): sold at Robin's in limited numbers, or crafted from 1 Copper Bar and 1 Coal for 12 cells once you reach Mining level 2. A pair lasts 4 in-game hours, and only while it is dark where you are.
-- **Battery Pack** (the game's own): a pair of them goes in the slots instead. A pair of packs lasts 6 hours, two more than a pair of Dry Cells, and while it is in use the beam is 20 percent longer and a little brighter. Packs are found from a Lightning Rod or a Solar Panel, never sold, and you need two, so using them is a choice.
+- **Dry Cell** (a battery): sold at Robin's in limited numbers, or crafted from 1 Copper Bar and 1 Coal for 12 cells once you reach Mining level 2. A pair lasts 10 in-game hours, and only while it is dark where you are. A cell costs 30g.
+- **Battery Pack** (the game's own): a pair of them goes in the slots instead. A pair of packs lasts 12 hours, two more than a pair of Dry Cells, and while it is in use the beam is 20 percent longer (12 tiles). Packs are found from a Lightning Rod or a Solar Panel, never sold, and you need two, so using them is a choice.
 - **A letter about the flashlight**: a few days into a save, one letter comes to a player who does not have one yet. It is from Robin, or from Clint if only he sells it, once for each player and only while a shop sells it. `SendMail` turns it off.
 
 | | |
 | --- | --- |
 | ![Battery Pack beam](docs/images/night-battery-pack.png) | ![Facing down](docs/images/night-facing-down.png) |
 
-![Held in the hand, unlit above and lit below, facing down, right, left and up](docs/images/held.png)
+![Held in the hand in daylight, facing down, right, left and up](docs/images/held.png)
 
-![Walking](docs/images/walking.png)
+![Two players in multiplayer, each seeing the other player's beam as a cone with shadows](docs/images/multiplayer.png)
 
 | | |
 | --- | --- |
@@ -39,15 +39,15 @@ Edit `config.json` in the mod folder after the first run, or change them in game
 | Setting | Default | What it does |
 | --- | --- | --- |
 | `ToggleKey` | `F` | The button or buttons that switch the flashlight on and off, such as `F, LeftShoulder`. |
-| `BeamLengthTiles` | `7` | How far the beam reaches (3 to 12). |
+| `BeamLengthTiles` | `10` | How far the beam reaches (3 to 16). 10 matches a Glow Ring. |
 | `ShowInHand` | `true` | Draw the flashlight in your hand while it is selected. |
 | `BeamShadows` | `true` | Trees, boulders, buildings and walls stop the beam and throw a shadow behind them. Turn it off for the plain cone. |
-| `BatteryHours` | `4` | In-game hours a pair of Dry Cells lasts (1 to 12). |
+| `BatteryHours` | `10` | In-game hours a pair of Dry Cells lasts (1 to 24). |
 | `UseBatteryPacks` | `true` | Whether the game's Battery Pack can be loaded. |
-| `BatteryPackHours` | `6` | In-game hours a pair of Battery Packs lasts (1 to 48). |
+| `BatteryPackHours` | `12` | In-game hours a pair of Battery Packs lasts (1 to 48). |
 | `BatteryPackBeamPercent` | `120` | Beam length while a pack is in use, as a percentage (100 to 200). |
 | `FlashlightPrice` | `600` | Shop price of the flashlight. |
-| `BatteryPrice` | `15` | Shop price of one Dry Cell. |
+| `BatteryPrice` | `30` | Shop price of one Dry Cell. |
 | `SoldAtCarpenter` | `true` | Whether Robin sells them. Turn off if another mod handles shops. |
 | `SoldAtBlacksmith` | `false` | Whether Clint's Blacksmith sells them too. Works alone or together with Robin's. With both on, the daily Dry Cell stock is shared between the two shops. |
 | `SendMail` | `true` | Whether one letter about the flashlight is sent. From Robin, or Clint if only he sells it. Only sent while a shop sells it. |

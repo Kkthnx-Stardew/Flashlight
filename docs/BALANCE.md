@@ -10,7 +10,7 @@ Checked on the Stardew Valley Wiki and in the game's own code (1.6.15):
 | --- | --- | --- |
 | Torch | about 3 tiles | Starter recipe (1 Wood, 2 Sap). Only lights while it is the held item (`Object.actionWhenBeingHeld`). |
 | Small Glow Ring | 5 tiles | Found in Mines floors 1 to 39. Not sold. |
-| Glow Ring | 10 tiles | Found in Mines floor 40 and deeper and in the Skull Cavern. Not sold. |
+| Glow Ring and Glowstone Ring | 10 tiles | Found in Mines floor 40 and deeper and in the Skull Cavern. Not sold. |
 
 Night starts at 8pm in spring and summer, 7pm in fall and 6pm in winter. The day ends at 2am. Ten in-game minutes pass in 7 real seconds, so a spring night (8pm to 2am) is about 4.2 real minutes. A new game starts with 500g (seen in the game).
 
@@ -25,8 +25,8 @@ The game's Battery Pack sells for 500g and is not sold in any shop. It comes fro
 ## How it works
 
 - **Battery slots.** The flashlight always has two slots, like the bait slot of a fishing rod, and it is not a setting. It needs both filled with the same kind of cell, as a real flashlight does: two Dry Cells or two Battery Packs. One cell alone does nothing and a Dry Cell next to a Battery Pack is refused and handed back. Right-click the flashlight in the backpack with cells on the cursor to load one into each slot, and right-click it with an empty hand to take one out. Hover it to see what is loaded.
-- **Charge.** A matched pair is used up together the moment the flashlight needs light and gives a fixed time, 4 hours for Dry Cells. The flashlight keeps that charge and, when it runs out, takes the next matched pair if one is loaded. With no matching pair it goes out. A pair can be loaded while the light is already on.
-- **Battery Pack.** A pair of Battery Packs goes in the slots instead of Dry Cells. A pair lasts 6 hours (two more than Dry Cells) and while it is in use the beam is 20 percent longer (about 8.4 tiles) and takes more of the darkness away. Packs are found, not bought, and it takes two, so a pair is 1,000g of items the game would sell for 6 hours of a slightly better beam. That is deliberately a poor trade, so packs are a treat and not the default. The charge bar is measured against the best pair in the flashlight, so a Dry Cell pair reads full and a pair of packs reads full.
+- **Charge.** A matched pair is used up together the moment the flashlight needs light and gives a fixed time, 10 hours for Dry Cells. The flashlight keeps that charge and, when it runs out, takes the next matched pair if one is loaded. With no matching pair it goes out. A pair can be loaded while the light is already on.
+- **Battery Pack.** A pair of Battery Packs goes in the slots instead of Dry Cells. A pair lasts 12 hours (two more than Dry Cells) and while it is in use the beam is 20 percent longer (about 12 tiles) and takes more of the darkness away. Packs are found, not bought, and it takes two, so a pair is 1,000g of items the game would sell for 12 hours of a slightly better beam. That is deliberately a poor trade, so packs are a treat and not the default. The charge bar is measured against the best pair in the flashlight, so a Dry Cell pair reads full and a pair of packs reads full.
 - **Only a cone.** Like a real flashlight it lights what it points at and nothing around the farmer, so it does not replace a torch for work at close range or a glow ring that lights every way.
 - **Switching.** A key (F, or a list such as `F, LeftShoulder` for a controller) or using the tool switches it on and off. The toolbar picture changes to a lit one while it is on.
 - **Charge bar.** Under the picture is a bar like the water bar of the watering can. It shows how much of a full load (one fresh pair, running or loaded) is left, in steps: green above half, yellow above a quarter, orange above a tenth, red below that. The tooltip gives the same figure as a percentage.
@@ -37,16 +37,16 @@ The game's Battery Pack sells for 500g and is not sold in any shop. It comes fro
 
 | Setting | Default | Why |
 | --- | --- | --- |
-| Beam length | 7 tiles (9 with a Battery Pack) | More reach than a Small Glow Ring, far less coverage than a Glow Ring. |
+| Beam length | 10 tiles (12 with a Battery Pack) | The same reach as a Glow Ring and a Glowstone Ring, which the game gives a radius of 10. It is a narrow cone, so it covers far less ground than either ring. |
 | Beam spread | 30 degrees each side of the facing | Narrow on purpose. |
-| Battery slots | 2, fixed, a matched pair | A real flashlight takes two batteries that work together. Two Dry Cells is one pair, which is 4 in-game hours of light, so a full night takes a pair and a half and the bag still matters. |
-| Battery life | A pair of Dry Cells lasts 4 in-game hours (24 ticks of 10 minutes) | About 170 real seconds a pair. It was 2 hours in 1.0.0 and was doubled so a pair covers most of an evening. The flashlight is still something you feed and not something you set and forget. |
+| Battery slots | 2, fixed, a matched pair | A real flashlight takes two batteries that work together. Two Dry Cells is one pair, which is 10 in-game hours of light, so a full night uses about two thirds of a pair. |
+| Battery life | A pair of Dry Cells lasts 10 in-game hours (60 ticks of 10 minutes) | About 7 real minutes a pair. It was 2 hours in 1.0.0, 4 in 1.1.0 and is 10 from 1.3.0, so one pair covers a night and most of the next. The price per cell went up with it, see the 1.3.0 note below. |
 | Flashlight price | 600g | A new game starts with 500g, so it cannot be bought on day one, and it is the cost of a good early harvest. |
-| Battery price | 15g a cell | A pair is 30g for 4 hours, which is 7.5g for each hour of light. A full spring night (6 hours, a pair and a half) is about 45g, and only the dark hours count. |
-| Battery sell price | 3g | A fifth of the shop price, so buying cells to sell them again loses money. |
+| Battery price | 30g a cell | A pair is 60g for 10 hours, which is 6g for each hour of light. A spring night (6 dark hours) costs about 36g, in the middle of the 30g to 45g a night that 1.1.0 and 1.2.0 charged. |
+| Battery sell price | 6g | A fifth of the shop price, so buying cells to sell them again loses money. |
 | Where it is sold | Robin's Carpenter's Shop, Clint's Blacksmith as an option | Robin already sells the lamp-post recipes (500g and 1,000g). Clint's is off by default. The game counts daily stock for each shop on its own, so with both on the daily stock is shared between them. Shop hours are not verified. |
-| Battery Pack life | A pair of Battery Packs lasts 6 in-game hours | Two more hours than a pair of Dry Cells. The game sells a pack for 500g and uses it for lamp-posts and sprinklers, and the flashlight needs two, so burning a pair is a real choice and never a bargain. Lightning rod storms and a week of a solar panel cannot carry a season of nights. |
-| Battery recipe | 1 Copper Bar + 1 Coal makes 12 Dry Cells | A Copper Bar is 5 Copper Ore and 1 Coal at a furnace (wiki), so a craft is 5 ore and 2 coal for 12 cells, which is 24 hours of light. Learned at Mining level 2, which is a placeholder and not verified. |
+| Battery Pack life | A pair of Battery Packs lasts 12 in-game hours | Two more hours than a pair of Dry Cells. The game sells a pack for 500g and uses it for lamp-posts and sprinklers, and the flashlight needs two, so burning a pair is a real choice and never a bargain. Lightning rod storms and a week of a solar panel cannot carry a season of nights. |
+| Battery recipe | 1 Copper Bar + 1 Coal makes 12 Dry Cells | A Copper Bar is 5 Copper Ore and 1 Coal at a furnace (wiki), so a craft is 5 ore and 2 coal for 12 cells, which is 60 hours of light. Learned at Mining level 2, which is a placeholder and not verified. |
 
 ## Keeping it fair
 
@@ -98,7 +98,7 @@ The defaults are a first pass. Players can paste the output of the `flashlight_r
 | Most nights end with spare cells and the shop is never empty | Lower `BatteryDailyStock` or raise `BatteryOutOfStockPercent`. The target is a flashlight that costs thought on a bad shop day, not every day. |
 | The flashlight runs out mid night more than about one night in four | Raise `BatteryHours` or `BatteryDailyStock`. Upkeep should be a cost, not a wall. |
 | The 600g price is reached before spring ends and feels free | Raise `FlashlightPrice`. If it feels out of reach, check against when players first have 600g. |
-| Beam or glow is called too strong next to glow rings | Lower `BeamLengthTiles`. Rings should stay better in the Mines. |
+| Beam or glow is called too strong next to glow rings | Lower `BeamLengthTiles`. From 1.3.0 the beam reaches as far as a Glow Ring on purpose, so only the cone shape and the upkeep keep rings better in the Mines. |
 | Battery Packs make the Dry Cell pointless | Lower `BatteryPackHours` or `BatteryPackBeamPercent`. A pack should be an event, not the default. |
 | Flicker is annoying | Raise `FlickerSecondsBetween`, or set it to 0. The low-charge warning flicker stays. |
 
@@ -110,3 +110,19 @@ Each change goes into the changelog with the report that caused it, so the histo
 - Mining level for the battery recipe against vanilla recipe levels.
 - Whether 600g and 30g feel right after real play. Every price is in `config.json`.
 - Beam size and position need a play-test.
+
+## 1.3.0 changes
+
+Three numbers moved together, so the upkeep did not fall by accident.
+
+| What | Was | Now | Why |
+| --- | --- | --- | --- |
+| Beam length | 7 tiles | 10 tiles (12 with a Battery Pack) | The game gives a Glow Ring and a Glowstone Ring a light radius of 10 (read from the game's code), with the colour (0, 30, 150), which the beam already used. Reach now matches. Measured at night in the same spot, the centre of the beam added 10 to 20 percent more light than the ring from 1 to 5 tiles out and 30 to 60 percent more at 7 to 9 tiles, because the cone puts its light in a narrow strip. Dimming the light colour made no visible difference in the same test, so the brightness is set by the picture and the length, not the colour value. |
+| Dry Cell pair life | 4 hours | 10 hours | Six hours longer, as asked. A normal night of 6 dark hours now uses about two thirds of a pair. |
+| Battery Pack pair life | 6 hours | 12 hours | Six hours longer, and still two hours more than Dry Cells. |
+| Dry Cell price | 15g | 30g | Hours per cell went up by 2.5 times. At 15g the cost of an hour of light would have dropped from 7.5g to 3g, so a night would cost about 18g. At 30g an hour is 6g and a night about 36g, in the middle of the 30g to 45g a night the last two versions charged. At 38g an hour would match the old 7.5g exactly, but a pair at 76g is a bigger single purchase for a player who has just bought a 600g flashlight. |
+| Dry Cell sell price | 3g | 6g | Kept at a fifth of the shop price, so buying to resell still loses money. |
+
+Not changed, but worth watching. The daily stock (16) and the carry limit (16) now cover 80 hours of light a day for each player, far more than anyone lights in a day, so the shop limits no longer shape play. If upkeep feels too light, lower `BatteryDailyStock` and `MaxBatteriesCarried` to 8 before raising the price again.
+
+A config.json from an older version has its values moved to these numbers only where they still equal the old defaults (7 tiles, 4 and 6 hours, 15g), and a value a player changed is kept. The yearly shop simulation in docs/balance_sim.py was not rerun for these numbers because Python is not installed on the machine used for this pass. The figures above are hand arithmetic.

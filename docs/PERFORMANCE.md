@@ -43,3 +43,14 @@ Measured over 600 frames of the whole game, with the joining player in the same 
 | Both beams lit | 80.4 | 63.4 |
 
 The game itself makes about 64 to 78 KB a frame with no mod doing anything. A lit beam adds no more than about 1 KB, which is inside the run-to-run noise.
+
+## The 10 tile beam (1.3.0)
+
+The default beam grew from 7 to 10 tiles, so the shadow mask looks at a larger window of tiles. Measured with 400 builds in a row on the test farm at night, each at a slightly different position so none was reused, with the 10 tile default (a radius of 10.32).
+
+| Place | Median | 95th percentile | Slowest |
+| --- | --- | --- | --- |
+| Facing a tree | 0.195 ms | 0.227 ms | 0.55 ms |
+| Open ground | 0.202 ms | 0.239 ms | 0.46 ms |
+
+That is about the same as the 0.185 ms measured for the 7 tile beam in 1.1.0, because most of the cost is the 128 by 128 picture and not the window of tiles. The allocation figure of about 190 bytes a build comes from calling the method through reflection in the test, so it is not the mask's own garbage. The 12 tile beam of a Battery Pack was not timed on its own. Its window covers about 30 percent more tiles, so expect a little more than the figures above.
