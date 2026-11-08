@@ -24,6 +24,8 @@ public class ShippedFilesTests
         Assert.Equal("Flashlight.dll", root.GetProperty("EntryDll").GetString());
         Assert.Equal("%ProjectVersion%", root.GetProperty("Version").GetString());
         Assert.True(Version.TryParse(root.GetProperty("MinimumGameVersion").GetString(), out var min) && min >= new Version(1, 6, 9));
+        // SMAPI tells players about updates through this key, so it must name the Nexus page
+        Assert.Contains("Nexus:54143", root.GetProperty("UpdateKeys").EnumerateArray().Select(k => k.GetString()));
     }
 
     [Fact]
@@ -39,6 +41,7 @@ public class ShippedFilesTests
     [InlineData("objects.png", 16, 16)]
     [InlineData("tools.png", 32, 16)]
     [InlineData("held.png", 72, 12)]
+    [InlineData("coolness.png", 10, 10)]
     [InlineData("beam-up.png", 128, 128)]
     [InlineData("beam-right.png", 128, 128)]
     [InlineData("beam-down.png", 128, 128)]

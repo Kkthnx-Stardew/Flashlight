@@ -25,10 +25,11 @@ namespace Flashlight
         private const string ObjectsTexture = "Mods/" + ModId + "/Objects";
         public const string ToolsTexture = "Mods/" + ModId + "/Tools";
         public const string HeldTexture = "Mods/" + ModId + "/Held";
+        public const string CoolnessTexture = "Mods/" + ModId + "/Coolness";
         private const string BeamTexturePrefix = "Mods/" + ModId + "/Beam";
 
         /// <summary>What a battery sells for. It is well under the shop price and under the cost of the recipe's ingredients.</summary>
-        private const int BatterySellPrice = 3;
+        private const int BatterySellPrice = 6;
 
         public const string MailId = ModId + "_RobinAd";
 
@@ -58,6 +59,8 @@ namespace Flashlight
                 e.LoadFromModFile<Texture2D>("assets/objects.png", AssetLoadPriority.Medium);
             else if (e.NameWithoutLocale.IsEquivalentTo(ToolsTexture))
                 e.LoadFromModFile<Texture2D>("assets/tools.png", AssetLoadPriority.Medium);
+            else if (e.NameWithoutLocale.IsEquivalentTo(CoolnessTexture))
+                e.LoadFromModFile<Texture2D>("assets/coolness.png", AssetLoadPriority.Medium);
             else if (e.NameWithoutLocale.IsEquivalentTo(HeldTexture))
                 e.LoadFromModFile<Texture2D>("assets/held.png", AssetLoadPriority.Medium);
             else if (e.NameWithoutLocale.StartsWith(BeamTexturePrefix, true))

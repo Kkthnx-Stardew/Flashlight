@@ -15,8 +15,9 @@ namespace Flashlight
         // "radius" world pixels wide, so a beam of N tiles (64 pixels each) needs a radius of N * 64 / 62.
         private const float ConePixels = 62f;
 
-        // The colour is taken away from the darkness, so a warm light removes mostly blue.
-        private static readonly Color LightColor = new(0, 40, 140);
+        // The colour is taken away from the darkness, so a warm light removes mostly blue. This is the colour and the radius (10 tiles) the game gives the Glow Ring, and the Glowstone Ring once its wearer has entered a place.
+        // Measured at night with both lit in the same spot: lowering the green and blue values by half did not change how bright a ring looks, so the beam is matched to the ring by this colour and its length, not by dimming it.
+        private static readonly Color LightColor = new(0, 30, 150);
 
         private const string StatsFile = "stats.json";
 
@@ -54,6 +55,8 @@ namespace Flashlight
                 _config = new ModConfig();
                 Monitor.Log($"Could not read config.json, so the default settings are used and the file is left as it is. Fix it or delete it. ({ex.Message})", LogLevel.Warn);
             }
+            if (readable && _config.Upgrade())
+                Monitor.Log("The settings file was written by an older version, so the beam length and battery life that were still the old defaults are now the new ones (10 tiles, 10 and 12 hours, 30g a cell).", LogLevel.Info);
             ApplyConfig(save: readable);
             LoadStats();
             helper.ConsoleCommands.Add("flashlight_report", "Prints a block of text about your settings and how the flashlight has been used, to paste into a bug report or feedback. Nothing is sent anywhere.", (_, _) => Monitor.Log(Report(), LogLevel.Info));
@@ -66,6 +69,8 @@ namespace Flashlight
             FlashlightPatches.MismatchRefused = () => Notice("message.match");
             FlashlightPatches.EmptySlotsNote = inUse => helper.Translation.Get(inUse ? "tooltip.empty-in-use" : "tooltip.empty-none");
             FlashlightPatches.ChargeText = fraction => helper.Translation.Get("tooltip.charge", new { percent = (int)Math.Round(fraction * 100) });
+            FlashlightPatches.CoolnessLoader = () => helper.GameContent.Load<Texture2D>(ContentSetup.CoolnessTexture);
+            FlashlightPatches.CoolnessText = () => helper.Translation.Get("tooltip.coolness");
             FlashlightVisuals.ToolsLoader = () => helper.GameContent.Load<Texture2D>(ContentSetup.ToolsTexture);
             HeldFlashlight.HeldLoader = () => helper.GameContent.Load<Texture2D>(ContentSetup.HeldTexture);
             HeldFlashlight.SheetLoader = male => helper.GameContent.Load<Texture2D>(male ? "Characters/Farmer/farmer_base" : "Characters/Farmer/farmer_girl_base");
@@ -115,6 +120,7 @@ namespace Flashlight
         private void ApplyConfig(bool save)
         {
             _config.Clamp();
+            _config.ConfigVersion = ModConfig.CurrentVersion;
             if (save)
                 Helper.WriteConfig(_config);
 
@@ -157,6 +163,7 @@ namespace Flashlight
                 if (name.StartsWith("Mods/" + ContentSetup.ModId + "/", true))
                 {
                     FlashlightVisuals.ForgetTextures();
+                    FlashlightPatches.ForgetCoolness();
                     HeldFlashlight.ForgetTextures();
                     Array.Clear(_beams);
                     _mask.Forget();

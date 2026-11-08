@@ -13,6 +13,8 @@ namespace Flashlight
             var changed = new List<string>();
             foreach (var property in typeof(ModConfig).GetProperties())
             {
+                if (property.Name == nameof(ModConfig.ConfigVersion))
+                    continue; // bookkeeping, not a setting the player chose
                 var now = property.GetValue(config);
                 if (!Equals(now, property.GetValue(defaults)))
                     changed.Add($"{property.Name}={Convert.ToString(now, CultureInfo.InvariantCulture)}");

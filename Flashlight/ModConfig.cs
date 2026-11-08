@@ -3,20 +3,64 @@ namespace Flashlight
     /// <summary>Settings read from config.json. This file has no game dependencies so the tests can compile it.</summary>
     public class ModConfig
     {
+        /// <summary>The version of the settings layout this file was last written with. 0 means the file came from before versions were kept.</summary>
+        public int ConfigVersion { get; set; }
+
+        /// <summary>The layout version this build writes.</summary>
+        public const int CurrentVersion = 2;
+
+        /// <summary>The beam length, Dry Cell life, Battery Pack life and Dry Cell price that were the defaults before version 2.</summary>
+        private const int OldBeamLength = 7, OldBatteryHours = 4, OldBatteryPackHours = 6, OldBatteryPrice = 15;
+
+        /// <summary>
+        /// Moves a file written by an older build to the current defaults, but only for a value that still equals the old default,
+        /// so a setting the player changed on purpose is kept. Without this a saved file would hold the old numbers forever.
+        /// </summary>
+        /// <returns>Whether a value was moved to a new default.</returns>
+        public bool Upgrade()
+        {
+            if (ConfigVersion >= CurrentVersion)
+                return false;
+
+            var changed = false;
+            if (BeamLengthTiles == OldBeamLength)
+            {
+                BeamLengthTiles = new ModConfig().BeamLengthTiles;
+                changed = true;
+            }
+            if (BatteryHours == OldBatteryHours)
+            {
+                BatteryHours = new ModConfig().BatteryHours;
+                changed = true;
+            }
+            if (BatteryPackHours == OldBatteryPackHours)
+            {
+                BatteryPackHours = new ModConfig().BatteryPackHours;
+                changed = true;
+            }
+            if (BatteryPrice == OldBatteryPrice)
+            {
+                BatteryPrice = new ModConfig().BatteryPrice;
+                changed = true;
+            }
+            ConfigVersion = CurrentVersion;
+            return changed;
+        }
+
         /// <summary>The key that switches the flashlight on and off, as a SMAPI button name.</summary>
         public string ToggleKey { get; set; } = "F";
 
         /// <summary>How far the beam reaches, in tiles.</summary>
-        public int BeamLengthTiles { get; set; } = 7;
+        public int BeamLengthTiles { get; set; } = 10;
 
         /// <summary>How long a matched pair of Dry Cells lasts, in in-game hours.</summary>
-        public int BatteryHours { get; set; } = 4;
+        public int BatteryHours { get; set; } = 10;
 
         /// <summary>Whether the game's Battery Pack can be loaded as a longer lasting, brighter cell.</summary>
         public bool UseBatteryPacks { get; set; } = true;
 
         /// <summary>How long a matched pair of Battery Packs lasts, in in-game hours.</summary>
-        public int BatteryPackHours { get; set; } = 6;
+        public int BatteryPackHours { get; set; } = 12;
 
         /// <summary>How long the beam is while a Battery Pack is in use, as a percentage of the normal beam.</summary>
         public int BatteryPackBeamPercent { get; set; } = 120;
@@ -31,7 +75,7 @@ namespace Flashlight
         public int FlashlightPrice { get; set; } = 600;
 
         /// <summary>The price of one battery in the shop.</summary>
-        public int BatteryPrice { get; set; } = 15;
+        public int BatteryPrice { get; set; } = 30;
 
         /// <summary>Whether Robin's Carpenter's Shop sells the flashlight and batteries.</summary>
         public bool SoldAtCarpenter { get; set; } = true;
@@ -75,8 +119,8 @@ namespace Flashlight
         {
             if (string.IsNullOrWhiteSpace(ToggleKey))
                 ToggleKey = "F";
-            BeamLengthTiles = Math.Clamp(BeamLengthTiles, 3, 12);
-            BatteryHours = Math.Clamp(BatteryHours, 1, 12);
+            BeamLengthTiles = Math.Clamp(BeamLengthTiles, 3, 16);
+            BatteryHours = Math.Clamp(BatteryHours, 1, 24);
             BatteryPackHours = Math.Clamp(BatteryPackHours, 1, 48);
             BatteryPackBeamPercent = Math.Clamp(BatteryPackBeamPercent, 100, 200);
             FlashlightPrice = Math.Clamp(FlashlightPrice, 0, 100_000);

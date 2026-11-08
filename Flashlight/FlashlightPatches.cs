@@ -28,6 +28,22 @@ namespace Flashlight
         /// <summary>Builds the note under the charge line when both slots are empty, told whether a pair is still in use. Set by the mod.</summary>
         public static Func<bool, string>? EmptySlotsNote { get; set; }
 
+        /// <summary>Loads the sunglasses picture for the tooltip's "+1 Coolness" line. Set by the mod. Null result means the line is drawn without a picture.</summary>
+        public static Func<Texture2D?>? CoolnessLoader { get; set; }
+
+        /// <summary>The text of the "+1 Coolness" line. Set by the mod.</summary>
+        public static Func<string>? CoolnessText { get; set; }
+
+        private static Texture2D? _coolness;
+        private static bool _coolnessFailed;
+
+        /// <summary>Forget the picture, so it is loaded again after an asset changes.</summary>
+        public static void ForgetCoolness()
+        {
+            _coolness = null;
+            _coolnessFailed = false;
+        }
+
         /// <summary>Called when someone tries to load a cell into a spare flashlight. Set by the mod.</summary>
         public static Action? SpareRefused { get; set; }
 
@@ -72,6 +88,20 @@ namespace Flashlight
             Patch(monitor, "tooltip charge line", () => harmony.Patch(
                 original: AccessTools.Method(typeof(Tool), nameof(Tool.getDescription), Type.EmptyTypes),
                 postfix: new HarmonyMethod(typeof(FlashlightPatches), nameof(GetDescriptionPostfix))));
+            PatchCoolness(monitor, harmony);
+        }
+
+        private static void PatchCoolness(IMonitor monitor, Harmony harmony)
+        {
+            Patch(monitor, "coolness line (space)", () => harmony.Patch(
+                original: AccessTools.Method(typeof(Tool), nameof(Tool.getExtraSpaceNeededForTooltipSpecialIcons)),
+                postfix: new HarmonyMethod(typeof(FlashlightPatches), nameof(TooltipSpacePostfix))));
+            Patch(monitor, "battery slots side by side in the tooltip", () => harmony.Patch(
+                original: AccessTools.Method(typeof(Tool), nameof(Tool.drawAttachments)),
+                prefix: new HarmonyMethod(typeof(FlashlightPatches), nameof(DrawAttachmentsPrefix))));
+            Patch(monitor, "coolness line (drawing)", () => harmony.Patch(
+                original: AccessTools.Method(typeof(Tool), nameof(Tool.drawTooltip)),
+                postfix: new HarmonyMethod(typeof(FlashlightPatches), nameof(DrawTooltipPostfix))));
         }
 
         private static void Patch(IMonitor monitor, string what, Action apply)
@@ -219,6 +249,72 @@ namespace Flashlight
                 _heldFailed = true; // one message, not one every frame
                 HeldFlashlight.OnError?.Invoke(ex.ToString());
             }
+        }
+
+        /// <summary>The side of a battery slot, which is how far apart the slots are drawn.</summary>
+        private const int SlotStep = 68;
+
+        /// <summary>
+        /// Whether the tooltip being drawn puts the two battery slots next to each other. The game asks how tall the tooltip is
+        /// just before it draws it, so that answer sets this. A shop tooltip keeps the game's own tall layout, because the game
+        /// places the price line from the number of slots and would leave it hanging below a shorter box.
+        /// </summary>
+        private static bool _slotsSideBySide;
+
+        /// <summary>Draws the battery slots in a row instead of a column, which makes the tooltip shorter and shows a pair as a pair.</summary>
+        private static bool DrawAttachmentsPrefix(Tool __instance, SpriteBatch b, int x, int y)
+        {
+            if (!_slotsSideBySide || !FlashlightState.IsFlashlight(__instance))
+                return true;
+
+            y += __instance.enchantments.Count > 0 ? 8 : 4; // the same nudge the game applies
+            var source = Game1.getSourceRectForStandardTileSheet(Game1.menuTexture, 10);
+            for (var i = 0; i < __instance.AttachmentSlotsCount; i++)
+            {
+                var at = new Vector2(x + i * SlotStep, y);
+                b.Draw(Game1.menuTexture, at, source, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0.86f);
+                __instance.attachments[i]?.drawInMenu(b, at, 1f);
+            }
+            return false;
+        }
+
+        /// <summary>The tooltip gets a row for the coolness line, the way a stat row such as defense or luck gets one.</summary>
+        private static void TooltipSpacePostfix(Tool __instance, SpriteFont font, int minWidth, int moneyAmountToDisplayAtBottom, ref Point __result)
+        {
+            if (!FlashlightState.IsFlashlight(__instance))
+                return;
+            _slotsSideBySide = moneyAmountToDisplayAtBottom <= -1;
+            if (_slotsSideBySide && __instance.AttachmentSlotsCount > 1)
+                __result.Y -= SlotStep * (__instance.AttachmentSlotsCount - 1); // the game made room for a column of slots
+            if (CoolnessText is null)
+                return;
+            __result.Y += (int)Math.Max(font.MeasureString("TT").Y, 48f);
+            // The game takes a width other than 0 as the width of the whole tooltip, not as a minimum, so the width it asked about is kept
+            // unless the line needs more. 16 of margin and 52 for the picture on the left, and 16 on the right.
+            __result.X = Math.Max(Math.Max(__result.X, minWidth), 16 + 52 + (int)font.MeasureString(CoolnessText()).X + 16);
+        }
+
+        /// <summary>Draws the sunglasses and "+1 Coolness" under the description, at the same offsets the game uses for its own stat rows.</summary>
+        private static void DrawTooltipPostfix(Tool __instance, SpriteBatch spriteBatch, ref int x, ref int y, SpriteFont font, float alpha)
+        {
+            if (CoolnessText is null || !FlashlightState.IsFlashlight(__instance))
+                return;
+
+            if (_coolness is null && !_coolnessFailed && CoolnessLoader is not null)
+            {
+                try
+                {
+                    _coolness = CoolnessLoader();
+                }
+                catch
+                {
+                    _coolnessFailed = true; // a missing picture only costs the picture
+                }
+            }
+            if (_coolness is not null)
+                Utility.drawWithShadow(spriteBatch, _coolness, new Vector2(x + 16 + 4, y + 16 + 4), new Rectangle(0, 0, 10, 10), Color.White, 0f, Vector2.Zero, 4f, false, 1f);
+            Utility.drawTextWithShadow(spriteBatch, CoolnessText(), font, new Vector2(x + 16 + 52, y + 16 + 12), Game1.textColor * 0.9f * alpha);
+            y += (int)Math.Max(font.MeasureString("TT").Y, 48f);
         }
 
         private static void GetDescriptionPostfix(Tool __instance, ref string __result)
